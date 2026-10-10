@@ -98,7 +98,7 @@
     const revealed=passwordInput.type==='text';
     lockIcon.className=revealed?'bi bi-eye':'bi bi-lock';
     privacyHint.textContent=revealed?'Password visible in the form.':'Enter your password to continue.';
-    passHint.textContent=focused?'Your identity is covered while you enter your password.':'Your pass responds as you type.';
+    passHint.textContent=focused?'A little privacy before you cross.':'Your name at the entrance. Your next chapter ahead.';
   }
   passwordInput.addEventListener('focus',syncPrivacy);
   passwordInput.addEventListener('blur',()=>queueMicrotask(syncPrivacy));

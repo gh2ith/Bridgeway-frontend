@@ -109,49 +109,71 @@
 #page-login [data-style="s8"] { max-width: 440px; margin: 1.75rem auto; }
 #page-login [data-style="s9"] { font-size: 0.78rem; }
 
-/* Bridge access pass. */
-.login-page .lb-stage-area { flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:28px;padding:50px 0;position:relative; }
-.access-intro { width:min(100%,540px);color:#f1f5ff; }
-.access-intro > span { font-size:11px;letter-spacing:.2em;color:#aac9ff;font-weight:600; }
-.access-intro h2 { font-family:var(--lb-font-head);font-size:clamp(34px,3.6vw,56px);font-weight:700;letter-spacing:-.055em;line-height:1.1;margin:14px 0 16px; }
-.access-intro p { font-size:14px;color:#b9c9e3;margin:0; }
-.access-pass { --pass-ink:#173052;--pass-muted:#536882;position:relative;isolation:isolate;width:min(100%,540px);min-height:300px;border-radius:22px;background:linear-gradient(125deg,#fff,#edf4ff 80%,#dfeaff);border:1px solid #ffffff90;box-shadow:0 30px 65px -20px #020c2c85,inset 0 1px #fff;overflow:hidden;color:var(--pass-ink);padding:26px 30px;animation:passEnter .7s ease both; }
-.pass-top { display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2; }
-.pass-top img { width:88px;height:52px;object-fit:contain; }
-.pass-top > span { border:1px solid #7197c440;border-radius:5px;padding:5px 8px;font-size:10px;letter-spacing:.15em;color:var(--pass-muted); }
-.pass-bridge { position:absolute;right:-45px;top:35px;width:380px;height:220px;background:#386bb8;mask:url('../../assets/bridgeway-logo.svg') center/contain no-repeat;opacity:.07;pointer-events:none; }
-.pass-identity { display:flex;align-items:center;gap:18px;position:relative;margin:30px 0 28px; }
-.pass-avatar { width:60px;height:60px;flex-shrink:0;display:grid;place-items:center;border-radius:16px;background:#2358ad;color:white;font-size:21px;font-weight:700;box-shadow:inset 0 1px #ffffff35; }
-.pass-caption { font-size:9px;letter-spacing:.18em;color:var(--pass-muted);font-weight:600; }
-#badgeName { font-size:22px;font-weight:600;letter-spacing:-.04em;line-height:1.4;max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-#badgeRole { font-size:12px;color:var(--pass-muted);margin-top:3px; }
-.pass-bottom { position:relative;display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #6686ad30;padding-top:16px;font-size:10px;letter-spacing:.04em;color:var(--pass-muted); }
-.pass-contact { display:flex;align-items:center;gap:6px;min-width:0; }
-#passEmail { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px; }
-.pass-privacy { position:absolute;inset:88px 0 0;z-index:3;background:#edf4ffe8;backdrop-filter:blur(16px);border-top:1px solid #9bbbe050;display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(110%);visibility:hidden;transition:transform .5s var(--lb-ease),visibility .5s; }
-.is-private .pass-privacy { transform:translateY(0);visibility:visible; }
-.pass-lock { display:grid;place-items:center;width:42px;height:42px;margin-bottom:12px;border:1px solid #6584b950;border-radius:12px;color:#2358ad;transition:box-shadow .2s,transform .2s; }
-.pass-privacy h3 { font-size:19px;font-weight:600;letter-spacing:-.03em;margin:10px 0 6px; }
-.pass-privacy p { font-size:12px;color:var(--pass-muted);margin:0; }
-.pass-signal { display:flex;gap:5px;margin-top:16px; }
-.pass-signal span { width:5px;height:5px;border-radius:50%;background:#2358ad;opacity:.25;transition:opacity .2s,transform .2s; }
-.is-typing .pass-signal span { opacity:1;transform:scale(1.35); }
-.is-typing .pass-lock { box-shadow:0 0 0 7px #2563eb12;transform:scale(1.04); }
-.pass-hint { width:min(100%,540px);display:flex;align-items:center;gap:9px;font-size:11px;color:#b9c9e3;margin:0; }
-.pass-hint > span:first-child { width:5px;height:5px;background:#91baff;border-radius:50%;flex-shrink:0; }
-.pass-sweep { position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(110deg,transparent 20%,#ffffff90 50%,transparent 80%);transform:translateX(-120%); }
-.is-pending .pass-sweep { animation:passSweep 1s ease-in-out infinite; }
-.is-error-kick { animation:passError .45s ease; }
-[data-theme="dark"] .access-pass { --pass-ink:#edf4ff;--pass-muted:#a8bbd6;background:linear-gradient(125deg,#1e314e,#12233e 80%,#172e50);border-color:#8fadd535;box-shadow:0 30px 65px -20px #0009,inset 0 1px #ffffff15; }
-[data-theme="dark"] .pass-top img { filter:brightness(0) invert(1);opacity:.9; }
-[data-theme="dark"] .pass-bridge { background:#b1d2ff;opacity:.08; }
-[data-theme="dark"] .pass-avatar { background:#294b80; }
-[data-theme="dark"] .pass-privacy { background:#152844ed; }
-[data-theme="dark"] .pass-lock { color:#adcfff; }
-[data-theme="dark"] .pass-signal span { background:#adcfff; }
-@keyframes passEnter { from { opacity:0;transform:translateY(18px); } to { opacity:1;transform:translateY(0); } }
-@keyframes passSweep { to { transform:translateX(120%); } }
-@keyframes passError { 25%,75% { transform:translateX(-5px); } 50% { transform:translateX(5px); } }
-@media(max-width:991px) { .login-page .lb-stage-area { padding:34px 0;gap:20px; }.access-intro h2 { font-size:34px; }.access-intro h2 br { display:none; }.login-page .lb-badge-panel { min-height:0; } }
-@media(max-width:576px) { .access-pass { padding:20px;min-height:275px; }.pass-top img { width:74px; }.pass-identity { gap:12px;margin:26px 0; }#badgeName { font-size:18px;max-width:220px; }.pass-avatar { width:48px;height:48px; }#badgeRole { font-size:11px; }.pass-bottom { flex-wrap:wrap; }#passEmail { max-width:210px; }.pass-privacy h3 { font-size:17px; }.pass-privacy p { font-size:11px; } }
-@media(prefers-reduced-motion:reduce) { .access-pass,.pass-sweep,.is-error-kick { animation:none; }.pass-privacy,.pass-lock,.pass-signal span { transition:none; } }
+/* Interactive bridge entrance. */
+.login-page .lb-badge-panel { --gate-sky:#ddeafa;--gate-water:#87b4ce;--gate-water-deep:#356788;--gate-city:#617b9b;--gate-cloud:#fff;--gate-ink:#153254;background:linear-gradient(160deg,#f0f6ff,#d6e6fa);border-color:#c2d3e8; }
+.login-page .lb-brand-title,.login-page .lb-brand-link { color:#18365a; }
+.login-page .lb-brand-emblem { background:#2c589e;border-color:#4171ac; }
+.login-page .lb-brand-tag { background:#ffffff80;color:#315f9f;border-color:#abc4e2; }
+.login-page .lb-panel-footer { color:#536c8e;border-color:#a9bfda60;gap:12px; }
+.login-page .lb-stage-area { flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;gap:18px;padding:44px 0; }
+.entrance-intro { width:min(100%,660px);position:relative;z-index:2; }
+.entrance-intro > span { font-size:10px;letter-spacing:.2em;color:#486b96;font-weight:600; }
+.entrance-intro h2 { font-family:var(--lb-font-head);font-size:clamp(36px,3.8vw,58px);font-weight:700;letter-spacing:-.055em;line-height:1.08;color:var(--gate-ink);margin:16px 0 0; }
+.bridge-entrance { width:min(100%,660px);position:relative;isolation:isolate;aspect-ratio:760/560;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#ffffff70,transparent 65%),linear-gradient(var(--gate-sky),#c2ddef);border-radius:4px 4px 36% 36% / 4px 4px 8% 8%;animation:entranceAppear .8s ease both; }
+.entrance-view { width:100%;height:100%;display:block;transform-origin:50% 52%;transition:transform 1.4s ease; }
+.entrance-view::selection { background:transparent; }
+.entrance-clouds { opacity:.55; }
+.entrance-cable-light { stroke-dasharray:80 1400;stroke-dashoffset:1400;opacity:0; }
+.gate-wing { transition:transform .7s var(--lb-ease); }
+.gate-wing-left { transform:translateX(-115px); }
+.gate-wing-right { transform:translateX(115px); }
+.is-private .gate-wing { transform:translateX(0); }
+.gate-post-light { filter:drop-shadow(0 0 4px #9cd8ff);transition:stroke .2s; }
+.is-typing .gate-post-light { stroke:#fff;filter:drop-shadow(0 0 9px #b4e5ff); }
+.entrance-sign { position:absolute;left:7%;bottom:8%;width:46%;max-width:295px;padding:16px 18px;color:#193a62;background:#f6fbffe8;backdrop-filter:blur(12px);border:1px solid #ffffffa0;border-radius:10px;box-shadow:0 16px 24px -15px #071e47a0;overflow:hidden;transition:opacity .5s,transform .9s; }
+.sign-header { display:flex;align-items:center;gap:10px;border-bottom:1px solid #8ea9c840;padding-bottom:10px;margin-bottom:12px; }
+.sign-header img { width:54px;height:31px;object-fit:contain; }
+.sign-header > span { font-size:8px;letter-spacing:.1em;color:#527396; }
+.sign-identity { display:flex;gap:10px;align-items:center; }
+#badgeInitials { display:grid;place-items:center;flex-shrink:0;width:34px;height:34px;border-radius:50%;background:#285a9f;color:white;font-size:12px;font-weight:600; }
+.sign-identity > div { min-width:0; }
+#badgeName { font-size:15px;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.02em; }
+#badgeRole { display:block;font-size:9px;color:#527396;line-height:1.5;margin-top:3px; }
+.sign-email { margin-top:12px;font-size:10px;color:#527396;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.sign-shutter { position:absolute;inset:0;width:50%;background:linear-gradient(120deg,#e9f4fff7,#d4e4f3f5);backdrop-filter:blur(18px);z-index:2;transition:transform .55s var(--lb-ease); }
+.sign-shutter-left { border-right:1px solid #9bbad980;transform:translateX(-102%); }
+.sign-shutter-right { left:50%;transform:translateX(102%); }
+.is-private .sign-shutter { transform:translateX(0); }
+.sign-private { position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s; }
+.is-private .sign-private { opacity:1;visibility:visible;transition-delay:.15s; }
+.sign-private > i { font-size:22px; }
+.sign-private > span { font-size:10px;text-align:center;padding:0 12px; }
+.gate-signal { display:flex;gap:5px; }
+.gate-signal span { width:4px;height:4px;border-radius:50%;background:#397bbf;opacity:.3;transition:transform .2s,opacity .2s; }
+.is-typing .gate-signal span { opacity:1;transform:scale(1.6); }
+.entrance-hint { width:min(100%,660px);font-size:11px;color:#527396;margin:0; }
+.entrance-moon { display:none;position:absolute;top:10%;right:12%;width:34px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#c3daed);box-shadow:0 0 32px #c2ddff50; }
+.is-pending .gate-wing-left { transform:translateX(-300px); }
+.is-pending .gate-wing-right { transform:translateX(300px); }
+.is-pending .entrance-view { transform:scale(1.3); }
+.is-pending .entrance-sign { opacity:0;transform:translateY(24px); }
+.is-pending .entrance-cable-light { opacity:1;animation:entranceLight 1.5s ease forwards; }
+.is-error-kick .entrance-sign { animation:entranceError .4s ease; }
+[data-theme="dark"] .login-page .lb-badge-panel { --gate-sky:#0b172a;--gate-water:#1c3e5b;--gate-water-deep:#091d33;--gate-city:#6a9ac8;--gate-cloud:#80a0c2;--gate-ink:#ecf5ff;background:linear-gradient(160deg,#080f1c,#102540);border-color:#29405c; }
+[data-theme="dark"] .lb-brand-title,[data-theme="dark"] .lb-brand-link { color:#ecf5ff; }
+[data-theme="dark"] .login-page .lb-panel-footer { color:#819bb8;border-color:#36516e; }
+[data-theme="dark"] .entrance-intro > span,[data-theme="dark"] .entrance-hint { color:#9db6d6; }
+[data-theme="dark"] .bridge-entrance { background:radial-gradient(ellipse at 50% 40%,#25456450,transparent 65%),linear-gradient(var(--gate-sky),#183554); }
+[data-theme="dark"] .entrance-moon { display:block; }
+[data-theme="dark"] .entrance-clouds { opacity:.08; }
+[data-theme="dark"] .entrance-sign { background:#152a43eb;border-color:#688ab350;color:#e1eeff; }
+[data-theme="dark"] .sign-header img { filter:brightness(0) invert(1);opacity:.9; }
+[data-theme="dark"] :is(.sign-header > span,#badgeRole,.sign-email) { color:#aac1db; }
+[data-theme="dark"] .sign-shutter { background:linear-gradient(120deg,#203752f7,#182f48fa); }
+[data-theme="dark"] .gate-signal span { background:#add7ff; }
+@keyframes entranceAppear { from { opacity:0;transform:translateY(12px); } to { opacity:1;transform:translateY(0); } }
+@keyframes entranceLight { to { stroke-dashoffset:0; } }
+@keyframes entranceError { 25%,75% { transform:translateX(-4px); } 50% { transform:translateX(4px); } }
+@media(max-width:991px) { .login-page .lb-badge-panel { min-height:0; }.login-page .lb-stage-area { padding:28px 0; }.entrance-intro h2 { font-size:34px; }.entrance-intro h2 br { display:none; }.bridge-entrance { max-width:540px; } }
+@media(max-width:576px) { .entrance-intro h2 { font-size:30px; }.entrance-intro > span { font-size:8px; }.entrance-sign { left:4%;bottom:5%;width:55%;padding:10px; }.sign-header { margin-bottom:8px;padding-bottom:7px; }.sign-header img { width:40px;height:24px; }.sign-header > span { font-size:6px; }#badgeName { font-size:12px; }#badgeRole { font-size:8px; }.sign-email { font-size:8px;margin-top:8px; }.entrance-hint { font-size:10px; }.sign-private > span { font-size:9px; }.sign-private { gap:8px; } }
+@media(prefers-reduced-motion:reduce) { .bridge-entrance,.is-error-kick .entrance-sign,.entrance-cable-light { animation:none; }.entrance-view,.gate-wing,.entrance-sign,.sign-shutter,.sign-private,.gate-signal span { transition:none; }.is-pending .entrance-view { transform:none; } }
