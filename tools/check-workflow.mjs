@@ -1,0 +1,67 @@
+// Prevent the superseded supervisor-hiring workflow from returning to live pages.
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import assert from 'node:assert/strict';
+const root = new URL('../', import.meta.url);
+const read = path => readFileSync(new URL(path, root), 'utf8');
+function files(dir) {
+  return readdirSync(new URL(dir, root), { withFileTypes:true }).flatMap(entry =>
+    entry.isDirectory() ? files(join(dir, entry.name)) : [join(dir, entry.name)]);
+}
+const forbidden = [
+  /The Company cannot influence this (?:academic )?decision/i,
+  /Supervisor<\/strong>\s+reviews and approves\/rejects your applications/i,
+  /pending supervisor approval/i,
+  /Supervisor Review in Progress/i,
+  /Awaiting Faculty Endorsement/i,
+  /Academic Approval \(Status:/i,
+  /application[^\n]*through your academic supervisor's official endorsement/i,
+  /application[^\n]*sent to the[^\n]*university supervisor/i,
+  /Supervisors grade the 8-criteria evaluation rubric/i,
+  /Supervisors Monitor Interns, Submit Evaluations/i,
+  /(?:faculty|university) advisor notified!/i
+];
+for (const path of [...files('pages'), ...files('shared/js')].filter(path => /\.(html|js)$/.test(path))) {
+  const source = read(path);
+  forbidden.forEach(rule => assert(!rule.test(source), `Superseded workflow in ${path}: ${rule}`));
+}
+const student = read('pages/student-dashboard/student-dashboard.html');
+const profile = read('pages/student-profile/student-profile.html');
+const supervisor = read('pages/supervisor-dashboard/supervisor-dashboard.html');
+const company = read('pages/company-dashboard/company-dashboard.html');
+const college = read('pages/admin-dashboard/admin-dashboard.html');
+const collegeListings = college.split('id="tab-posts"')[1].split('id="tab-approved"')[0];
+assert(!college.includes('Manage Posts'), 'College listings must not imply company listing management.');
+assert(!collegeListings.includes('openDeleteModal') && collegeListings.includes('data-college-listing-toggle'), 'Colleges may pause their own listing availability, not delete company listings.');
+assert(read('pages/admin-dashboard/admin-dashboard.js').includes("student.hidden=tab!=='tab-overview'"), 'Avoid duplicate creation actions in college directory views.');
+assert(read('shared/js/portal.js').includes('Terminate placement for ${student.name}'), 'Every college placement must have a consistently labeled termination action.');
+assert(read('shared/js/portal.js').includes("row.dataset.terminated='true'"), 'Preview termination must update the placement, not only show a toast.');
+assert(company.includes('id="companyWeeklyDetail" hidden'), 'Company reports must start without a selected student.');
+assert(company.includes('class="evaluation-form-area" hidden'), 'Company evaluations must start without a selected student.');
+assert(company.includes('id="companyWeeklyPrompt"') && company.includes('id="companyEvaluationPrompt"'));
+assert(company.includes('id="companyAcceptedTableBody"'), 'Accepted students must have a separate table.');
+assert(!/<button[^>]*class="bw-masar-item"[^>]*data-open-modal="postJobModal"/.test(company), 'Posting belongs in the dashboard, not the sidebar.');
+assert(supervisor.includes('id="supervisorReportDetail" hidden'), 'Weekly reports must start without student details.');
+assert(supervisor.includes('aria-labelledby="supervisorEvaluationName" hidden'), 'Evaluations must start without student details.');
+assert(supervisor.includes('id="supervisorReportPrompt"') && supervisor.includes('id="supervisorEvaluationPrompt"'));
+assert(!read('pages/supervisor-dashboard/supervisor-dashboard.js').includes("let selected='sarah'"), 'Do not auto-select an evaluation.');
+assert(!student.includes('id="tab-applications"'), 'Applications belong in Student Profile.');
+assert(student.includes('student-profile.html#my-applications'), 'Listings must link directly to applications.');
+assert(profile.includes('id="studentApplicationsTable"') && profile.includes('id="my-applications"'));
+assert(profile.includes('data-application-status="accepted"') && profile.includes('data-application-status="pending"'));
+assert(profile.includes('id="withdrawModal"'), 'Pending withdrawal stays available in Profile.');
+assert(profile.includes('data-profile-view="applications"') && profile.includes('<span>Dashboard</span>'), 'Profile must have Dashboard and Applications navigation.');
+assert(profile.includes('id="my-applications" hidden'), 'Applications are a separate view, not appended to the profile form.');
+assert(profile.includes('id="studentCvFile"') && profile.includes('no file is uploaded or analyzed'));
+assert(!/\d+% Match<\/span>/.test(student), 'Do not display unqualified sample match scores.');
+assert(student.includes('Upload your CV to see your match') && student.includes('CV match · Sample'));
+assert(!student.includes('Why this match'), 'Do not add match explanations.');
+assert(read('shared/js/portal.js').includes('if (viewOnly || !pendingApplyBtn)'), 'Accepted students cannot confirm applications.');
+assert(!student.includes('Approval Process'), 'Remove the student academic-approval callout.');
+assert(student.includes('host company</strong>'), 'Application confirmation must identify the host company.');
+assert(read('pages/home/index.html').includes('Company Review in Progress'));
+assert(read('shared/js/portal.js').includes("Reject applicant"));
+assert(read('shared/js/enhancements.js').includes("stage==='Rejected'?'rejected'"));
+assert(read('shared/js/portal.js').includes('bw-badge-amber"><i class="bi bi-hourglass-split me-1"></i>Pending'));
+assert(!read('docs/backupway2_functionality_spec.md').includes('creates Application with `Status = 1`'));
+console.log('PASS: Company application decisions, pending submission, and supervisor training-only boundaries.');

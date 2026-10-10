@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en" data-page="company-dashboard">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bridgeway — Partner Company Portal</title>
+  <meta name="description" content="Bridgeway Partner Company Portal — Manage verified internship postings, review candidate applications, track weekly curriculum progress, and complete final degree rubrics.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
+
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=8">
+
+  <link rel="stylesheet" href="../../shared/css/interactions.css">
+  <link rel="stylesheet" href="company-dashboard.css?v=10">
+</head>
+<body class="company-workspace" data-portal-role="company" id="page-company-dashboard">
+
+  <div class="bw-company-layout">
+
+    <aside class="bw-masar-sidebar" aria-label="Company Portal Navigation">
+
+      <div class="bw-masar-top">
+
+        <div class="bw-masar-header">
+          <a href="../home/index.html" class="bw-masar-brand" title="Bridgeway Home">
+            <svg class="logo logo--nav" viewBox="0 0 400 232" role="img" aria-label="Bridgeway">
+              <defs>
+                <linearGradient id="ul-nav" x1="0" x2="1">
+                  <stop offset="0" stop-color="#2563EB"/>
+                  <stop offset="1" stop-color="#6366F1"/>
+                </linearGradient>
+              </defs>
+              <g stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round">
+                <line x1="41.2" y1="110.7" x2="41.2" y2="118"/><line x1="60.8" y1="101.3" x2="60.8" y2="118"/>
+                <line x1="78.8" y1="87.7" x2="78.8" y2="118"/><line x1="95.2" y1="69.9" x2="95.2" y2="118"/>
+                <line x1="125.0" y1="63.6" x2="125.0" y2="118"/><line x1="140.0" y1="76.3" x2="140.0" y2="118"/>
+                <line x1="155.0" y1="86.3" x2="155.0" y2="118"/><line x1="170.0" y1="93.3" x2="170.0" y2="118"/>
+                <line x1="185.0" y1="97.6" x2="185.0" y2="118"/><line x1="200.0" y1="99.0" x2="200.0" y2="118"/>
+                <line x1="215.0" y1="97.6" x2="215.0" y2="118"/><line x1="230.0" y1="93.3" x2="230.0" y2="118"/>
+                <line x1="245.0" y1="86.3" x2="245.0" y2="118"/><line x1="260.0" y1="76.3" x2="260.0" y2="118"/>
+                <line x1="275.0" y1="63.6" x2="275.0" y2="118"/><line x1="304.8" y1="69.9" x2="304.8" y2="118"/>
+                <line x1="321.2" y1="87.7" x2="321.2" y2="118"/><line x1="339.2" y1="101.3" x2="339.2" y2="118"/>
+                <line x1="358.8" y1="110.7" x2="358.8" y2="118"/>
+              </g>
+              <path d="M20,116 Q75,108 110,48 Q200,150 290,48 Q325,108 380,116" fill="none" stroke="#60A5FA" stroke-width="4" stroke-linecap="round"/>
+              <rect x="12" y="118" width="376" height="8" rx="3" fill="#2563EB"/>
+              <g fill="#2563EB">
+                <g><path d="M110 28 L116 46 L116 152 L104 152 L104 46 Z"/><rect x="99" y="68" width="22" height="6" rx="2"/><rect x="100" y="148" width="20" height="7" rx="2"/></g>
+                <g><path d="M290 28 L296 46 L296 152 L284 152 L284 46 Z"/><rect x="279" y="68" width="22" height="6" rx="2"/><rect x="280" y="148" width="20" height="7" rx="2"/></g>
+              </g>
+              <g class="logo__cap">
+                <path class="logo__cap-base" d="M172 62 L172 80 Q200 93 228 80 L228 62 Q200 72 172 62 Z" fill="#1D4ED8"/>
+                <polygon class="logo__cap-board" points="200,38 252,56 200,74 148,56" fill="#0F172A"/>
+                <g class="logo__cap-tassel">
+                  <path d="M200 56 L246 57.5 L246 78" stroke="#F59E0B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                  <circle cx="200" cy="56" r="3" fill="#F59E0B"/>
+                  <path d="M242.5 76 L249.5 76 L251 89 L241 89 Z" fill="#F59E0B"/>
+                </g>
+              </g>
+              <text class="logo__word" x="200" y="202" text-anchor="middle" font-family="Montserrat,'Segoe UI',Arial,sans-serif" font-weight="800" font-size="54" fill="#0F172A">Bridgeway</text>
+              <rect class="logo__ul" x="203.13" y="212" width="118.53" height="6" rx="3" fill="url(#ul-nav)"/>
+            </svg>
+          </a>
+          <button type="button" class="bw-masar-toggle" id="bwSidebarToggle" aria-label="Toggle Sidebar Menu">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+
+        <nav class="bw-masar-nav" aria-label="Company views">
+
+          <button type="button" class="bw-masar-item bw-tab-btn is-active" data-tab="tab-posts">
+            <i class="bi bi-grid-fill"></i>
+            <span>Dashboard</span>
+          </button>
+
+          <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-candidates">
+            <i class="bi bi-people-fill"></i>
+            <span>Applications</span><span class="company-nav-count" id="companyApplicationCount">1</span>
+          </button>
+
+          <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-accepted-students">
+            <i class="bi bi-person-check"></i>
+            <span>Interns</span><span class="company-nav-count" id="companyAcceptedCount">2</span>
+          </button>
+
+          <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-weekly-reports">
+            <i class="bi bi-calendar3"></i>
+            <span>Weekly Reports</span>
+          </button>
+
+          <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-final-evaluation">
+            <i class="bi bi-check2-square"></i>
+            <span>Evaluations</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="bw-masar-bottom-group">
+
+        <div class="bw-masar-divider"></div>
+
+        <div class="bw-masar-bottom">
+          <a href="../company-profile/company-profile.html" class="bw-masar-link">
+            <i class="bi bi-person-circle"></i>
+            <span>Profile</span>
+          </a>
+          <button type="button" id="bwThemeToggle" class="bw-masar-link bw-masar-btn-link">
+            <i id="bwThemeIcon" class="bi bi-moon-stars"></i>
+            <span id="bwThemeText">Dark Mode</span>
+          </button>
+          <a href="../login/login.html" class="bw-masar-link">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="bw-company-content bw-main-content">
+      <header class="company-topbar">
+        <div class="company-breadcrumb"><span class="company-header-mark" aria-hidden="true"></span> Company workspace <span>/</span> <strong>Tech Corp Inc.</strong></div>
+        <div class="company-account-wrap">
+          <button type="button" class="company-account" id="companyAccountToggle" aria-label="Tech Corp Inc. account options" aria-expanded="false" aria-controls="companyAccountDropdown"><span class="company-monogram" aria-hidden="true">TC</span><span>Tech Corp Inc.</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+          <nav class="company-account-dropdown" id="companyAccountDropdown" aria-label="Account options" hidden>
+            <a href="../company-profile/company-profile.html"><i class="bi bi-person-circle" aria-hidden="true"></i> Account profile</a>
+            <a href="../login/login.html" class="company-account-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </nav>
+        </div>
+      </header>
+
+      <section class="company-page-heading" aria-labelledby="companyPageTitle">
+        <div>
+          <div class="company-eyebrow">YOUR INTERNSHIP PROGRAM</div>
+          <h1 id="companyPageTitle">Internship overview</h1>
+          <p id="companyPageDescription">A clear view of your opportunities, applicants, and interns.</p>
+        </div>
+        <div class="company-heading-tools"><div id="companyOverviewTools"></div></div>
+      </section>
+
+      <section class="bw-kpi-grid" aria-label="Program overview" data-arrange-toolbar="#companyOverviewTools">
+        <button type="button" class="bw-kpi-card is-active-kpi" data-kpi-tab="tab-posts" data-onclick="switchTab-tab-posts-1">
+          <span class="company-metric-label">Active internships <i class="bi bi-briefcase" aria-hidden="true"></i></span>
+          <span class="bw-kpi-value" id="kpiActivePosts">2</span>
+          <span class="company-metric-caption">Open for applications <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+        </button>
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-candidates" data-onclick="switchTab-tab-candidates-2">
+          <span class="company-metric-label">Applications <i class="bi bi-people" aria-hidden="true"></i></span>
+          <span class="bw-kpi-value" id="companyApplicationsMetric">1</span>
+          <span class="company-metric-caption">Review your pipeline <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+        </button>
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-accepted-students" data-onclick="switchTab-tab-accepted-students">
+          <span class="company-metric-label">Active interns <i class="bi bi-person-check" aria-hidden="true"></i></span>
+          <span class="bw-kpi-value">4</span>
+          <span class="company-metric-caption">8-week training program <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+        </button>
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-weekly-reports" data-onclick="switchTab-tab-weekly-reports-3">
+          <span class="company-metric-label">Weekly reports <i class="bi bi-journal-text" aria-hidden="true"></i></span>
+          <span class="bw-kpi-value">1</span>
+          <span class="company-metric-caption"><span class="company-status-dot"></span> Awaiting faculty review <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+        </button>
+      </section>
+
+      <div class="bw-tab-panel is-active" id="tab-posts">
+        <div class="company-overview-layout">
+
+
+        <section class="company-listings" aria-labelledby="listingsTitle">
+          <div class="company-section-heading"><div><h2 id="listingsTitle">Internship listings</h2><p>Your opportunities, at a glance.</p></div><a class="company-primary" href="../company-post-role/company-post-role.html"><i class="bi bi-plus-lg" aria-hidden="true"></i> Post internship</a></div>
+          <div class="listing-toolbar"><div class="listing-filters" role="group" aria-label="Filter listings by status"><button type="button" data-listing-filter="all" aria-pressed="true">All listings</button><button type="button" data-listing-filter="active" aria-pressed="false">Active</button><button type="button" data-listing-filter="paused" aria-pressed="false">Paused</button></div><label class="company-search"><i class="bi bi-search" aria-hidden="true"></i><input id="companyListingSearch" type="search" placeholder="Search listings" aria-label="Search internship listings"></label></div>
+          <div class="listing-table-scroll" tabindex="0" role="region" aria-label="Internship listings table">
+            <table class="listing-table bw-opportunities-grid"><thead><tr><th scope="col">Internship</th><th scope="col">Status</th><th scope="col">Applicants</th><th scope="col">Seats</th><th scope="col">Deadline</th><th scope="col"><span class="listing-detail-label">Actions</span></th></tr></thead>
+              <tbody class="bw-opp-card" data-listing-status="active">
+                <tr>
+                  <th scope="row"><button class="listing-title" type="button" aria-expanded="false" aria-controls="listing-software" data-listing-details><span class="bw-opp-title">Software Engineering Intern</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><span class="listing-location">Amman · Hybrid</span></th>
+                  <td><span class="post-status-badge listing-status">Active</span></td>
+                  <td><button type="button" class="listing-applicants" data-onclick="switchTab-tab-candidates-2" aria-label="Review applicants for Software Engineering Intern">10<i class="bi bi-arrow-up-right" aria-hidden="true"></i></button></td>
+                  <td><span class="listing-seats">2 <span>/ 3 filled</span></span><meter min="0" max="3" value="2" aria-label="Software Engineering Intern: 2 of 3 seats filled"></meter></td>
+                  <td><time datetime="2026-11-30">Nov 30, 2026</time></td>
+                  <td><button type="button" class="listing-manage" data-listing-details aria-expanded="false" aria-controls="listing-software" aria-label="Manage Software Engineering Intern">Manage <i class="bi bi-chevron-down" aria-hidden="true"></i></button></td>
+                </tr>
+                <tr id="listing-software" class="listing-detail" hidden><td colspan="6"><div class="listing-detail-content"><div><span class="listing-detail-label">Requirements</span><div class="listing-skills"><span>C#</span><span>ASP.NET Core</span><span>PostgreSQL</span><span>GPA &gt; 3.0</span></div></div><div class="listing-detail-actions"><a href="../company-post-role/company-post-role.html">Edit listing</a><button type="button" data-onclick="toggleCompanyPost--5" data-listing-pause>Pause Post</button><button type="button" class="text-danger" data-onclick="openDeletePostModal--6">Delete</button></div></div></td></tr>
+              </tbody>
+              <tbody class="bw-opp-card" data-listing-status="active">
+                <tr>
+                  <th scope="row"><button class="listing-title" type="button" aria-expanded="false" aria-controls="listing-frontend" data-listing-details><span class="bw-opp-title">Frontend React Developer Intern</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><span class="listing-location">Amman · On-site</span></th>
+                  <td><span class="post-status-badge listing-status">Active</span></td>
+                  <td><button type="button" class="listing-applicants" data-onclick="switchTab-tab-candidates-2" aria-label="Review applicants for Frontend React Developer Intern">4<i class="bi bi-arrow-up-right" aria-hidden="true"></i></button></td>
+                  <td><span class="listing-seats">2 <span>/ 5 filled</span></span><meter min="0" max="5" value="2" aria-label="Frontend React Developer Intern: 2 of 5 seats filled"></meter></td>
+                  <td><time datetime="2026-12-10">Dec 10, 2026</time></td>
+                  <td><button type="button" class="listing-manage" data-listing-details aria-expanded="false" aria-controls="listing-frontend" aria-label="Manage Frontend React Developer Intern">Manage <i class="bi bi-chevron-down" aria-hidden="true"></i></button></td>
+                </tr>
+                <tr id="listing-frontend" class="listing-detail" hidden><td colspan="6"><div class="listing-detail-content"><div><span class="listing-detail-label">Requirements</span><div class="listing-skills"><span>React</span><span>TypeScript</span><span>Tailwind</span><span>GPA &gt; 3.0</span></div></div><div class="listing-detail-actions"><a href="../company-post-role/company-post-role.html">Edit listing</a><button type="button" data-onclick="toggleCompanyPost--5" data-listing-pause>Pause Post</button><button type="button" class="text-danger" data-onclick="openDeletePostModal--7">Delete</button></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="company-empty" id="companyListingsEmpty" hidden>No matching internships. Try a different search or status.</p>
+          <div class="listing-footer"><span id="companyListingCount" role="status">Showing 2 listings</span><span>Select a role to view requirements and actions</span></div>
+        </section>
+
+        </div>
+      </div>
+
+      <div class="bw-tab-panel" id="tab-candidates">
+        <section class="applicants-workspace" aria-label="Student applications">
+          <div class="company-section-heading applicants-heading"><div><h2>Student applications</h2><p>Review pending applications and keep a record of past decisions.</p></div></div>
+
+        <div class="applicants-toolbar">
+          <div data-style="s2">
+            <button type="button" class="bw-tag-btn is-active" data-onclick="filterCandidates-all-8">All applications</button>
+            <button type="button" class="bw-tag-btn" data-onclick="filterCandidates-review-10">Pending</button>
+            <button type="button" class="bw-tag-btn" data-onclick="filterCandidates-rejected">Rejected</button>
+          </div>
+          <div data-style="s3">
+            <i class="bi bi-search" data-style="s4"></i>
+            <input type="text" id="candidateSearchInput" class="bw-input" aria-label="Search applications" placeholder="Search name, major, or role..." data-style="s5" data-oninput="searchCandidates--12">
+          </div>
+        </div>
+
+        <div class="bw-table-container" tabindex="0" role="region" aria-label="Student applications table">
+          <table class="bw-table">
+            <thead>
+              <tr>
+                <th scope="col">Student</th>
+                <th scope="col">Major</th>
+                <th scope="col">Internship</th>
+                <th scope="col">GPA</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="companyCandidatesTableBody">
+              <tr>
+                <td>
+                  <div data-style="s6">
+                    <div class="bw-student-avatar" data-style="s7">AJ</div>
+                    <div>
+                      <div data-style="s8" data-presentation="font-weight font-weight-800">Alice Johnson</div>
+                      <div data-style="s9">ID #20220042</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Computer Science</td>
+                <td>Frontend React Developer Intern</td>
+                <td><span class="bw-badge bw-badge-blue">3.50 / 4.00</span></td>
+                <td><span class="bw-badge bw-badge-success"><i class="bi bi-check-circle-fill"></i> Accepted</span></td>
+                <td>
+                  <div data-style="s10">
+                    <button type="button" class="bw-tag-btn" data-onclick="selectInternForRubric-alice-13">
+                      <i class="bi bi-star-fill me-1 text-warning"></i> Evaluate
+                    </button>
+                    <button type="button" class="bw-tag-btn" data-open-modal="hrMeetingsModal" title="Schedule HR Meeting">
+                      <i class="bi bi-camera-video"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div data-style="s6">
+                    <div class="bw-student-avatar" data-style="s11">GA</div>
+                    <div>
+                      <div data-style="s8" data-presentation="font-weight font-weight-800">Ghaith Amourah</div>
+                      <div data-style="s9">ID #20220148</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Software Engineering</td>
+                <td>Software Engineering Intern</td>
+                <td><span class="bw-badge bw-badge-blue">3.75 / 4.00</span></td>
+                <td><span class="bw-badge bw-badge-success"><i class="bi bi-check-circle-fill"></i> Accepted</span></td>
+                <td>
+                  <div data-style="s10">
+                    <button type="button" class="bw-tag-btn" data-onclick="switchTab-tab-weekly-reports-14">
+                      <i class="bi bi-journal-check me-1"></i> Log Report
+                    </button>
+                    <button type="button" class="bw-tag-btn" data-open-modal="hrMeetingsModal" title="Schedule HR Meeting">
+                      <i class="bi bi-camera-video"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div data-style="s6">
+                    <div class="bw-student-avatar" data-style="s12">OM</div>
+                    <div>
+                      <div data-style="s8" data-presentation="font-weight font-weight-800">Omar Majed</div>
+                      <div data-style="s9">ID #20220088</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Cybersecurity</td>
+                <td>Software Engineering Intern</td>
+                <td><span class="bw-badge bw-badge-blue">3.42 / 4.00</span></td>
+                <td><span class="bw-badge bw-badge-amber"><i class="bi bi-hourglass-split"></i> Under Review</span></td>
+                <td>
+                  <div data-style="s10">
+                    <button type="button" class="bw-tag-btn" data-onclick="showPortalToast-tr-15">
+                      <i class="bi bi-check-lg me-1 text-success"></i> Approve Seat
+                    </button>
+                    <button type="button" class="bw-tag-btn" data-open-modal="hrMeetingsModal" title="Schedule HR Meeting">
+                      <i class="bi bi-camera-video"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </section>
+      </div>
+
+      <div class="bw-tab-panel" id="tab-accepted-students">
+        <section class="applicants-workspace" aria-labelledby="acceptedStudentsTitle">
+          <div class="company-section-heading applicants-heading"><div><h2 id="acceptedStudentsTitle">Interns</h2><p>Your internship roster, from placement administration to active training.</p></div></div>
+          <div class="applicants-toolbar">
+            <div data-style="s2" role="group" aria-label="Filter interns">
+              <button type="button" class="bw-tag-btn is-active" data-accepted-filter="all" aria-pressed="true">All interns</button>
+              <button type="button" class="bw-tag-btn" data-accepted-filter="accepted" aria-pressed="false">Active interns</button>
+              <button type="button" class="bw-tag-btn" data-accepted-filter="awaiting" aria-pressed="false">Awaiting placement</button>
+            </div>
+            <div data-style="s3"><i class="bi bi-search" data-style="s4" aria-hidden="true"></i><input type="search" id="acceptedStudentSearch" class="bw-input" aria-label="Search interns" placeholder="Search name, major, or role..." data-style="s5"></div>
+          </div>
+          <div class="bw-table-container" tabindex="0" role="region" aria-label="Interns table">
+            <table class="bw-table"><thead><tr><th scope="col">Student</th><th scope="col">Major</th><th scope="col">Internship</th><th scope="col">GPA</th><th scope="col">Training status</th><th scope="col">Actions</th></tr></thead><tbody id="companyAcceptedTableBody"></tbody></table>
+          </div>
+          <p class="company-empty" id="acceptedStudentsEmpty" role="status" hidden>No interns match this search or filter.</p>
+        </section>
+      </div>
+
+      <div class="bw-tab-panel" id="tab-weekly-reports">
+        <div class="bw-weekly-overview-grid">
+
+          <aside class="company-student-directory" aria-label="Students for weekly reports">
+            <h2>Students</h2><p>Select a student to write their weekly report.</p>
+            <label class="company-search"><i class="bi bi-search" aria-hidden="true"></i><input id="weeklyStudentSearch" type="search" placeholder="Search name, ID, or college" aria-label="Search students for weekly reports"></label>
+            <div id="weeklyStudentList" class="company-student-list">
+              <button type="button" class="company-student-button bw-intern-status-card" data-weekly-id="1" data-weekly-week="4" aria-pressed="false" aria-controls="companyWeeklyDetail"><strong class="bw-intern-status-name">Alice Johnson</strong><span class="bw-intern-status-role">Frontend React Developer Intern</span><span data-student-college="alice"></span><small>ID 20220042 · Week 4 of 8</small></button>
+              <button type="button" class="company-student-button bw-intern-status-card" data-weekly-id="2" data-weekly-week="6" aria-pressed="false" aria-controls="companyWeeklyDetail"><strong class="bw-intern-status-name">Ghaith Amourah</strong><span class="bw-intern-status-role">Software Engineering Intern</span><span data-student-college="ghaith"></span><small>ID 20220148 · Week 6 of 8</small></button>
+            </div><p id="weeklyStudentsEmpty" role="status" hidden>No matching students.</p>
+          </aside>
+          <div class="company-selection-content">
+            <section id="companyWeeklyPrompt" class="company-selection-prompt"><i class="bi bi-journal-text" aria-hidden="true"></i><h2>Select a student</h2><p>Choose a student from the list to open their weekly report form.</p></section>
+            <div id="companyWeeklyDetail" hidden><button type="button" class="company-change-student" id="clearCompanyWeekly">Change student</button>
+          <div class="bw-card-panel weekly-report-panel">
+            <div class="weekly-section-heading"><h2><span class="weekly-step">2</span> Write the weekly report</h2><p>Record the selected intern’s work for one training week.</p></div>
+            <div class="weekly-report-context" aria-live="polite"><div><span class="weekly-context-label">REPORT FOR</span><strong id="weeklyReportStudent">Alice Johnson</strong><span id="weeklyReportRole">Frontend React Developer</span><span id="weeklyReportCollege"></span></div><span class="weekly-context-week" id="weeklyReportWeek">Week 4 of 8</span></div>
+
+            <form id="companyWeeklyForm" data-onsubmit="preventDefault--19">
+              <input type="hidden" id="activeInternSelect" name="internId" value="">
+              <div class="bw-form-group">
+                <label class="bw-form-label" for="programWeekSelect">Reporting week *</label>
+                <select id="programWeekSelect" class="bw-select" required>
+                  <option value="4">Week 4</option>
+                  <option value="5">Week 5</option>
+                  <option value="6">Week 6</option>
+                  <option value="7">Week 7</option>
+                  <option value="8">Week 8</option>
+                </select>
+              </div>
+
+              <div class="bw-form-group">
+                <label class="bw-form-label" for="companyTasksInput">Work completed *</label>
+                <textarea id="companyTasksInput" class="bw-textarea" placeholder="Summarize the tasks completed, what the intern learned, and your feedback." required></textarea>
+              </div>
+
+              <div class="bw-form-group">
+                <label class="bw-form-label" for="companyToolsInput">Tools and technologies *</label>
+                <input type="text" id="companyToolsInput" class="bw-input" placeholder="e.g. Excel, AutoCAD, C#, or Git" required>
+              </div>
+
+              <div class="bw-form-group">
+                <label class="bw-form-label" for="companyHoursInput">Hours worked this week *</label>
+                <input type="number" id="companyHoursInput" class="bw-input" value="40" min="1" max="50" required>
+              </div>
+
+              <div class="weekly-submit-row"><span>All fields are required.</span>
+                <button type="submit" class="bw-btn-block bw-btn-primary" data-style="s20" data-presentation="font-weight font-weight-700">
+                  <i class="bi bi-send-check me-1"></i> Submit weekly report
+                </button>
+              </div>
+            </form>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bw-tab-panel" id="tab-final-evaluation">
+        <div class="evaluation-workspace">
+          <aside class="evaluation-student-picker" aria-label="Students to evaluate">
+            <h2>Students</h2><p>Select a student for the college’s end-of-term assessment.</p>
+            <label class="company-search"><i class="bi bi-search" aria-hidden="true"></i><input id="evaluationStudentSearch" type="search" placeholder="Search name, ID, or college" aria-label="Search students to evaluate"></label>
+            <div id="companyEvaluationStudents" class="company-student-list"></div>
+            <select id="evaluationStudentSelect" hidden aria-label="Student to evaluate">
+              <option value="alice" data-name="Alice Johnson" data-role="Frontend Developer Intern" data-gpa="3.50" data-status="4 of 8 weeks completed">Alice Johnson · 20220042</option>
+              <option value="ghaith" data-name="Ghaith Amourah" data-role="Software Engineering Intern" data-gpa="3.75" data-status="6 of 8 weeks completed">Ghaith Amourah · 20220148</option>
+              <option value="omar" data-name="Omar Majed" data-role="Cybersecurity Intern" data-gpa="3.42" data-status="4 of 8 weeks completed">Omar Majed · 20220088</option>
+            </select>
+            <p id="evaluationStudentEmpty" hidden>No matching students.</p>
+          </aside>
+          <section id="companyEvaluationPrompt" class="company-selection-prompt"><i class="bi bi-clipboard-check" aria-hidden="true"></i><h2>Select a student</h2><p>Choose a student from the list to open their evaluation form.</p></section>
+          <div class="evaluation-form-area" hidden><button type="button" class="company-change-student" id="clearCompanyEvaluation">Change student</button><p id="evaluationCollege" class="company-student-college"></p>
+        <div class="bw-card-panel">
+          <div class="bw-card-panel-header">
+            <div>
+              <div data-style="s21" data-presentation="font-weight font-weight-800">
+                Evaluation form
+              </div>
+              <div data-style="s9">
+                Complete the college-required assessment of the student’s internship performance.
+              </div>
+            </div>
+            <div data-style="s22">
+              <span class="bw-badge bw-badge-success" id="activeInternBadge">Alice Johnson — 4 of 8 weeks completed</span>
+            </div>
+          </div>
+
+          <div class="bw-rubric-hud">
+            <div class="bw-hud-score-box">
+              <span class="bw-hud-score-label">Cumulative Score</span>
+              <div class="bw-hud-score-row">
+                <span class="bw-hud-score-val" id="rubricScoreTotal">0</span>
+                <span class="bw-hud-score-max">/ 40 pts</span>
+                <span class="bw-hud-grade-pill" id="rubricGradePill">Incomplete (0%)</span>
+              </div>
+            </div>
+
+            <div class="bw-hud-progress-wrap">
+              <div class="bw-hud-progress-info">
+                <span>Grading Progress</span>
+                <span id="rubricRatedCounterText">0 of 8 Dimensions Evaluated (0%)</span>
+              </div>
+              <div class="bw-progress-track">
+                <div class="bw-progress-fill" id="rubricRatedPercent" data-style="s23"></div>
+              </div>
+            </div>
+
+            <div class="bw-hud-tools">
+              <button type="button" class="bw-tag-btn" id="autoFillRubricBtn" data-onclick="autoFillRubricDemo--20" title="Auto-fill high performance ratings for demo preview">
+                <i class="bi bi-magic me-1"></i> Quick Fill (4–5)
+              </button>
+              <button type="button" class="bw-tag-btn text-muted" id="resetRubricBtn" data-onclick="resetRubricRatings--21" title="Reset all rubric ratings">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <div data-style="s24" id="rubricCriteriaContainer">
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">1. Performance Level</div>
+                <div class="bw-rubric-criterion-desc">Work quality, consistency & deliverable standards</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">2. Sense of Responsibility</div>
+                <div class="bw-rubric-criterion-desc">Ownership, accountability & dependability for tasks</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">3. Accuracy in Execution</div>
+                <div class="bw-rubric-criterion-desc">Precision, attention to detail & thorough testing</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">4. Attendance & Punctuality</div>
+                <div class="bw-rubric-criterion-desc">Adherence to work hours, standups & team meetings</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">5. Teamwork & Collaboration</div>
+                <div class="bw-rubric-criterion-desc">Constructive communication & proactive team support</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">6. Adaptability & Flexibility</div>
+                <div class="bw-rubric-criterion-desc">Handling shifting project requirements & new frameworks</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">7. Speed of Learning</div>
+                <div class="bw-rubric-criterion-desc">Rapidly mastering new technologies and code repositories</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+
+            <div class="bw-rubric-rating-row">
+              <div class="bw-rubric-criterion-info">
+                <div class="bw-rubric-criterion-name">8. Curriculum Completion</div>
+                <div class="bw-rubric-criterion-desc">Full completion of 8-week assigned deliverables</div>
+              </div>
+              <div class="bw-rubric-buttons">
+                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
+                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
+                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
+                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
+                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bw-form-group">
+            <label class="bw-form-label" for="evaluationComments">
+              <span>Company Mentor Endorsements & Employment Recommendations</span>
+              <small>Submitted to Academic Faculty</small>
+            </label>
+            <textarea id="evaluationComments" class="bw-textarea" placeholder="Detail the student's primary achievements, work attitude, and recommendation for graduation or future employment..."></textarea>
+
+            <div class="bw-prompt-chips">
+              <span data-style="s25" data-presentation="font-weight font-weight-700">Insert Feedback Prompt:</span>
+              <button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--22">
+                + Exceptional Technical Velocity
+              </button>
+              <button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--23">
+                + Proactive Team Communicator
+              </button>
+              <button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--24">
+                + Recommended for Full-Time Hire
+              </button>
+            </div>
+          </div>
+
+          <div data-style="s26">
+            <div data-style="s27">
+              <span data-style="s28" data-presentation="font-weight font-weight-700" id="rubricRatedCount">0 of 8 rated</span>
+              <div data-style="s9">
+                Score: <strong id="rubricFooterScore" data-style="s29">0 / 40</strong> (<span id="rubricFooterGrade">Incomplete</span>)
+              </div>
+            </div>
+            <button type="button" class="bw-btn-block bw-btn-outline" id="submitRubricBtn" data-style="s30" data-presentation="font-weight font-weight-700" disabled>
+              Complete All 8 Dimensions (0/8)
+            </button>
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="bw-modal-backdrop" id="deletePostModal">
+    <div class="bw-modal-dialog">
+      <div class="bw-modal-header">
+        <div class="bw-modal-title">
+          <i class="bi bi-trash-fill text-danger"></i>
+          <span>Delete Internship Opportunity</span>
+        </div>
+        <button type="button" class="bw-modal-close" data-close-modal="deletePostModal">&times;</button>
+      </div>
+      <div class="bw-modal-body">
+        <p data-style="s33">
+          Are you sure you want to delete <strong id="deletePostModalTitle">Software Engineering Intern</strong>?
+        </p>
+        <div data-style="s34">
+          <i class="bi bi-info-circle-fill me-1"></i>
+          This opportunity post and any associated candidate pending applications will be permanently removed.
+        </div>
+      </div>
+      <div class="bw-modal-footer">
+        <button type="button" class="bw-btn-block bw-btn-outline" data-style="s32" data-close-modal="deletePostModal">Cancel</button>
+        <button type="button" class="bw-btn-block" id="confirmDeletePostBtn" data-style="s35">
+          <i class="bi bi-trash me-1"></i> Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-modal-backdrop" id="hrMeetingsModal">
+    <div class="bw-modal-dialog">
+      <div class="bw-modal-header">
+        <div class="bw-modal-title">
+          <i class="bi bi-camera-video-fill text-primary"></i>
+          <span>HR Meetings & Candidate Interviews</span>
+        </div>
+        <button type="button" class="bw-modal-close" data-close-modal="hrMeetingsModal">&times;</button>
+      </div>
+      <div class="bw-modal-body">
+        <div data-style="s36">
+          <div data-style="s37">
+            <div data-style="s38">
+              <span data-style="s28" data-presentation="font-weight font-weight-700">Technical Screening: Ghaith Al-Student</span>
+              <span class="bw-badge bw-badge-blue">Today • 2:00 PM</span>
+            </div>
+            <p data-style="s39">Video screening for Software Engineering Intern role with Engineering Lead.</p>
+            <div data-style="s40">
+              <a href="https://meet.google.com" target="_blank" rel="noopener noreferrer" class="bw-tag-btn" data-style="s41">
+                <i class="bi bi-camera-video me-1"></i> Launch Call
+              </a>
+              <button type="button" class="bw-tag-btn" data-onclick="showPortalToast--25" data-style="s42">
+                <i class="bi bi-bell me-1"></i> Send Ping
+              </button>
+            </div>
+          </div>
+
+          <div data-style="s37">
+            <div data-style="s38">
+              <span data-style="s28" data-presentation="font-weight font-weight-700">Faculty Midterm Review: Dr. Tariq Al-Husseini</span>
+              <span class="bw-badge bw-badge-amber">Tomorrow • 11:30 AM</span>
+            </div>
+            <p data-style="s39">Sync with BAU University Academic Supervisor regarding 8-week trainee milestones.</p>
+            <button type="button" class="bw-tag-btn" data-onclick="showPortalToast--26" data-style="s42">
+              <i class="bi bi-calendar-plus me-1"></i> Add to Calendar
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="bw-btn-block bw-btn-primary" data-onclick="showPortalToast--27">
+          <i class="bi bi-plus-lg me-1"></i> Schedule New HR Interview
+        </button>
+      </div>
+      <div class="bw-modal-footer">
+        <button type="button" class="bw-btn-block bw-btn-outline" data-style="s32" data-close-modal="hrMeetingsModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-modal-backdrop" id="companyPoliciesModal">
+    <div class="bw-modal-dialog">
+      <div class="bw-modal-header">
+        <div class="bw-modal-title">
+          <i class="bi bi-book-half text-primary"></i>
+          <span>Company Policies & BAU Internship Framework</span>
+        </div>
+        <button type="button" class="bw-modal-close" data-close-modal="companyPoliciesModal">&times;</button>
+      </div>
+      <div class="bw-modal-body" data-style="s43">
+        <div data-style="s44">
+          <strong data-style="s29">Al-Balqa Applied University Accreditation</strong>
+          <p data-style="s45">
+            All host organizations agree to provide structured mentorship for at least 280 logged training hours across an 8-week period.
+          </p>
+        </div>
+
+        <div>
+          <h4 data-style="s46" data-presentation="font-weight font-weight-700">1. Mentorship & Workspace Safety</h4>
+          <p data-style="s47">Host companies assign a designated senior engineer/mentor who conducts weekly check-ins and signs off on weekly training logbooks.</p>
+        </div>
+
+        <div>
+          <h4 data-style="s46" data-presentation="font-weight font-weight-700">2. Attendance & Leave Protocols</h4>
+          <p data-style="s47">Students must maintain 90%+ attendance. Any absence exceeding 2 days requires faculty coordinator approval and medical proof.</p>
+        </div>
+
+        <div>
+          <h4 data-style="s46" data-presentation="font-weight font-weight-700">3. Evaluation & Rubric Delivery</h4>
+          <p data-style="s47">The 8-criterion final evaluation matrix must be filled and digitally signed through this portal upon completion of the training period.</p>
+        </div>
+      </div>
+      <div class="bw-modal-footer">
+        <button type="button" class="bw-btn-block bw-btn-primary" data-style="s32" data-close-modal="companyPoliciesModal">
+          ✓ Acknowledge Policies
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-modal-backdrop" id="feedbackModal">
+    <div class="bw-modal-dialog">
+      <div class="bw-modal-header">
+        <div class="bw-modal-title">
+          <i class="bi bi-chat-dots-fill text-primary"></i>
+          <span>Employee & Intern Feedback</span>
+        </div>
+        <button type="button" class="bw-modal-close" data-close-modal="feedbackModal">&times;</button>
+      </div>
+      <div class="bw-modal-body">
+        <div data-style="s48">
+          <div data-style="s38">
+            <span data-style="s28" data-presentation="font-weight font-weight-700">Academic Liaison Note: Dr. Tariq Al-Husseini</span>
+            <span data-style="s9">2 days ago</span>
+          </div>
+          <p data-style="s49">"Student Ghaith Al-Student is demonstrating outstanding velocity in ASP.NET Core sprint. Please ensure midterm rubric is logged."</p>
+        </div>
+
+        <div class="bw-form-group">
+          <label class="bw-form-label" for="replyFeedbackText">Send Feedback / Progress Notice to University Faculty</label>
+          <textarea id="replyFeedbackText" class="bw-textarea" placeholder="Type comments or student feedback here..."></textarea>
+        </div>
+
+        <button type="button" class="bw-btn-block bw-btn-primary" data-onclick="getElementById-replyFeedbackText-28">
+          <i class="bi bi-send-fill me-1"></i> Transmit Feedback
+        </button>
+      </div>
+      <div class="bw-modal-footer">
+        <button type="button" class="bw-btn-block bw-btn-outline" data-style="s32" data-close-modal="feedbackModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/js/portal.js?v=12"></script>
+
+  <script src="company-dashboard.js?v=7"></script>
+  <script src="../../shared/js/enhancements.js?v=4"></script>
+
+  <script src="../../shared/js/interactions.js"></script>
+</body>
+</html>

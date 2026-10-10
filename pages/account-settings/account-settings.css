@@ -1,0 +1,16 @@
+/* Page presentation, deduplicated from former inline styles. */ #page-account-settings [data-style="s1"] { max-width: 760px; margin: 0 auto; width: 100%; }
+#page-account-settings [data-style="s2"] { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+#page-account-settings [data-style="s3"] { width: auto; text-decoration: none; }
+#page-account-settings [data-style="s4"] { margin-bottom: 1.5rem; }
+#page-account-settings [data-style="s5"] { font-family: var(--bw-font-head); font-size: 1.15rem; font-weight: 800; margin: 0 0 2px 0; }
+#page-account-settings [data-style="s6"] { font-size: 13px; color: var(--bw-text-muted); }
+#page-account-settings [data-style="s7"] { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+#page-account-settings [data-style="s8"] { display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.95rem; background: var(--bw-bg-alt); border: 1.5px solid var(--bw-border); border-radius: var(--bw-radius-md); font-size: 0.88rem; font-weight: 600; }
+#page-account-settings [data-style="s9"] { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+#page-account-settings [data-style="s10"] { display: flex; justify-content: flex-end; margin-top: 1rem; }
+#page-account-settings [data-style="s11"] { width: auto; }
+#page-account-settings [data-style="s12"] { display: flex; flex-direction: column; gap: 1rem; }
+#page-account-settings [data-style="s13"] { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 0.6rem 0; border-bottom: 1px solid var(--bw-border); }
+#page-account-settings [data-style="s14"] { font-weight: 700; font-size: 0.88rem; color: var(--bw-text); }
+#page-account-settings [data-style="s15"] { width: 18px; height: 18px; accent-color: var(--bw-primary); }
+#page-account-settings [data-style="s16"] { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 0.6rem 0; }
