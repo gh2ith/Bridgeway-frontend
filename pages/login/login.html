@@ -18,9 +18,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
 
-  <link rel="stylesheet" href="login.css?v=4">
+  <link rel="stylesheet" href="login.css?v=6">
 
-  <script src="login.js?v=4" defer></script>
+  <script src="login.js?v=6" defer></script>
   <link rel="stylesheet" href="../../shared/css/interactions.css">
 </head>
 
@@ -31,7 +31,7 @@
 
     <div class="lb-container">
 
-      <section class="lb-badge-panel" aria-label="Interactive Bridgeway Entrance">
+      <section class="lb-badge-panel" aria-label="Interactive Academic Identity Badge Visual">
 
         <header class="lb-panel-brand">
           <a href="../home/index.html" class="lb-brand-link" title="Return to Bridgeway Journey">
@@ -51,53 +51,191 @@
           </a>
         </header>
 
+        <div class="lb-deco-item lb-deco-1" aria-hidden="true">
+          <div class="lb-deco-icon"><i class="bi bi-mortarboard-fill"></i></div>
+          <div class="lb-deco-text">
+            <span class="lb-deco-title">5 Governed Roles</span>
+            <span class="lb-deco-desc">Academic Hierarchy</span>
+          </div>
+        </div>
+
+        <div class="lb-deco-item lb-deco-2" aria-hidden="true">
+          <div class="lb-deco-icon"><i class="bi bi-clock-history"></i></div>
+          <div class="lb-deco-text">
+            <span class="lb-deco-title">320h Training Audit</span>
+            <span class="lb-deco-desc">8-Week Verified Logs</span>
+          </div>
+        </div>
+
+        <div class="lb-deco-item lb-deco-3" aria-hidden="true">
+          <div class="lb-deco-icon"><i class="bi bi-award-fill"></i></div>
+          <div class="lb-deco-text">
+            <span class="lb-deco-title">Crown Prince Foundation</span>
+            <span class="lb-deco-desc">National Governance</span>
+          </div>
+        </div>
+
+        <div class="lb-deco-item lb-deco-4" aria-hidden="true">
+          <div class="lb-deco-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+          <div class="lb-deco-text">
+            <span class="lb-deco-title">Orange Coding Academy</span>
+            <span class="lb-deco-desc">Masterpiece Project</span>
+          </div>
+        </div>
+
         <div class="lb-stage-area">
-          <div class="entrance-intro"><span>THE BRIDGE TO YOUR NEXT CHAPTER</span><h2>Your future.<br>Just across.</h2></div>
-          <div class="bridge-entrance" id="badgeCard" aria-hidden="true">
-            <div class="entrance-moon"></div>
-            <svg class="entrance-view" viewBox="0 0 760 560" fill="none">
-              <defs>
-                <linearGradient id="gateWater" x2="0" y2="1"><stop stop-color="var(--gate-water)"/><stop offset="1" stop-color="var(--gate-water-deep)"/></linearGradient>
-                <linearGradient id="gateRoad" x2="0" y2="1"><stop stop-color="#8ea3bb"/><stop offset="1" stop-color="#293e58"/></linearGradient>
-                <linearGradient id="gateSteel" x2="1" y2="0"><stop stop-color="#234775"/><stop offset=".5" stop-color="#608dbb"/><stop offset="1" stop-color="#183958"/></linearGradient>
-                <linearGradient id="gateGlass" x2="1" y2="1"><stop stop-color="#b7d9ff" stop-opacity=".12"/><stop offset="1" stop-color="#7198c7" stop-opacity=".4"/></linearGradient>
-              </defs>
-              <g class="entrance-clouds" fill="var(--gate-cloud)"><ellipse cx="155" cy="125" rx="110" ry="18"/><ellipse cx="603" cy="87" rx="90" ry="14"/></g>
-              <path d="M0 274H760V560H0Z" fill="url(#gateWater)"/>
-              <g opacity=".24" stroke="#c1e1ff"><path d="M0 302H220M480 302H760M20 351H180M560 351H730M0 412H160M603 430H760"/></g>
-              <g opacity=".28" fill="var(--gate-city)"><path d="M210 274v-30h13v-18h18v48h8v-60h17v60h10v-41h18v41h154v-40h18v40h12v-61h17v61h8v-28h22v28Z"/></g>
-              <path d="M355 255H405L671 560H89Z" fill="url(#gateRoad)"/>
-              <path d="M355 255L89 560M405 255L671 560" stroke="#b0c9df" stroke-width="13"/>
-              <path d="M366 255L145 560M394 255L615 560" stroke="#d7e7f6" stroke-width="2"/>
-              <path d="M380 279V296M380 319V345M380 382V424M380 480V540" stroke="#dce6ef" stroke-width="4"/>
-              <g stroke="url(#gateSteel)" stroke-linejoin="round">
-                <path d="M281 152V346M479 152V346" stroke-width="13"/>
-                <path d="M277 165H285M475 165H483M278 201H284M476 201H482" stroke-width="20"/>
-                <path d="M332 201V288M428 201V288" stroke-width="6"/>
-                <path d="M132 105V486M628 105V486" stroke-width="22"/>
-                <path d="M126 134H138M622 134H634M128 195H136M624 195H632" stroke-width="31"/>
-              </g>
-              <g stroke="#83afd6" stroke-width="3">
-                <path d="M0 247Q89 232 132 105Q206 301 281 152Q306 253 332 201Q380 290 428 201Q454 253 479 152Q554 301 628 105Q671 232 760 247"/>
-                <path d="M28 241V524M68 218V502M98 180V475M173 193V440M204 229V414M235 221V384M259 191V361M301 207V325M317 226V309M343 222V280M360 240V268M400 240V268M417 222V280M443 226V309M459 207V325M501 191V361M525 221V384M556 229V414M587 193V440M662 180V475M692 218V502M732 241V524" stroke-width="1.5" opacity=".7"/>
-              </g>
-              <g class="entrance-cable-light" stroke="#d4ecff" stroke-width="3"><path d="M0 247Q89 232 132 105Q206 301 281 152Q306 253 332 201Q380 290 428 201Q454 253 479 152Q554 301 628 105Q671 232 760 247"/></g>
-              <g class="entrance-gate">
-                <path d="M99 329L105 328V550H75V340Z" fill="url(#gateSteel)"/><path d="M661 329L655 328V550H685V340Z" fill="url(#gateSteel)"/>
-                <path d="M85 348V520M675 348V520" stroke="#94c8ff" stroke-width="3" class="gate-post-light"/>
-                <g class="gate-wing gate-wing-left"><path d="M106 353L376 382V522L106 544Z" fill="url(#gateGlass)" stroke="#9fc5ed" stroke-opacity=".5"/><path d="M120 367L363 393M120 530L363 510" stroke="#c7e4ff" stroke-opacity=".4"/><path d="M370 389V515" stroke="#b7deff" stroke-width="3"/></g>
-                <g class="gate-wing gate-wing-right"><path d="M654 353L384 382V522L654 544Z" fill="url(#gateGlass)" stroke="#9fc5ed" stroke-opacity=".5"/><path d="M640 367L397 393M640 530L397 510" stroke="#c7e4ff" stroke-opacity=".4"/><path d="M390 389V515" stroke="#b7deff" stroke-width="3"/></g>
-              </g>
-            </svg>
-            <div class="entrance-sign">
-              <div class="sign-header"><img src="../../assets/bridgeway-logo.svg" alt=""><span>WELCOME TO BRIDGEWAY</span></div>
-              <div class="sign-identity"><span id="badgeInitials">GA</span><div><strong id="badgeName">Ghaith Al-Student</strong><span id="badgeRole">Student Intern</span></div></div>
-              <div class="sign-email" id="passEmail">student@bau.edu.jo</div><span id="badgeIdSerial" hidden></span>
-              <div class="sign-shutter sign-shutter-left"></div><div class="sign-shutter sign-shutter-right"></div>
-              <div class="sign-private"><i class="bi bi-lock" id="passLockIcon"></i><span id="passPrivacyHint">Enter your password to continue.</span><div class="gate-signal"><span></span><span></span><span></span></div></div>
+
+          <svg class="lb-lanyard-svg" viewBox="0 0 400 130" fill="none" xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true">
+            <defs>
+              <linearGradient id="lanyardBandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1e3a8a" />
+                <stop offset="50%" stop-color="#2563eb" />
+                <stop offset="100%" stop-color="#1d4ed8" />
+              </linearGradient>
+              <linearGradient id="metalClipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f8fafc" />
+                <stop offset="50%" stop-color="#cbd5e1" />
+                <stop offset="100%" stop-color="#94a3b8" />
+              </linearGradient>
+            </defs>
+
+            <path id="lanyardLeftStrap" d="M 152 0 Q 176 52 196 98" stroke="url(#lanyardBandGrad)" stroke-width="14"
+              stroke-linecap="round" fill="none" />
+            <path d="M 152 0 Q 176 52 196 98" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1.5"
+              stroke-dasharray="3 3" fill="none" />
+
+            <path id="lanyardRightStrap" d="M 248 0 Q 224 52 204 98" stroke="url(#lanyardBandGrad)" stroke-width="14"
+              stroke-linecap="round" fill="none" />
+            <path d="M 248 0 Q 224 52 204 98" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1.5"
+              stroke-dasharray="3 3" fill="none" />
+
+            <g id="lanyardClip" transform="translate(200, 98)">
+              <ellipse cx="0" cy="0" rx="9" ry="6" fill="none" stroke="url(#metalClipGrad)" stroke-width="3" />
+              <rect x="-7" y="5" width="14" height="12" rx="2" fill="url(#metalClipGrad)" stroke="#64748b"
+                stroke-width="0.8" />
+              <rect x="-4" y="10" width="8" height="2" rx="1" fill="#475569" />
+              <path d="M -5 17 L -5 27 C -5 30, 5 30, 5 27 L 5 17 Z" fill="url(#metalClipGrad)" stroke="#64748b"
+                stroke-width="0.8" />
+              <circle cx="0" cy="23" r="2" fill="#334155" />
+            </g>
+          </svg>
+
+          <div class="lb-badge-shadow" id="badgeShadow" aria-hidden="true"></div>
+
+          <div class="lb-badge-assembly" id="badgeAssembly" aria-hidden="true">
+
+            <div class="lb-badge-tilt" id="badgeTilt">
+
+              <div class="lb-badge-idle-sway">
+
+                <div class="lb-badge-card" id="badgeCard">
+
+                  <div class="lb-badge-sheen" aria-hidden="true"></div>
+
+                  <div class="lb-badge-error-overlay" aria-hidden="true"></div>
+
+                  <div class="lb-badge-glare" aria-hidden="true"></div>
+
+                  <div class="lb-badge-face lb-badge-front">
+                    <div class="lb-badge-sweep" aria-hidden="true"></div>
+                    <div class="lb-badge-slot"></div>
+
+                    <div class="lb-card-brand lb-stagger-item lb-stagger-1">
+                      <span class="lb-card-brand-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                      </span>
+                      <span>Bridgeway<span class="lb-card-brand-accent">.identity</span></span>
+                    </div>
+
+                    <div class="lb-avatar-wrap lb-stagger-item lb-stagger-2">
+                      <span class="lb-avatar-initials" id="badgeInitials">GA</span>
+                      <span class="lb-avatar-badge-dot" id="badgeStatusDot"></span>
+                    </div>
+
+                    <div class="lb-name-line lb-stagger-item lb-stagger-3" id="badgeName">Ghaith Al-Student</div>
+                    <div class="lb-role-line lb-stagger-item lb-stagger-4" id="badgeRole">Student Intern &bull; Al-Balqa Applied Univ.</div>
+
+                    <div class="lb-front-details lb-stagger-item lb-stagger-5">
+                      <div class="lb-front-chip"></div>
+                      <span class="font-monospace fw-bold" id="badgeIdSerial" data-style="s1">#STU-2026-BAU</span>
+                      <i class="bi bi-shield-check text-primary fs-6"></i>
+                    </div>
+
+                    <div class="lb-front-stripe lb-stagger-item lb-stagger-5" id="badgeBottomStripe"></div>
+                  </div>
+
+                  <div class="lb-badge-face lb-badge-back">
+                    <div class="lb-badge-slot" data-style="s2"></div>
+
+                    <div class="lb-back-tag">
+                      <i class="bi bi-lock-fill"></i> Verified Gateway
+                    </div>
+
+                    <div class="lb-padlock-stage">
+                      <svg class="lb-padlock-svg" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                          <linearGradient id="padlockBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3b82f6" />
+                            <stop offset="100%" stop-color="#1e3a8a" />
+                          </linearGradient>
+                          <linearGradient id="shackleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f8fafc" />
+                            <stop offset="50%" stop-color="#cbd5e1" />
+                            <stop offset="100%" stop-color="#94a3b8" />
+                          </linearGradient>
+                        </defs>
+
+                        <path id="padlockShackle" d="M 22 30 L 22 20 C 22 13, 48 13, 48 20 L 48 30"
+                          stroke="url(#shackleGrad)" stroke-width="5" stroke-linecap="round" fill="none" />
+
+                        <rect id="padlockBody" x="16" y="28" width="38" height="28" rx="6" fill="url(#padlockBodyGrad)"
+                          stroke="#60a5fa" stroke-width="1.2" />
+
+                        <circle cx="35" cy="39" r="3" fill="#0f172a" />
+                        <path d="M 33.5 39 L 36.5 39 L 37.5 46 L 32.5 46 Z" fill="#0f172a" />
+                      </svg>
+                    </div>
+
+                    <div>
+                      <div class="lb-back-title">ACADEMIC GOVERNANCE</div>
+                      <div class="lb-back-desc">Crown Prince Foundation &bull; Orange Coding Academy Protocol</div>
+                    </div>
+
+                    <div class="lb-barcode-wrap">
+                      <div class="lb-barcode-lines">
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s5"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s6"></div>
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s5"></div>
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s6"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s5"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s6"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s5"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                        <div class="lb-bar-line" data-style="s3"></div>
+                        <div class="lb-bar-line" data-style="s4"></div>
+                      </div>
+                      <div class="lb-barcode-num" id="badgeBackSerial">CPF-BW-2026-AUTH</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
-          <p class="entrance-hint" id="passHint">Your name at the entrance. Your next chapter ahead.</p>
+
         </div>
 
         <footer class="lb-panel-footer">
