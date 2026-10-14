@@ -14,7 +14,6 @@ Start Live Server from the project root and open `index.html`. It redirects to t
 
 ```
 index.html                      Small homepage entry point
-<original-page-name>.html        Small redirects for existing URLs/bookmarks
 pages/<page-name>/               Exactly three files per page
   <original-page-name>.html      Page content and links
   <page-name>.css                Page-specific presentation
@@ -29,7 +28,7 @@ tools/compact-css.mjs            Safe one-rule-per-line CSS formatting
 tools/refactor-site.mjs          One-time migration utility; do not rerun
 ```
 
-The homepage uses `pages/home/index.html`, `home.css`, and `home.js`. Other pages retain their original HTML filenames, keeping existing filename-based behavior and saved card-order keys compatible.
+The homepage uses `pages/home/index.html`, `home.css`, and `home.js`. Every actual page lives in its named folder under `pages/`; only the homepage entry point remains at the repository root.
 
 ## Editing
 
@@ -45,10 +44,10 @@ The homepage uses `pages/home/index.html`, `home.css`, and `home.js`. Other page
 
 Run `node tools/check-site.mjs`, `node tools/check-workflow.mjs`, and `node tools/check-cv-preview.mjs`. These validate page structure and links, workflow boundaries, and metadata-only CV preview behavior. Also test changed interactions in the browser.
 
-All original flat page URLs redirect to their matching `pages/` destination, preserving query parameters and section hashes. Edit the actual pages inside `pages/`; root HTML files are compatibility entry points.
+Edit the actual pages inside `pages/`. Use these folder-based URLs for links and bookmarks; the old root-level portal redirects have been removed. Root `index.html` still opens the homepage and preserves query parameters and section hashes.
 
 ## Live demo and repository hygiene
 
-Pushes to `main` deploy [the live demo](https://gh2ith.github.io/Bridgeway-frontend/). GitHub Pages receives only root HTML entry points, `.nojekyll`, `pages/`, `shared/`, and `assets/`. Documentation, tools, and local archives are not published to the demo.
+Pushes to `main` deploy [the live demo](https://gh2ith.github.io/Bridgeway-frontend/). GitHub Pages receives only `index.html`, `.nojekyll`, `pages/`, `shared/`, and `assets/`. Documentation, tools, and local archives are not published to the demo.
 
 Local IDE files, backup archives, and superseded audit screenshots/reports are ignored. Existing local copies are preserved; previously committed material remains recoverable through Git history. Keep `AGENTS.md` as the workflow authority; historical specifications are reference material only. The saved Orbit login concept remains in `docs/login-concepts/`.
