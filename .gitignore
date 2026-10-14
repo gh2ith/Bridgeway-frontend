@@ -1,0 +1,25 @@
+# Local editor state, dependencies, and credentials
+.vs/
+.vscode/
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Local archives and historical design material (preserved on disk)
+/backups/
+/docs/backups/
+/docs/screenshots/
+/docs/CODE-CLEANUP.md
+/docs/PORTAL-AUDIT-2026-10-13.md
+/docs/design-walkthrough-report.md
+/docs/handover.md
+/docs/legacy-protected-hashes.json
+/docs/portal-design-system.md
+/docs/portal-redesign-progress.md
+/docs/website-walkthrough-report.md
+
+# Generated deployment output
+/_site/
+.DS_Store
+Thumbs.db

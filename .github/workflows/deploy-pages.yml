@@ -27,10 +27,16 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Prepare website files
+        shell: bash
+        run: |
+          mkdir -p _site
+          cp -R pages shared assets _site/
+          cp ./*.html .nojekyll _site/
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
