@@ -136,6 +136,7 @@
   };
 
   let activeRole = 'student';
+  let pending = false;
   // PHYSICS SIMULATION STATE
   let angle = 0;              // Badge pendulum angle (deg, capped ±10°)
   let velocity = 0;           // Badge angular velocity (deg/s, capped ±30 deg/s)
@@ -541,7 +542,7 @@
   }
   // 5-ROLE SELECTOR & BADGE IDENTITY SYNCHRONIZATION
   function selectRole(roleKey) {
-    if (!ROLES[roleKey]) return;
+    if (!ROLES[roleKey] || pending) return;
     activeRole = roleKey;
     const roleData = ROLES[roleKey];
 
@@ -650,6 +651,7 @@
         return;
       }
 
+      pending = true;
       // Diagonal Light Sweep on Badge
       if (badgeCard) badgeCard.classList.add('is-pending');
 

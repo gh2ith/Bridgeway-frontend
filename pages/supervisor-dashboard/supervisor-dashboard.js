@@ -1,3 +1,19 @@
+// Compact header example, scoped to this portal.
+document.addEventListener('DOMContentLoaded',()=>{
+  const breadcrumb=document.querySelector('.company-breadcrumb');
+  const identity=document.createElement('div');identity.className='supervisor-workspace-identity';
+  const college=document.createElement('strong');college.textContent='Al-Balqa Applied University';
+  const department=document.createElement('span');department.textContent='Software Engineering · Supervisor workspace';
+  identity.append(college,department);breadcrumb.replaceWith(identity);
+  const tools=document.getElementById('supervisorHeadingTools');
+  const sync=()=>{
+    const toggle=tools.querySelector('.bw-arrange-toggle');if(!toggle)return;
+    const editing=toggle.getAttribute('aria-pressed')==='true';
+    toggle.setAttribute('aria-label',editing?'Finish arranging cards':'Arrange cards');
+    toggle.title=editing?'Finish arranging cards':'Arrange cards';
+  };
+  new MutationObserver(sync).observe(tools,{childList:true,subtree:true});sync();
+});
 /* Fixed examples for this supervisor; no backend, persistence, or editing. */
 document.addEventListener('DOMContentLoaded',()=>{
  const records=[
@@ -33,6 +49,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('supervisorEvaluationScores').replaceChildren();
   for(const id of ['Company','Mentor','Date','Score','Comments'])$(`supervisorEvaluation${id}`).textContent='';
   if(!record.scores)return;
+  window.BridgewayRadar.mount($('supervisorEvaluationRadar')).update(record.scores,{submitted:true});
   $('supervisorEvaluationCompany').textContent=record.company;$('supervisorEvaluationMentor').textContent=record.mentor;$('supervisorEvaluationDate').textContent=record.date;
   const score=record.scores.reduce((sum,n)=>sum+n,0);$('supervisorEvaluationScore').textContent=`${score} / 40 (${score/40*100}%)`;
   record.scores.forEach((score,index)=>{const row=make('tr');const label=make('th',criteria[index]);label.scope='row';row.append(label,make('td',`${score} / 5`),make('td',ratings[score]));$('supervisorEvaluationScores').append(row);});
@@ -40,8 +57,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  $('supervisorEvaluationSearch').addEventListener('input',renderList);
  $('clearSupervisorEvaluation').addEventListener('click',()=>{selected='';renderList();$('supervisorEvaluationSearch').focus();});
- // Direct access from assigned student rows, without exposing another student's data.
- document.querySelectorAll('#supervisedStudentsTable tbody tr').forEach(row=>{const record=records.find(item=>row.textContent.includes(item.name));if(!record)return;const button=make('button','View evaluation','bw-tag-btn');button.type='button';button.addEventListener('click',()=>{selected=record.id;$('supervisorEvaluationSearch').value='';renderList();renderDetail();window.switchTab('tab-endorsement');});row.cells[row.cells.length-1].querySelectorAll('button').forEach(b=>{if(b.textContent.includes('View evaluation'))b.remove();});row.cells[row.cells.length-1].append(button);});
  renderList();renderDetail();
 });
 
@@ -53,6 +68,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('supervisorReportStudents');
   const detail = document.getElementById('supervisorReportDetail');
   const prompt = document.getElementById('supervisorReportPrompt');
+  const tracker=document.querySelector('.report-week-tracker');
+  const reviewStates=new Map();
+  detail.insertBefore(tracker,detail.querySelector('.report-student-summary'));
+  function renderTimeline(student) {
+    const timeline=document.getElementById('curriculumTimelineGrid');
+    timeline.setAttribute('role','list');timeline.setAttribute('aria-label','Weekly training status');
+    timeline.replaceChildren();
+    for(let week=1;week<=8;week++) {
+      const verified=week<student.weeks || student.weeks===8 || (week===student.weeks && reviewStates.get(student.id)==='verified');
+      const review=week===student.weeks && !verified;
+      const revision=review && reviewStates.get(student.id)==='revision';
+      const item=document.createElement('div');item.className=`report-week ${verified?'is-verified':review?'is-review':'is-upcoming'}`;
+      item.setAttribute('role','listitem');
+      item.setAttribute('aria-label',`Week ${week}: ${verified?'Verified, 40 hours':revision?'Revision requested, 40 hours':review?'In review, 40 hours':'Upcoming'}`);
+      const title=document.createElement('strong');title.textContent=week;title.setAttribute('aria-hidden','true');
+      const state=document.createElement('span');state.textContent=verified?'Verified':revision?'Revision':review?'In review':'Upcoming';state.setAttribute('aria-hidden','true');
+      const hours=document.createElement('small');hours.textContent=verified||review?'40 h':'—';hours.setAttribute('aria-hidden','true');
+      item.append(title,state,hours);timeline.append(item);
+    }
+  }
   let selected = '';
   function render() {
     const query = search.value.trim().toLowerCase();
@@ -69,7 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
       button.setAttribute('aria-pressed', String(student.id === selected));
       button.setAttribute('aria-controls', detail.id);
       const company = model.organizations.find(company => company.id === student.company).name;
-      [['strong',student.name],['span',`${student.studentId} / ${company}`],['small',student.weeks === 8 ? 'All weeks verified' : `Week ${student.weeks} · Pending review`]].forEach(([tag,text]) => {
+      const status=reviewStates.get(student.id);
+      [['strong',student.name],['span',`${student.studentId} / ${company}`],['small',student.weeks === 8 ? 'All weeks verified' : `Week ${student.weeks} · ${status==='verified'?'Verified':status==='revision'?'Revision requested':'Pending review'}`]].forEach(([tag,text]) => {
         const node = document.createElement(tag);node.textContent = text;button.append(node);
       });
       button.addEventListener('click', () => window.reviewStudentReport(student.name));
@@ -87,9 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
     selected = student.id;
     search.value = '';
     review(...args);
+    renderTimeline(student);
     render();
   };
   search.addEventListener('input', render);
+  document.addEventListener('bridgeway:report-reviewed',event=>{
+    const student=students.find(student=>student.name===event.detail.name);
+    if(!student)return;
+    reviewStates.set(student.id,event.detail.status);renderTimeline(student);render();
+    const row=[...document.querySelectorAll('#supervisedStudentsTable tbody tr')].find(row=>row.cells[0].textContent.includes(student.name));
+    const badge=row?.cells[4]?.querySelector('.bw-badge');
+    if(badge){badge.textContent=event.detail.status==='verified'?'Verified':'Revision';badge.className=`bw-badge ${event.detail.status==='verified'?'bw-badge-success':'bw-badge-amber'}`;}
+  });
   document.getElementById('clearSupervisorReport').addEventListener('click', () => {selected='';render();search.focus();});
   render();
 });

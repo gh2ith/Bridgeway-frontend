@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let nextId = 10;
   let editingOrganization = null;
   let editingIssue = null;
+  let partnershipView = 'list', selectedNetworkOrg = null, selectedNetworkLink = null;
+  let focusedNetworkCollege = 'all';
+  const mapMobile = window.matchMedia('(max-width: 760px)');
+  const mapMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const linkStatus = link => window.BridgewayPartners.effective(link) ? 'Active' : link.status === 'Active' ? 'Account suspended' : 'Paused';
   const titles = {
     'platform-overview':['Platform overview','Manage the colleges and companies that make Bridgeway possible.'],
     'platform-companies':['Company accounts','Create accounts, maintain contact details, and manage company access.'],
@@ -40,7 +45,134 @@ document.addEventListener('DOMContentLoaded', () => {
     rows.forEach(row => {row.hidden=!row.textContent.toLowerCase().includes(query); if(!row.hidden) count++;});
     document.querySelector(`[data-result-count="${panelId}"]`).textContent=`${count} of ${rows.length} records`;
     document.querySelector(`[data-empty="${panelId}"]`).hidden=count>0;
+    if(panelId==='platform-partnerships') renderPartnershipMap();
   }
+  async function togglePartnership(link) {
+    if(link.status==='Active'&&!await window.confirmPartnershipPause(`Are you sure you want to pause the partnership between ${orgName(link.college)} and ${orgName(link.company)}? New applications and placements will stop; existing training continues. This change is preview-only.`))return;
+    const members=organizations.filter(org=>[link.college,link.company].includes(org.id));
+    if(link.status!=='Active'&&members.some(org=>org.status!=='Active')) {showPortalToast('Activate both organization accounts before reactivating this partnership.');return;}
+    link.status=link.status==='Active'?'Inactive':'Active';
+    render();
+    if(partnershipView==='map') (document.querySelector(`[data-network-link="${link.id}"]`)||document.querySelector(`[data-network-org="${link.company}"]`))?.focus({preventScroll:true});
+    showPortalToast(link.status==='Active'?'Partnership resumed in this preview.':'Partnership paused in this preview. Existing training and history remain intact.');
+  }
+  function networkSelection(orgId,linkId=null) {
+    if(organizations.find(org=>org.id===orgId)?.type==='college') focusedNetworkCollege=orgId;
+    selectedNetworkOrg=orgId; selectedNetworkLink=linkId;
+    renderPartnershipMap();
+    const company=partnerships.find(link=>link.id===linkId)?.company;
+    const control=linkId?document.querySelector(`[data-network-link="${linkId}"]`)||document.querySelector(`[data-network-org="${company}"]`):document.querySelector(`[data-network-org="${orgId}"]`);
+    control?.focus({preventScroll:true});
+  }
+  function renderNetworkDetail() {
+    const detail=$('partnershipMapDetail'); detail.replaceChildren();
+    const link=partnerships.find(item=>item.id===selectedNetworkLink);
+    const org=organizations.find(item=>item.id===selectedNetworkOrg);
+    if(link) {
+      detail.append(element('span','PARTNERSHIP DETAILS','partnership-map-eyebrow'),element('h3',orgName(link.college)),element('p',`Connected to ${orgName(link.company)}`,'network-detail-company'),badge(linkStatus(link)));
+      const members=window.BridgewayPartners.students.filter(s=>s.college===link.college&&s.company===link.company);
+      const summary=element('dl',undefined,'network-detail-stats');
+      for(const [label,value] of [['Sample interns',members.filter(s=>s.stage==='Placed').length],['Pending applicants',members.filter(s=>s.stage==='Applied').length]]) {
+        const row=element('div');row.append(element('dt',label),element('dd',String(value)));summary.append(row);
+      }
+      detail.append(summary,element('p',linkStatus(link)==='Active'?'Students from this college can apply to this company’s open listings.':'New applications and placements are unavailable through this connection. Existing training and history remain intact.','network-detail-note'));
+      const controls=element('div',undefined,'network-detail-actions');
+      controls.append(action('View cycle',()=>openPartnerCycle(link)),action(link.status==='Active'?'Pause partnership':'Resume partnership',()=>togglePartnership(link)));
+      detail.append(controls);
+    } else if(org) {
+      detail.append(element('span',org.type==='college'?'COLLEGE CONNECTIONS':'COMPANY CONNECTIONS','partnership-map-eyebrow'),element('h3',org.name),element('p',`${org.location} · ${org.status} account`,'network-detail-company'));
+      const links=partnerships.filter(l=>l.college===org.id||l.company===org.id);
+      detail.append(element('p',`${links.length} partner connection${links.length===1?'':'s'}. Select one to inspect its status and actions.`,'network-detail-note'));
+      links.forEach(l=>{const button=action(orgName(org.type==='college'?l.company:l.college),()=>networkSelection(null,l.id));button.append(badge(linkStatus(l)));button.classList.add('network-detail-partner');detail.append(button);});
+    } else {
+      const icon=element('i',undefined,'bi bi-diagram-3');icon.setAttribute('aria-hidden','true');
+      const well=element('span',undefined,'network-detail-icon');well.append(icon);
+      detail.append(well,element('h3','Explore a partnership.'),element('p',focusedNetworkCollege==='all'?'Select a college to rearrange the map around its partners. Select a company or connection to inspect partnership details.':'Select a partner company to view details or pause and resume its connection to this college.','network-detail-note'));
+    }
+  }
+  function renderPartnershipMap() {
+    if(partnershipView!=='map') return;
+    const previous=mapMotion.matches?[]:Array.from(document.querySelectorAll('[data-network-org]')).map(node=>({id:node.dataset.networkOrg,rect:node.getBoundingClientRect()}));
+    const query=document.querySelector('[data-platform-search="platform-partnerships"]').value.trim().toLowerCase();
+    const matching=partnerships.filter(l=>`${orgName(l.college)} ${orgName(l.company)} ${linkStatus(l)}`.toLowerCase().includes(query));
+    if(focusedNetworkCollege!=='all'&&!matching.some(l=>l.college===focusedNetworkCollege)) focusedNetworkCollege='all';
+    const picker=$('networkCollege');picker.replaceChildren();
+    const all=element('option','All colleges');all.value='all';picker.append(all);
+    organizations.filter(o=>o.type==='college'&&matching.some(l=>l.college===o.id)).forEach(o=>{const option=element('option',o.name);option.value=o.id;picker.append(option);});
+    picker.value=focusedNetworkCollege;
+    const overview=focusedNetworkCollege==='all';
+    $('networkMapTitle').textContent=overview?'See the connections.':'Your college connections.';
+    document.querySelector('.partnership-map-columns span').textContent=overview?'Colleges':'Selected college';
+    document.querySelector('.network-map-hint').textContent=overview?'Select a college to simplify the map. Select a connection for partnership details.':'Select a company to view its partnership details.';
+    const links=overview?matching:matching.filter(l=>l.college===focusedNetworkCollege);
+    const ids=new Set(links.flatMap(l=>[l.college,l.company]));
+    if(overview&&!query) organizations.forEach(o=>ids.add(o.id));
+    if(selectedNetworkLink&&!links.some(l=>l.id===selectedNetworkLink)) selectedNetworkLink=null;
+    if(selectedNetworkOrg&&!ids.has(selectedNetworkOrg)) selectedNetworkOrg=null;
+    const nodes=$('partnershipMapNodes'),svg=$('partnershipMapLines'),canvas=$('partnershipMapCanvas');
+    nodes.replaceChildren();svg.replaceChildren();
+    canvas.classList.toggle('is-overview',overview);
+    const positions=new Map(),halfWidth=overview?126:153;
+    canvas.style.height=`${Math.max(510,...['college','company'].map(type=>organizations.filter(o=>o.type===type&&ids.has(o.id)).length*180))}px`;
+    for(const type of ['college','company']) {
+      const members=organizations.filter(o=>o.type===type&&ids.has(o.id));
+      if(overview&&type==='company') {
+        const colleges=organizations.filter(o=>o.type==='college'&&ids.has(o.id));
+        const rank=company=>Math.max(-1,...links.filter(l=>l.company===company.id).map(l=>colleges.findIndex(c=>c.id===l.college)));
+        members.sort((a,b)=>rank(a)-rank(b));
+      }
+      members.forEach((org,i)=>{
+        const x=type==='college'?(overview?170:190):(overview?730:710),y=35+(i+.5)*430/members.length;
+        positions.set(org.id,{x,y});
+        const connection=!overview&&type==='company'?links.find(l=>l.company===org.id):null;
+        const node=action('',()=>networkSelection(connection?null:org.id,connection?.id),connection?`View partnership with ${org.name}`:type==='college'?`Focus map on ${org.name}`:`View ${org.name} connections`);
+        node.className=`network-node network-node--${type}`;node.dataset.networkOrg=org.id;
+        if(connection) node.dataset.networkLink=connection.id;
+        node.style.left=`${x/9}%`;node.style.top=`${y/5}%`;
+        const selected=selectedNetworkOrg===org.id||Boolean(connection&&selectedNetworkLink===connection.id);
+        node.classList.toggle('is-selected',selected);node.setAttribute('aria-pressed',String(selected));
+        const mark=element('span',undefined,'network-node-mark'),icon=element('i',undefined,type==='college'?'bi bi-mortarboard':'bi bi-buildings');
+        icon.setAttribute('aria-hidden','true');mark.append(icon);
+        const count=partnerships.filter(l=>l.college===org.id||l.company===org.id).length;
+        node.append(mark,element('strong',org.name),element('small',`${org.location} · ${count} partner${count===1?'':'s'}`));nodes.append(node);
+        if(connection) node.append(badge(linkStatus(connection)));
+      });
+    }
+    links.forEach(link=>{
+      const a=positions.get(link.college),b=positions.get(link.company),status=linkStatus(link);
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',`M ${a.x+halfWidth} ${a.y} C 410 ${a.y}, 490 ${b.y}, ${b.x-halfWidth} ${b.y}`);
+      path.setAttribute('class',`network-link${status==='Paused'?' is-paused':status==='Account suspended'?' is-blocked':''}${selectedNetworkLink===link.id?' is-selected':''}`);
+      path.classList.toggle('is-dimmed',Boolean(selectedNetworkLink&&selectedNetworkLink!==link.id||selectedNetworkOrg&&link.college!==selectedNetworkOrg&&link.company!==selectedNetworkOrg));
+      svg.append(path);path.addEventListener('click',()=>networkSelection(null,link.id));
+    });
+    renderNetworkDetail();
+    previous.forEach(old=>{
+      const node=document.querySelector(`[data-network-org="${old.id}"]`);if(!node)return;
+      const rect=node.getBoundingClientRect(),dx=old.rect.x-rect.x,dy=old.rect.y-rect.y;
+      if(Math.abs(dx)+Math.abs(dy)>1) node.animate([{transform:`translate(-50%,-50%) translate(${dx}px,${dy}px)`},{transform:'translate(-50%,-50%)'}],{duration:420,easing:'cubic-bezier(.22,1,.36,1)'});
+    });
+  }
+  function setPartnershipView(view) {
+    if(view==='map'&&mapMobile.matches)return;
+    const fromMap=partnershipView==='map';
+    const source=Array.from(document.querySelectorAll(fromMap?'[data-network-org]':'#platform-partnerships-rows tr:not([hidden]) td:nth-child(-n+2)')).map(node=>({name:node.dataset.networkOrg?orgName(node.dataset.networkOrg):node.textContent,rect:node.getBoundingClientRect()}));
+    partnershipView=view;
+    $('partnershipList').hidden=view==='map';$('partnershipMap').hidden=view!=='map';
+    document.querySelectorAll('[data-partnership-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.partnershipView===view)));
+    renderPartnershipMap();
+    if(!mapMotion.matches) {
+      const targets=document.querySelectorAll(view==='map'?'[data-network-org]':'#platform-partnerships-rows tr:not([hidden]) td:nth-child(-n+2)');
+      targets.forEach(node=>{
+        const name=node.dataset.networkOrg?orgName(node.dataset.networkOrg):node.textContent, previous=source.find(s=>s.name===name);
+        if(!previous)return;const rect=node.getBoundingClientRect(),base=node.classList.contains('network-node')?'translate(-50%, -50%)':'translate(0,0)';
+        node.animate([{transform:`${base} translate(${previous.rect.x-rect.x}px,${previous.rect.y-rect.y}px) scale(.9)`,opacity:.25},{transform:base,opacity:1}],{duration:500,easing:'cubic-bezier(.22,1,.36,1)'});
+      });
+    }
+  }
+  document.querySelectorAll('[data-partnership-view]').forEach(button=>button.addEventListener('click',()=>setPartnershipView(button.dataset.partnershipView)));
+  $('partnershipMapReset').addEventListener('click',()=>{focusedNetworkCollege='all';selectedNetworkOrg=null;selectedNetworkLink=null;renderPartnershipMap();});
+  $('networkCollege').addEventListener('change',event=>{focusedNetworkCollege=event.target.value;selectedNetworkOrg=null;selectedNetworkLink=null;renderPartnershipMap();});
   function render() {
     for(const type of ['company','college']) {
       const panel=type==='company'?'platform-companies':'platform-colleges';
@@ -56,12 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
     partnerships.forEach(link=>{
       const row=element('tr'); cell(row,element('span',orgName(link.college))); cell(row,element('span',orgName(link.company))); cell(row,badge(window.BridgewayPartners.effective(link)?'Active':link.status==='Active'?'Account suspended':'Paused'));
       cell(row,action('View cycle',()=>openPartnerCycle(link),`View partnership ${orgName(link.college)} and ${orgName(link.company)}`));
-      cell(row,action(link.status==='Active'?'Pause':'Resume',async()=>{
-        if(link.status==='Active'&&!await window.confirmPartnershipPause(`Are you sure you want to pause the partnership between ${orgName(link.college)} and ${orgName(link.company)}? New applications and placements will stop; existing training continues. This change is preview-only.`))return;
-        const members=organizations.filter(org=>[link.college,link.company].includes(org.id));
-        if(link.status!=='Active' && members.some(org=>org.status!=='Active')) {showPortalToast('Activate both organization accounts before reactivating this partnership.'); return;}
-        link.status=link.status==='Active'?'Inactive':'Active'; render(); showPortalToast(link.status==='Active'?'Partnership resumed in this preview.':'Partnership paused. New applications stop; existing placements continue.');
-      },`${link.status==='Active'?'Pause':'Resume'} ${orgName(link.college)} and ${orgName(link.company)} partnership`)); partnershipBody.append(row);
+      cell(row,action(link.status==='Active'?'Pause':'Resume',()=>togglePartnership(link),`${link.status==='Active'?'Pause':'Resume'} ${orgName(link.college)} and ${orgName(link.company)} partnership`));
+      Array.from(row.cells).forEach((td,i)=>td.dataset.label=['College','Company','Status','Cycle','Actions'][i]);partnershipBody.append(row);
     }); filterTable('platform-partnerships');
     const issueBody=$('platform-issues-rows'); issueBody.replaceChildren();
     issues.forEach(issue=>{

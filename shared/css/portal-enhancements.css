@@ -1,3 +1,25 @@
+/* Compact dashboard headers, matching the supervisor example. */
+.portal-compact .bw-company-content { gap:22px!important; }
+.portal-compact .company-topbar { position:static!important;width:auto;min-height:54px;padding:0 0 16px!important; }
+.portal-compact .company-breadcrumb { display:none; }
+.portal-workspace-identity { display:grid;gap:5px;min-width:0; }
+.portal-workspace-identity strong { font-size:13px;font-weight:600;color:var(--bw-text); }
+.portal-workspace-identity span { font-size:11px;line-height:1.5;color:var(--bw-text-muted); }
+.portal-compact .portal-compact-heading { display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:0!important;margin:0; }
+.portal-compact-heading :is(.bw-eyebrow,.company-eyebrow,.bw-subtitle,#companyPageDescription,#platformPageDescription) { display:none; }
+.portal-compact .portal-compact-heading h1 { margin:0!important;font-size:26px!important;line-height:1.3!important;letter-spacing:-.035em; }
+.portal-compact .portal-compact-heading > [data-style="s1"] { display:contents; }
+.portal-heading-tools { display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-left:auto;flex-wrap:wrap; }
+.portal-compact .portal-heading-tools .bw-arrange-bar { margin:0; }
+.portal-compact .portal-heading-tools .bw-arrange-hint { display:none; }
+.portal-compact .bw-arrange-toggle[aria-pressed="false"] { width:44px;padding:0;font-size:0;border-radius:10px; }
+.portal-compact .bw-arrange-toggle[aria-pressed="false"]::before { content:'⠿';font-size:24px;line-height:1; }
+@media(max-width:600px) {
+ .portal-compact .portal-compact-heading h1 { font-size:23px!important; }
+ .portal-workspace-identity { max-width:58%; }
+ .portal-compact .portal-heading-tools .bw-arrange-actions { width:auto; }
+ .portal-compact .portal-heading-tools > [data-style="s2"] { flex-wrap:wrap; }
+}
 /* portal-cycle */ .portal-header-actions { display:flex;align-items:center;gap:12px;margin-left:auto; }
 .portal-notifications { position:relative; }
 .notification-toggle { position:relative;width:40px;height:40px;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-surface);color:var(--bw-text);cursor:pointer; }
@@ -44,6 +66,14 @@
 .partner-preview::backdrop { background:#0f172a66; }
 .partner-scope { font-size:12px;color:var(--bw-text-muted);margin:12px 0; }
 .portal-unified[data-portal-role="admin"] .bw-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr))!important; }
+.bw-jitsi-dialog { width:min(1100px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 32px);padding:20px;border:1px solid var(--bw-border);border-radius:16px;background:var(--bw-surface);color:var(--bw-text); }
+.bw-jitsi-dialog::backdrop { background:rgb(15 23 42 / .75); }
+.bw-jitsi-dialog header { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+.bw-jitsi-dialog h2 { margin:0;font-size:20px; }
+.bw-jitsi-status,.bw-jitsi-dialog footer { margin:12px 0;font-size:14px;line-height:1.5; }
+.bw-jitsi-frame { height:clamp(300px,65dvh,720px);overflow:hidden;border-radius:12px;background:#1e293b; }
+.bw-jitsi-frame iframe { display:block;border:0; }
+.bw-jitsi-dialog footer a { display:inline-block;margin-inline-start:8px;text-decoration:underline; }
 @media(max-width:650px) {
   .portal-unified[data-portal-role="admin"] .bw-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
 }
@@ -164,6 +194,16 @@
 }
 html[data-theme="dark"]:has(body.company-workspace) { color-scheme:dark; }
 html[data-theme="light"]:has(body.company-workspace) { color-scheme:light; }
+/* Keep navigation and account actions in separate rows on small screens. */
+@media(max-width:650px) {
+  .company-workspace .bw-masar-sidebar .bw-masar-header { padding-right:0; }
+  .company-workspace .company-topbar { position:static!important; width:100%; }
+  .company-workspace .portal-header-actions { width:100%; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
+  .company-workspace :is(.bw-input,.bw-select,.bw-textarea,input,select,textarea) { font-size:16px; max-width:100%; min-width:0; }
+  .company-workspace .bw-page-header { flex-wrap:wrap; gap:16px; }
+  .company-workspace :is(.bw-table-search,.bw-search-input-wrap,.portal-directory-search input) { min-width:0; max-width:100%; }
+  .company-workspace :is(.bw-table-search input,.bw-search-input) { width:100%; min-width:0; }
+}
 .portal-directory-search { display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0; }
 .portal-directory-search input { flex:1;min-width:180px;max-width:420px; }
 .portal-directory-search label { color:var(--bw-text); }

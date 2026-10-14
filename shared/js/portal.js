@@ -1,7 +1,7 @@
 /* partnership-data */
 // CV metadata is a local preview marker, never an uploaded or analyzed document.
 window.BridgewayCV = {
-  key: 'bridgeway:student-cv-preview:v1',
+  get key() { return 'bridgeway:student-cv-preview:v1' + (window.BridgewayStudent?.current().id === 'lina' ? ':lina' : ''); },
   read() {
     try {
       const file = JSON.parse(sessionStorage.getItem(this.key));
@@ -16,13 +16,77 @@ window.BridgewayCV = {
     } catch { return false; }
   }
 };
+// Meeting fixtures reset on every page load. No scheduling or cross-portal delivery.
+window.BridgewayMeetings = {
+  records: [{ student: 'ghaith', company: 'company-1', title: 'Training check-in', date: '2026-10-15T14:00', url: `https://meet.jit.si/Bridgeway-preview-${crypto.randomUUID()}`, sample: true }],
+  validUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && url.hostname === 'meet.jit.si' && !url.port && !url.username && !url.password && /^\/[A-Za-z0-9_-]{3,200}\/?$/.test(url.pathname) && !url.search && !url.hash ? url.href : null;
+    } catch { return null; }
+  }
+};
 /* Shared sample relationships. Each page gets fresh data; this is not authorization. */
+// Load the external service only after the user explicitly opens a meeting.
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.querySelector('#companyMeetingJoin,#studentMeetingJoin')) return;
+  let dialog, api, load, opener, generation = 0;
+  function loadJitsi() {
+    if (window.JitsiMeetExternalAPI) return Promise.resolve();
+    if (!load) load = new Promise((resolve,reject) => {
+      const script = document.createElement('script');
+      const timer = setTimeout(failed,15000);
+      function failed() { clearTimeout(timer); script.remove(); load=null; reject(new Error('Jitsi unavailable')); }
+      script.src='https://meet.jit.si/external_api.js';
+      script.onload=()=>{clearTimeout(timer); window.JitsiMeetExternalAPI?resolve():failed();};
+      script.onerror=failed;
+      document.head.append(script);
+    });
+    return load;
+  }
+  document.addEventListener('click', async event => {
+    const link=event.target.closest('#companyMeetingJoin,#studentMeetingJoin,[data-jitsi-meeting]');
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const url=window.BridgewayMeetings.validUrl(link.href);
+    if (!url) return;
+    event.preventDefault();
+    opener=link;
+    if (!dialog) {
+      dialog=document.createElement('dialog');
+      dialog.className='bw-jitsi-dialog';
+      dialog.setAttribute('aria-labelledby','jitsiMeetingHeading');
+      dialog.innerHTML='<header><h2 id="jitsiMeetingHeading">Jitsi meeting</h2><button type="button" class="bw-tag-btn">Close meeting</button></header><p class="bw-jitsi-status" role="status"></p><div class="bw-jitsi-frame"></div><footer>Jitsi is an external service. Camera and microphone access is controlled by your browser. The host must sign in to start the room. <a target="_blank" rel="noopener noreferrer">Open directly in Jitsi</a></footer>';
+      document.body.append(dialog);
+      dialog.querySelector('button').addEventListener('click',()=>dialog.close());
+      dialog.addEventListener('close',()=>{generation++;api?.dispose();api=null;dialog.querySelector('.bw-jitsi-frame').replaceChildren();opener?.focus();});
+    }
+    api?.dispose(); api=null;
+    const run=++generation;
+    const status=dialog.querySelector('.bw-jitsi-status');
+    status.textContent='Loading Jitsi…';
+    dialog.querySelector('a').href=url;
+    if (!dialog.open) dialog.showModal();
+    try {
+      await loadJitsi();
+      if (!dialog.open || run!==generation) return;
+      api=new window.JitsiMeetExternalAPI('meet.jit.si',{
+        roomName:new URL(url).pathname.replace(/^\/|\/$/g,''),
+        width:'100%',height:'100%',parentNode:dialog.querySelector('.bw-jitsi-frame'),
+        configOverwrite:{prejoinPageEnabled:true,startWithAudioMuted:true,startWithVideoMuted:true},
+        onload:()=>{if(run===generation)status.textContent='Check your name and devices in Jitsi before joining.';}
+      });
+      api.addListener('readyToClose',()=>dialog.close());
+    } catch {
+      if (dialog.open && run===generation) status.textContent='Jitsi could not load. Close and try again, or use the direct link below.';
+    }
+  });
+});
 window.BridgewayPartners = {
   organizations: [
     {id:'company-1',type:'company',name:'Tech Corp Inc.',admin:'Tech Corp HR',email:'hr@techcorp.com',location:'Amman',phone:'',status:'Active',listings:2},
     {id:'company-2',type:'company',name:'Nexus Cloud Systems',admin:'Nexus HR',email:'talent@nexuscloud.jo',location:'Amman',phone:'',status:'Active',listings:1},
     {id:'company-3',type:'company',name:'Aspire Cloud Services',admin:'Aspire HR',email:'careers@aspirecloud.io',location:'Amman',phone:'',status:'Active',listings:1},
-    {id:'college-1',type:'college',name:'Al-Balqa Applied University',admin:'College Admin',email:'admin@bau.edu.jo',location:'Salt',phone:'',status:'Active',students:3,placements:2},
+    {id:'college-1',type:'college',name:'Al-Balqa Applied University',admin:'College Admin',email:'admin@bau.edu.jo',location:'Salt',phone:'',status:'Active',students:4,placements:2},
     {id:'college-2',type:'college',name:'Jordan University',admin:'College Admin',email:'admin@uni.edu',location:'Amman',phone:'',status:'Active',students:1,placements:1}
   ],
   links: [
@@ -35,12 +99,37 @@ window.BridgewayPartners = {
     {studentId:'20220042',gpa:'3.50',weeks:4,hours:160,supervisor:'Dr. John Smith',id:'alice',name:'Alice Johnson',college:'college-2',company:'company-1',stage:'Placed',role:'Frontend React Developer Intern'},
     {studentId:'20220148',gpa:'3.75',weeks:6,hours:240,supervisor:'Dr. Ahmad S.',id:'ghaith',name:'Ghaith Amourah',college:'college-1',company:'company-1',stage:'Placed',role:'Software Engineering Intern'},
     {studentId:'20220088',gpa:'3.42',weeks:0,hours:0,supervisor:null,id:'omar',name:'Omar Majed',college:'college-1',company:'company-1',stage:'Applied',role:'Software Engineering Intern'},
-    {studentId:'20220019',gpa:'3.88',weeks:8,hours:320,supervisor:'Dr. Ahmad S.',id:'sarah',name:'Sarah Ahmad',college:'college-1',company:'company-2',stage:'Placed',role:'Full-Stack .NET Developer Intern'}
+    {studentId:'20220019',gpa:'3.88',weeks:8,hours:320,supervisor:'Dr. Ahmad S.',id:'sarah',name:'Sarah Ahmad',college:'college-1',company:'company-2',stage:'Placed',role:'Full-Stack .NET Developer Intern'},
+    {studentId:'20260101',gpa:'3.60',weeks:0,hours:0,supervisor:null,id:'lina',name:'Lina Haddad',college:'college-1',company:null,stage:'Not applied',role:null}
   ],
   effective(link) {
     return link.status === 'Active' && this.organizations.filter(o=>o.id===link.college||o.id===link.company).every(o=>o.status==='Active');
   }
 };
+
+// URL context selects a sample persona, not a real account or authorization.
+window.BridgewayStudent = {
+  current() {
+    const id = new URLSearchParams(location.search).get('student') === 'lina' ? 'lina' : 'ghaith';
+    return window.BridgewayPartners.students.find(student => student.id === id);
+  },
+  url(href) {
+    const url = new URL(href, location.href);
+    url.searchParams.set('student', this.current().id);
+    return url.href;
+  }
+};
+document.addEventListener('DOMContentLoaded', () => {
+  if (!/\/student-(dashboard|profile)\//.test(location.pathname)) return;
+  const student = window.BridgewayStudent.current();
+  const initials = student.name.split(' ').map(word => word[0]).join('');
+  document.getElementById('portalAccountName').textContent = student.name;
+  document.getElementById('portalInitials').textContent = initials;
+  // Run after the other shared initializers have created notification links.
+  queueMicrotask(() => document.querySelectorAll('a[href]').forEach(link => {
+    if (/\/student-(dashboard|profile)\//.test(new URL(link.href).pathname)) link.href = window.BridgewayStudent.url(link.href);
+  }));
+});
 
 // Native dialog keeps focus contained and Escape/Cancel leaves the status unchanged.
 window.confirmPartnershipPause = (message,heading='Pause partnership?',action='Pause partnership') => new Promise(resolve => {
@@ -76,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const actionCell=row.cells[row.cells.length-1];
       const actions=actionCell.firstElementChild?.tagName==='DIV'?actionCell.firstElementChild:actionCell;
       const meeting=actions.querySelector('[data-open-modal="hrMeetingsModal"]');
-      if(meeting){meeting.title='Zoom meeting';meeting.setAttribute('aria-label',`Zoom meeting with ${student.name}`);}
+      if(meeting){meeting.title='Jitsi meeting';meeting.setAttribute('aria-label',`Jitsi meeting with ${student.name}`);}
       function renderActions(){
         const active=student.stage==='Placed',applied=student.stage==='Applied',rejected=student.stage==='Rejected';
         row.dataset.status=active?'accepted':applied?'review':rejected?'rejected':'awaiting';
@@ -107,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.listing-applicants').forEach((b,i)=>{b.firstChild.textContent=i===0?'2':'1';});
     document.querySelectorAll('.listing-seats').forEach(b=>b.firstChild.textContent='1 ');document.querySelectorAll('.listing-table meter').forEach(m=>{m.value=1;m.setAttribute('aria-label',`1 of ${m.max} seats filled`);});
     const source=document.querySelector('#candidateTableBody,#companyCandidatesTableBody');
-    if(source) {const note=el('p','Only applicants to Tech Corp listings are shown. Reports and evaluations are restricted to confirmed Tech Corp interns.','partner-scope');source.closest('table').parentElement.before(note);}
   }
   if(role==='admin' && document.getElementById('adminStudentsTableBody')) {
     document.querySelectorAll('#adminStudentsTableBody tr,#tab-supervisors tbody tr').forEach(row=>{if(row.textContent.includes('@uni.edu'))row.remove();});
@@ -117,8 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const usersBody=document.querySelector('#tab-users tbody');
     function appendCells(body,values){const row=el('tr');values.forEach(value=>{const cell=el('td');if(value instanceof Node)cell.append(value);else cell.textContent=value;row.append(cell);});body.append(row);return row;}
     const supervisorSelect=()=>{const select=el('select',null,'bw-select');select.setAttribute('aria-label','Assigned supervisor');['Unassigned','Dr. Ahmad S.'].forEach(name=>select.append(el('option',name)));select.addEventListener('change',()=>window.showPortalToast('Supervisor assignment updated in this preview.'));return select;};
-    appendCells(studentsBody,['Omar Majed','Cybersecurity','3.42','Faculty of IT',supervisorSelect(),'Awaiting placement']);
+    appendCells(studentsBody,['Omar Majed','Cybersecurity','3.42','Faculty of IT','After company acceptance','Application pending']);
+    appendCells(studentsBody,['Lina Haddad','Software Engineering','3.60','Faculty of IT','After company acceptance','Not applied']);
     appendCells(usersBody,['#8','omar@bau.edu.jo','Student','Faculty of IT','College managed']);
+    appendCells(usersBody,['#9','lina@bau.edu.jo','Student','Faculty of IT','College managed']);
     appendCells(document.querySelector('#tab-approved tbody'),['#103','Sarah Ahmad','Nexus Cloud Systems','Full-Stack .NET Developer Intern','Dr. Ahmad S.','Approved','Active placement']);
     document.querySelectorAll('#tab-approved tbody tr').forEach(row=>{
       const student=model.students.find(s=>row.cells[1].textContent.includes(s.name));if(!student||student.college!==college)return;
@@ -134,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('registerStudentForm')?.addEventListener('submit',event=>{
       if(!event.target.checkValidity())return;
       const name=document.getElementById('studentFullName').value.trim(),email=document.getElementById('studentEmail').value.trim(),dept=document.getElementById('studentDept').value,gpa=document.getElementById('studentGpa').value;
-      if(!name)return;appendCells(studentsBody,[name,dept,gpa,'Faculty of IT',supervisorSelect(),'Not placed']);appendCells(usersBody,['Preview',email,'Student','Faculty of IT','College managed']);queueMicrotask(counts);
+      if(!name)return;appendCells(studentsBody,[name,dept,gpa,'Faculty of IT','After company acceptance','Not applied']);appendCells(usersBody,['Preview',email,'Student','Faculty of IT','College managed']);queueMicrotask(counts);
     });
     document.getElementById('addSupervisorForm')?.addEventListener('submit',event=>{
       if(!event.target.checkValidity())return;
@@ -185,10 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const notices={
     company:[['Ghaith\u2019s weekly report is due','../company-dashboard/company-dashboard.html?student=ghaith#tab-weekly-reports'],['Review applicants to your listings','../company-dashboard/company-dashboard.html#tab-candidates']],
     admin:[['Review your college\u2019s student internships','../admin-dashboard/admin-dashboard.html#tab-approved'],['View active partner companies','../admin-dashboard/admin-dashboard.html#tab-companies']],
-    student:[['View your internship applications','../student-profile/student-profile.html#my-applications'],['Review your training progress','../student-dashboard/student-dashboard.html#tab-progress']],
+    student:[['View your internship applications','../student-dashboard/student-dashboard.html#tab-applications'],['Review your training progress','../student-dashboard/student-dashboard.html#tab-progress']],
     supervisor:[['Weekly reports need your review','../supervisor-dashboard/supervisor-dashboard.html#tab-reports']],
     platform_admin:[['Two escalated issues need attention','../platform-admin/platform-admin.html#platform-issues'],['Review college–company partnerships','../platform-admin/platform-admin.html#platform-partnerships']]
   };
+  if (actualRole === 'student' && window.BridgewayStudent.current().id === 'lina') notices.student = [];
   const account=document.querySelector('.company-account-wrap');if(!account)return;
   const actions=el('div',null,'portal-header-actions');account.before(actions);actions.append(account);
   if(actualRole==='company'||actualRole==='admin') {
@@ -209,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const wrap=el('div',null,'portal-notifications'),toggle=el('button',null,'notification-toggle'),count=el('span',String((notices[actualRole]||[]).length),'notification-count');toggle.type='button';toggle.setAttribute('aria-label','Notifications');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','portalNotifications');toggle.innerHTML='<i class="bi bi-bell" aria-hidden="true"></i>';toggle.append(count);
   const panel=el('section',null,'notification-panel');panel.id='portalNotifications';panel.hidden=true;panel.setAttribute('aria-label','Notifications');panel.append(el('h2','Notifications'));
   (notices[actualRole]||[]).forEach(([text,href])=>{const a=el('a',text);a.href=href;panel.append(a);});
+  if (!(notices[actualRole]||[]).length) { count.hidden=true; panel.append(el('p','No notifications yet.')); }
   const read=el('button','Mark all as read','bw-tag-btn');read.type='button';read.addEventListener('click',()=>{count.hidden=true;read.textContent='All caught up';read.disabled=true;});panel.append(read);wrap.append(toggle,panel);actions.prepend(wrap);
   function close(){panel.hidden=true;toggle.setAttribute('aria-expanded','false');}
   toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden));document.querySelectorAll('.company-account-dropdown').forEach(menu=>menu.hidden=true);document.querySelectorAll('.company-account').forEach(b=>b.setAttribute('aria-expanded','false'));});
@@ -372,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // STUDENT PORTAL SPECIFICS
   function initStudentDashboard() {
     if (!document.getElementById('tab-opportunities')) return;
-    const student = window.BridgewayPartners.students.find(student => student.id === 'ghaith');
+    const student = window.BridgewayStudent.current();
     const viewOnly = ['Placed', 'Awaiting placement', 'Accepted'].includes(student?.stage);
     const notice = document.getElementById('acceptedInternshipNotice');
     if (notice) notice.hidden = !viewOnly;
@@ -440,13 +532,16 @@ document.addEventListener('DOMContentLoaded', () => {
         pendingApplyBtn = this;
         const role = this.getAttribute('data-role') || 'Internship Opportunity';
         const company = this.getAttribute('data-company') || 'Partner Company';
-        const deadline = this.getAttribute('data-deadline') || 'Nov 30, 2026';
+        const deadline = this.getAttribute('data-deadline') || this.closest('.bw-opp-card')?.querySelector('.bi-calendar-event')?.parentElement.textContent.trim().replace(/^Ends\s+/,'') || 'Not specified';
+        this.setAttribute('data-deadline',deadline);
 
         const titleEl = document.getElementById('applyModalTitle');
+        const roleEl = document.getElementById('applyModalPosition');
         const compEl = document.getElementById('applyModalCompany');
         const deadEl = document.getElementById('applyModalDeadline');
 
         if (titleEl) titleEl.textContent = role;
+        if (roleEl) roleEl.textContent = role;
         if (compEl) compEl.textContent = company;
         if (deadEl) deadEl.textContent = deadline;
 
@@ -466,6 +561,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const company = pendingApplyBtn.getAttribute('data-company') || 'Partner Org';
         const deadline = pendingApplyBtn.getAttribute('data-deadline') || 'Nov 30, 2026';
 
+        const cv = document.getElementById('applicationCvFile');
+        const cvNote = document.getElementById('applicationCvStatus');
+        const file = cv?.files[0];
+        if (file && (!/\.(pdf|docx)$/i.test(file.name) || !file.size || file.size > 5 * 1024 * 1024)) {
+          cvNote.textContent = 'Choose a non-empty PDF or DOCX up to 5 MB.';
+          cv.setAttribute('aria-invalid', 'true');
+          cv.focus();
+          return;
+        }
+        if (!file && !window.BridgewayCV.read()) {
+          cvNote.textContent = 'Select a CV before confirming this application.';
+          cv.setAttribute('aria-invalid', 'true');
+          cv.focus();
+          return;
+        }
+
         pendingApplyBtn.classList.add('is-applied');
         pendingApplyBtn.innerHTML = '<i class="bi bi-check2"></i> Applied';
         pendingApplyBtn.style.background = '#059669';
@@ -483,13 +594,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const tableBody = document.getElementById('studentApplicationsTable');
         if (tableBody) {
           const tr = document.createElement('tr');
+          tr.dataset.applicationStatus = 'pending';
           tr.innerHTML = `
             <td><div style="font-weight: 700; color: var(--bw-text);">${company}</div></td>
             <td><div style="font-weight: 600;">${role}</div></td>
             <td><span style="color: var(--bw-text-muted);"><i class="bi bi-geo-alt me-1"></i>Amman</span></td>
             <td><span style="color: var(--bw-danger); font-weight: 500;">${deadline}</span></td>
             <td><span class="bw-badge bw-badge-amber"><i class="bi bi-hourglass-split me-1"></i>Pending</span></td>
-            <td><span style="font-size: 0.75rem; color: var(--bw-text-muted); font-weight: 600;"><i class="bi bi-shield-check me-1"></i>Preview only</span></td>
+            <td><button type="button" class="bw-tag-btn text-danger" data-withdraw-application>Withdraw</button></td>
           `;
           tableBody.prepend(tr);
         }
@@ -545,12 +657,12 @@ document.addEventListener('DOMContentLoaded', () => {
       badgeClass: 'bw-badge-success',
       statusText: 'Week 8 Completed',
       heading: 'Week 8: Capstone SSO Gateway & Final Presentation',
-      meta: 'Submitted Oct 08, 2026 • All 8 Weeks Verified & Endorsed',
-      pendingText: '320.0h Endorsed',
+      meta: 'Submitted Oct 08, 2026 • All 8 weeks verified',
+      pendingText: '40.0h Verified',
       pendingClass: 'bw-badge-success',
       deliverables: 'Completed final capstone project: Microservices-based authentication & single sign-on (SSO) gateway with Redis token caching and Docker container orchestration. Delivered final internship presentation.',
       tech: ['Microservices', 'Docker', 'Redis', 'OAuth2 & JWT', 'CI/CD'],
-      feedback: 'Outstanding technical performance across the entire 8-week cycle. Ready for graduation degree audit endorsement.',
+      feedback: 'Outstanding technical performance across the entire 8-week cycle. All submitted training hours have been verified.',
       canApprove: false,
       avatar: 'SA',
       btnId: 'btnStudentSA',
@@ -583,6 +695,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentAvatar = document.getElementById('activeStudentAvatar');
     const studentWeekBadge = document.getElementById('activeStudentWeekBadge');
 
+    const assigned = window.BridgewayPartners.students.find(student => student.name === name && student.stage === 'Placed' && student.supervisor === 'Dr. Ahmad S.');
+    if (!assigned) return;
     const reportData = studentReportData[name];
 
     if (studentTitle) studentTitle.textContent = name;
@@ -609,6 +723,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const feedbackEl = document.getElementById('supervisorFeedback');
       const timelineSummary = document.getElementById('timelineCurriculumSummary');
       const approveBtn = document.getElementById('approveWeekBtn');
+      const revisionBtn = document.getElementById('requestRevisionBtn');
+      if (revisionBtn) revisionBtn.disabled = !reportData.canApprove;
 
       if (headingEl) headingEl.textContent = reportData.heading;
       if (metaEl) metaEl.textContent = reportData.meta;
@@ -631,13 +747,13 @@ document.addEventListener('DOMContentLoaded', () => {
           approveBtn.style.background = '';
           approveBtn.style.color = '';
           approveBtn.classList.add('bw-btn-primary');
-          approveBtn.innerHTML = `<i class="bi bi-check2-all"></i> Approve & Verify ${reportData.week} (40.0 Hours)`;
+          approveBtn.innerHTML = '<i class="bi bi-check2-all" aria-hidden="true"></i> Verify training hours';
         } else {
           approveBtn.disabled = true;
           approveBtn.style.background = '#059669';
           approveBtn.style.color = '#ffffff';
           approveBtn.classList.remove('bw-btn-primary');
-          approveBtn.innerHTML = `<i class="bi bi-check2-all me-1"></i> Already Verified & Endorsed`;
+          approveBtn.innerHTML = '<i class="bi bi-check2-all" aria-hidden="true"></i> Already verified';
         }
       }
 
@@ -658,8 +774,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const approveBtn = document.getElementById('approveWeekBtn');
     if (approveBtn) {
       approveBtn.addEventListener('click', () => {
+        const name = document.getElementById('activeStudentName').textContent;
+        const report = studentReportData[name];
+        if (!report?.canApprove) return;
+        report.canApprove = false;
+        report.pendingText = '40.0h Verified';
+        report.pendingClass = 'bw-badge-success';
+        report.feedback = document.getElementById('supervisorFeedback').value;
+        document.getElementById('requestRevisionBtn').disabled = true;
         approveBtn.disabled = true;
-        approveBtn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Week Verified & Endorsed (40.0h)';
+        approveBtn.innerHTML = '<i class="bi bi-check2-all" aria-hidden="true"></i> Training hours verified';
         approveBtn.classList.remove('bw-btn-primary');
         approveBtn.style.background = '#059669';
         approveBtn.style.color = '#ffffff';
@@ -683,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         showPortalToast('Report marked verified in this preview only.');
+        document.dispatchEvent(new CustomEvent('bridgeway:report-reviewed',{detail:{name,status:'verified'}}));
       });
     }
 
@@ -690,7 +815,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmRevisionModalBtn = document.getElementById('confirmRevisionModalBtn');
     if (confirmRevisionModalBtn) {
       confirmRevisionModalBtn.addEventListener('click', () => {
+        const name = document.getElementById('activeStudentName').textContent;
+        const report = studentReportData[name];
+        const notes = document.getElementById('revisionNotesInput');
+        if (!report?.canApprove) return;
+        if (!notes.value.trim()) { notes.focus(); return; }
+        report.pendingText = '40.0h Revision requested';
+        report.pendingClass = 'bw-badge-amber';
+        report.feedback = document.getElementById('supervisorFeedback').value;
+        const pill = document.getElementById('reportPendingPill');
+        pill.textContent = report.pendingText; pill.className = 'bw-badge bw-badge-amber';
         closeModal('requestRevisionModal');
+        document.dispatchEvent(new CustomEvent('bridgeway:report-reviewed',{detail:{name,status:'revision'}}));
         showPortalToast('Revision preview only. No notes were sent.', 'bi-info-circle-fill text-warning');
       });
     }
@@ -1066,12 +1202,14 @@ document.addEventListener('DOMContentLoaded', () => {
       withdrawBtn.addEventListener('click', () => {
         closeModal('withdrawModal');
         const table = document.getElementById('studentApplicationsTable');
+        let withdrawn = 0;
         if (table) {
           const rows = table.querySelectorAll('tr');
           rows.forEach(tr => {
-            if (tr.textContent.includes(pendingWithdrawRole) || tr.textContent.includes(pendingWithdrawCompany)) {
+            if (tr.cells[1]?.textContent.trim() === pendingWithdrawRole && tr.cells[0]?.textContent.trim() === pendingWithdrawCompany) {
               if (tr.dataset.applicationStatus !== 'pending') return;
               tr.dataset.applicationStatus = 'withdrawn';
+              withdrawn++;
               const badge = tr.querySelector('.bw-badge');
               badge.className = 'bw-badge';
               badge.textContent = 'Withdrawn';
@@ -1080,9 +1218,9 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
         const appKpi = document.getElementById('kpiApplicationsSent');
-        if (appKpi) {
+        if (appKpi && withdrawn) {
           const current = parseInt(appKpi.textContent, 10) || 0;
-          if (current > 0) appKpi.textContent = current - 1;
+          appKpi.textContent = Math.max(0,current - withdrawn);
         }
         showPortalToast(`Application for "${pendingWithdrawRole}" withdrawn in this preview.`, 'bi-exclamation-triangle-fill text-warning');
       });

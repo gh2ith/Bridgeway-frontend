@@ -13,6 +13,35 @@ document.addEventListener('DOMContentLoaded',()=>{
    small.addEventListener('change',event=>{sidebar.classList.toggle('is-collapsed',event.matches);navState();});
  }
  const role=document.body.dataset.portalRole;
+ // Dashboard headers share the approved compact supervisor layout.
+ const profilePage=/\/(student-profile|company-profile|account-settings)\//.test(location.pathname);
+ if(profilePage || (role!=='supervisor' && document.querySelector('.bw-tab-panel'))) {
+  const heading=main.querySelector('.bw-page-header,.company-page-heading');
+  if(heading) {
+   document.body.classList.add('portal-compact');heading.classList.add('portal-compact-heading');
+   const identities={student:['Al-Balqa Applied University','Student workspace'],supervisor:['Al-Balqa Applied University','Software Engineering · Supervisor workspace'],company:['Tech Corp Inc.','Company workspace'],admin:['Al-Balqa Applied University','College administration'],platform_admin:['Bridgeway','Platform administration']};
+   const identity=document.createElement('div');identity.className='portal-workspace-identity';
+   const [organization,workspace]=identities[role]||['Bridgeway','Workspace'];
+   for(const [tag,text] of [['strong',organization],['span',workspace]]){const node=document.createElement(tag);node.textContent=text;identity.append(node);}
+   main.querySelector('.company-breadcrumb')?.before(identity);
+   let tools=heading.querySelector('#companyOverviewTools,#platformOverviewTools');
+   if(!tools) {
+    tools=document.createElement('div');tools.id='portalHeadingTools';
+    if(role==='admin'){const actions=heading.querySelector('[data-style="s2"]');if(actions)tools.append(actions);}
+    heading.append(tools);
+   }
+   tools.classList.add('portal-heading-tools');
+   if(profilePage) {
+    const title=heading.querySelector('h1');
+    const back=heading.querySelector('a[href]') || (role==='company'?main.querySelector('a[href="../company-dashboard/company-dashboard.html"][data-style="s2"]'):null);
+    if(back){const oldWrapper=back.parentElement;tools.append(back);if(oldWrapper!==heading && !oldWrapper.textContent.trim())oldWrapper.remove();}
+    heading.replaceChildren(title,tools);
+   }
+   const grid=main.querySelector('.bw-kpi-grid,.platform-metrics');if(grid)grid.dataset.arrangeToolbar=`#${tools.id}`;
+   const sync=()=>{const toggle=tools.querySelector('.bw-arrange-toggle');if(!toggle)return;const editing=toggle.getAttribute('aria-pressed')==='true';toggle.setAttribute('aria-label',editing?'Finish arranging cards':'Arrange cards');toggle.title=editing?'Finish arranging cards':'Arrange cards';};
+   new MutationObserver(sync).observe(tools,{childList:true,subtree:true});sync();
+  }
+ }
  const copy={
   'tab-opportunities':['Available internships','Explore opportunities from your college partners and find a role that fits your studies.'],
   'tab-applications':['My applications','Track the progress of your internship applications.'],
@@ -86,7 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     new MutationObserver(count).observe(applicationBody, {childList:true});
   }
   if ($('#tab-opportunities')) {
+    const opportunityNav=$('[data-tab="tab-opportunities"]');
     set('[data-tab="tab-opportunities"] .bw-tab-badge', $('#tab-opportunities').querySelectorAll('.bw-opp-card').length);
+    if(opportunityNav) opportunityNav.title=opportunityNav.textContent.trim().replace(/\s+/g,' ');
     // Empty search feedback for the existing opportunity search.
     const empty = make('p','No matching internships. Try another search or category.','portal-muted');
     empty.hidden = true; $('#tab-opportunities').append(empty);

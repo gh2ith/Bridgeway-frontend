@@ -38,4 +38,87 @@
 @media (max-height:720px) and (min-width:901px) { .ms--openings .card--job { padding:16px; gap:9px; } }
 @media (max-width:640px) { .journey-orb { top:calc(var(--nav-h) + 18px); right:24px; width:46px; } .ms--openings .card--job { padding:18px; } }
 .no-webgl .journey-atmosphere { position:fixed; }
+/* Hero: editorial copy lets the bridge and translucent ocean remain the artwork. */
+#page-home .logo--nav { height:54px!important; width:auto; }
+#page-home .ms--hero { margin:0 auto; max-width:1320px; padding-top:calc(var(--nav-h) + clamp(34px,6vh,64px)); text-align:left; }
+#page-home .hero__center-wrap { max-width:1200px; display:grid; grid-template-columns:1.1fr 1fr; gap:56px; align-items:center; }
+.hero__copy { min-width:0; max-width:580px; }
+#page-home .hero__badge-row { justify-content:flex-start; margin-bottom:26px; }
+#page-home .hero__badge-row .tag { font-size:11px; padding:7px 14px 7px 8px; }
+#page-home .hero__eyebrow { font-size:11px; letter-spacing:.13em; margin-bottom:16px; }
+#page-home .hero__title { font-size:clamp(42px,4.9vw,66px); line-height:1.06; letter-spacing:-.055em; margin-bottom:22px; }
+#page-home .hero__lead { margin:0 0 26px; max-width:465px; font-size:16px; line-height:1.75; }
+#page-home .hero__cta { justify-content:flex-start; gap:10px; }
+#page-home .hero__cta .btn { height:50px; padding:0 20px; font-size:13px; border-radius:12px; }
+#page-home .hero__cta .btn--secondary { background:rgb(255 255 255 / .55); border:1px solid rgb(37 99 235 / .14); box-shadow:none; }
+.hero__note { font:500 11px/1.6 var(--f-body); color:#17314e; margin:18px 0 0; }
+[data-theme="dark"] .hero__note { color:#bed0e9; }
+[data-theme="dark"] #page-home .hero__cta .btn--secondary { background:#14243d9c; border-color:#93c5fd40; color:#e0edff; }
+.hero-preview { --preview-bg:#fff; --preview-ink:#162b46; --preview-muted:#536781; --preview-border:#d5e3f3; min-width:0; position:relative; }
+.hero-preview::before { content:''; position:absolute; inset:0 -10%; background:radial-gradient(ellipse,#93c5fd48,transparent 68%); z-index:-1; }
+.hero-preview__heading { display:flex; justify-content:flex-start; gap:16px; padding:0 6px 20px; font:500 11px/1.5 var(--f-body); color:var(--preview-muted); }
+.hero-preview__heading>span:first-child { font-weight:600; letter-spacing:.14em; color:#2563eb; }
+.hero-preview__stack { position:relative; height:370px; }
+.hero-opportunity { position:absolute; top:0; left:0; width:calc(100% - 50px); padding:25px; border:1px solid var(--preview-border); border-radius:20px; background:var(--preview-bg); color:var(--preview-ink); box-shadow:0 20px 55px #163b6824,0 3px 8px #163b6808; transform-origin:50% 60%; }
+.hero-opportunity--first { animation:opportunityFront 14s ease-in-out infinite; }
+.hero-opportunity--second { animation:opportunityBack 14s ease-in-out infinite; }
+.hero-opportunity__company { display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+.hero-opportunity__mark { width:42px; height:42px; flex:none; display:grid; place-items:center; border-radius:12px; background:linear-gradient(135deg,#eff6ff,#dbeafe); color:#1d4ed8; font:700 14px var(--f-body); }
+.hero-opportunity--second .hero-opportunity__mark { background:linear-gradient(135deg,#ecfdf5,#ccfbf1); color:#087f8c; }
+.hero-opportunity__company>div { display:grid; gap:4px; }
+.hero-opportunity__company strong { font:600 12px/1.4 var(--f-body); }
+.hero-opportunity__company>div>span { color:var(--preview-muted); font:400 11px/1.4 var(--f-body); }
+.hero-opportunity__type { margin-left:auto; color:var(--preview-muted); font:500 10px var(--f-body); }
+#page-home .hero-opportunity h2 { color:var(--preview-ink); font:600 clamp(21px,2vw,26px)/1.2 var(--f-body); letter-spacing:-.035em; margin:0 0 14px; text-shadow:none; }
+#page-home .hero-opportunity p { color:var(--preview-muted); font:400 12px/1.7 var(--f-body); margin:0 0 20px; text-shadow:none; }
+.hero-opportunity__skills { display:flex; gap:7px; flex-wrap:wrap; list-style:none; padding:0; margin:0 0 24px; }
+.hero-opportunity__skills li { padding:6px 10px; border:1px solid var(--preview-border); border-radius:7px; color:var(--preview-muted); font:500 11px var(--f-body); }
+.hero-opportunity__footer { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:16px; border-top:1px solid var(--preview-border); color:var(--preview-muted); font:400 11px/1.5 var(--f-body); }
+.hero-opportunity__footer svg { color:#2563eb; flex:none; }
+.hero-preview__controls { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 6px 0; font:500 12px/1.5 var(--f-body); }
+.hero-preview__controls a { color:#1d4ed8; text-decoration:none; }
+.hero-preview__controls button { padding:12px 0; border:0; background:none; font:inherit; color:var(--preview-muted); cursor:pointer; }
+.hero-preview__controls :focus-visible { outline:2px solid #2563eb; outline-offset:4px; border-radius:4px; }
+.hero-preview:is(:hover,:focus-within,.is-paused) .hero-opportunity,.ms--hero:not(.is-active) .hero-opportunity { animation-play-state:paused; }
+@keyframes opportunityFront { 0%,35%,100% { transform:translate(0,38px) rotate(-3deg); z-index:2; opacity:1; } 50%,85% { transform:translate(48px,0) rotate(5deg) scale(.94); z-index:1; opacity:.85; } }
+@keyframes opportunityBack { 0%,35%,100% { transform:translate(48px,0) rotate(5deg) scale(.94); z-index:1; opacity:.85; } 50%,85% { transform:translate(0,38px) rotate(-3deg); z-index:2; opacity:1; } }
+[data-theme="dark"] .hero-preview { --preview-bg:#13243b; --preview-ink:#edf5ff; --preview-muted:#b7c9df; --preview-border:#314862; }
+[data-theme="dark"] .hero-preview__heading>span:first-child,[data-theme="dark"] .hero-preview__controls a,[data-theme="dark"] .hero-opportunity__footer svg { color:#93c5fd; }
+[data-theme="dark"] .hero-opportunity { box-shadow:0 22px 60px #0005,0 0 35px #38bdf80b; }
+[data-theme="dark"] .hero-opportunity__mark { background:#203b62; color:#bfdbfe; }
+[data-theme="dark"] .hero-opportunity--second .hero-opportunity__mark { background:#153d42; color:#99f6e4; }
+@media(max-width:1100px) {
+  #page-home .hero__center-wrap { gap:26px; }
+  .hero-opportunity { padding:20px; }
+  .hero-opportunity__type { display:none; }
+  #page-home .hero__title { font-size:clamp(36px,4.8vw,52px); }
+  #page-home .hero__lead { font-size:14px; }
+}
+@media(max-width:760px) {
+  #page-home .hero__center-wrap { grid-template-columns:1fr; gap:30px; }
+  .hero-preview { max-width:440px; width:100%; margin:0 auto; }
+  .hero-preview__stack { height:auto; display:grid; gap:14px; }
+  .hero-opportunity { position:relative; width:100%; animation:none; }
+  .hero-opportunity__company { margin-bottom:18px; }
+  .hero-preview__controls button { display:none; }
+  #page-home .logo--nav { height:44px!important; }
+  #page-home .ms--hero { margin:0; padding-top:calc(var(--nav-h) + 24px)!important; }
+  #page-home .hero__badge-row { margin-bottom:18px; }
+  #page-home .hero__title { font-size:clamp(36px,8vw,50px)!important; }
+  #page-home .hero__lead { font-size:14px!important; margin-bottom:20px!important; }
+  #page-home .hero__eyebrow { font-size:10px; }
+  #page-home .hero__cue { display:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .hero-opportunity { animation:none; }
+  .hero-opportunity--first { transform:translate(0,38px) rotate(-3deg); z-index:2; }
+  .hero-opportunity--second { transform:translate(48px,0) rotate(5deg) scale(.94); z-index:1; }
+  .hero-preview__controls button { display:none; }
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce) { .hero-opportunity { transform:none; } }
+@media(max-height:720px) and (min-width:761px) {
+  #page-home .ms--hero { padding-top:calc(var(--nav-h) + 22px)!important; }
+  #page-home .hero__badge-row { margin-bottom:14px; }
+  #page-home .hero__title { font-size:44px!important; margin-bottom:16px; }
+}
 @media (prefers-reduced-motion:reduce) { .journey-atmosphere { position:fixed; --arrival:1 !important; transition:none; } .journey-orb { transform:none; transition:none; } .ms--openings .card--job { transition:none; } .ms--openings .card--job:hover { transform:none; } }

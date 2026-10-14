@@ -1,5 +1,12 @@
 /* Page presentation, deduplicated from former inline styles. */ #page-student-dashboard [data-style="s1"] { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 #page-student-dashboard [data-style="s2"] { cursor: pointer; }
+.student-preview-picker { display:grid; gap:6px; margin-top:12px; max-width:290px; color:var(--bw-text-muted); font-size:12px; }
+.student-preview-picker select { width:100%; min-height:44px; }
+.student-preview-empty { padding:40px 24px; text-align:center; border:1px solid var(--bw-border); border-radius:16px; background:var(--bw-card-bg, var(--bw-surface)); }
+.student-preview-empty > i { font-size:28px; color:var(--bw-primary); }
+.student-preview-empty h2 { margin:14px 0 8px; font-size:20px; }
+.student-preview-empty p { max-width:500px; margin:0 auto 20px; color:var(--bw-text-muted); }
+#page-student-dashboard [hidden] { display:none !important; }
 #page-student-dashboard [data-style="s3"] { font-size: 0.82rem; font-weight: 700; color: var(--bw-text-muted); }
 #page-student-dashboard [data-style="s4"] { margin-bottom: 1.5rem; }
 #page-student-dashboard [data-style="s5"] { width: 33%; }
@@ -95,7 +102,7 @@
 .training-review-note { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--bw-text-secondary); }
 .training-report[data-report-status="verified"] .training-review-note { color:var(--training-green); }
 .training-report[data-report-status="submitted"] .training-review-note { color:var(--training-amber); }
-.training-sidebar { display:grid; gap:20px; }
+.training-workspace { grid-template-columns:minmax(0,1fr); }
 .training-review-panel { padding:22px; background:var(--bw-primary-light); border-radius:8px; border-left:3px solid var(--bw-primary); }
 .training-sidebar h2 { font-size:15px; line-height:1.5; margin:0 0 10px; font-weight:600; }
 .training-sidebar p { font-size:13px; line-height:1.75; color:var(--bw-text-secondary); margin:0 0 12px; }
@@ -120,6 +127,12 @@
 .cv-match-state { max-width:210px; text-align:right; }
 .cv-upload-link { display:inline-block; max-width:160px; color:var(--bw-primary); font-size:12px; line-height:1.5; text-underline-offset:3px; }
 .cv-preview-note { margin:0 0 16px; font-size:12px; color:var(--bw-text-muted); line-height:1.6; }
+.application-cv { margin:20px 0;padding:18px;border:1px solid var(--bw-border);border-radius:12px;background:var(--bw-bg-alt); }
+.application-cv label { display:block;font-weight:600;margin-bottom:8px; }
+.application-cv p,.application-cv small { font-size:12px;color:var(--bw-text-muted);line-height:1.7; }
+.application-cv input { display:block;width:100%;min-width:0;font:inherit;font-size:13px;color:var(--bw-text);margin:16px 0; }
+.application-cv input::file-selector-button { padding:10px 12px;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-surface);color:var(--bw-primary);margin-right:10px;cursor:pointer; }
+.application-cv input[aria-invalid="true"] { outline:2px solid var(--bw-danger);outline-offset:3px; }
 .cv-match-state [hidden], .cv-preview-note[hidden] { display:none !important; }
 .internship-intro { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:20px; }
 #acceptedInternshipNotice { display:inline-flex; align-items:center; gap:6px; flex-shrink:0; font-size:12px; color:var(--bw-text-muted); }
@@ -136,3 +149,28 @@
 @media (max-width:900px) {
   .internship-intro { align-items:flex-start; flex-direction:column; gap:8px; }
 }
+
+.profile-applications { margin:0; scroll-margin-top:24px; }
+.student-meeting { padding:24px;margin-bottom:22px;border:1px solid var(--bw-border);border-radius:14px;background:var(--bw-surface); }
+.student-meeting-heading { display:flex;gap:14px;align-items:center; }
+.student-meeting-heading > i { display:grid;place-items:center;width:44px;height:44px;border-radius:12px;color:var(--bw-primary);background:var(--bw-primary-light);font-size:20px; }
+.student-meeting-heading span { font-size:10px;letter-spacing:.08em;color:var(--bw-primary); }
+.student-meeting-heading h2 { margin:5px 0!important; }
+.student-meeting p { font-size:12px;line-height:1.8;color:var(--bw-text-muted); }
+.student-meeting label { display:block;font-size:13px;font-weight:500;color:var(--bw-text);margin:16px 0 8px; }
+.student-meeting form > div { display:flex;gap:10px;flex-wrap:wrap; }
+.student-meeting input { flex:1;min-width:180px;border:1px solid var(--bw-border);border-radius:8px;padding:12px;font:inherit;font-size:13px;background:var(--bw-bg-alt);color:var(--bw-text); }
+.student-meeting input[aria-invalid="true"] { border-color:var(--bw-danger); }
+.student-meeting button,.student-meeting a { min-height:44px; }
+.student-meeting [hidden] { display:none!important; }
+.student-meeting-top { display:flex;align-items:center;justify-content:space-between;gap:20px; }
+.student-meeting-top #studentMeetingJoin { flex-shrink:0;background:var(--bw-primary);color:#fff;border-color:var(--bw-primary);padding:12px 18px; }
+.student-meeting-heading > i { flex-shrink:0; }
+.student-meeting .student-meeting-heading p { margin:0;color:var(--bw-text-secondary);font-size:14px; }
+.student-meeting .student-meeting-note { margin:18px 0 0;padding-top:14px;border-top:1px solid var(--bw-border);font-size:13px;color:var(--bw-text-secondary); }
+@media(max-width:650px) { .student-meeting-top { align-items:flex-start;flex-direction:column;gap:14px; } .student-meeting-top #studentMeetingJoin { width:100%;justify-content:center; } }
+.profile-applications h2 { margin:0; font-size:16px; color:var(--bw-text); }
+.profile-applications td:first-child, .profile-applications td:nth-child(2) { font-weight:500; }
+
+#page-student-dashboard .profile-applications :is(a,button,input):focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
+

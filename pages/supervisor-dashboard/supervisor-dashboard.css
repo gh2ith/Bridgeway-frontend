@@ -1,3 +1,21 @@
+/* Compact title row: institution belongs to the workspace bar. */
+#page-supervisor-dashboard .bw-company-content { gap:22px; }
+#page-supervisor-dashboard .company-topbar { position:static!important;width:auto;min-height:54px;padding:0 0 16px; }
+.supervisor-workspace-identity { display:grid;gap:5px;min-width:0; }
+.supervisor-workspace-identity strong { font-size:13px;font-weight:600;color:var(--bw-text); }
+.supervisor-workspace-identity span { font-size:11px;line-height:1.5;color:var(--bw-text-muted); }
+#page-supervisor-dashboard .supervisor-page-heading { display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap; }
+#page-supervisor-dashboard .supervisor-page-heading .bw-title { margin:0;font-size:26px;line-height:1.3;letter-spacing:-.035em; }
+.supervisor-heading-tools { margin-left:auto; }
+#page-supervisor-dashboard .supervisor-heading-tools .bw-arrange-bar { margin:0; }
+#page-supervisor-dashboard .supervisor-heading-tools .bw-arrange-hint { display:none; }
+#page-supervisor-dashboard .bw-arrange-toggle[aria-pressed="false"] { width:44px;padding:0;font-size:0;border-radius:10px; }
+#page-supervisor-dashboard .bw-arrange-toggle[aria-pressed="false"]::before { content:'⠿';font-size:24px;line-height:1; }
+@media(max-width:600px) {
+  #page-supervisor-dashboard .supervisor-page-heading .bw-title { font-size:23px; }
+  .supervisor-workspace-identity { max-width:58%; }
+  #page-supervisor-dashboard .supervisor-heading-tools .bw-arrange-actions { width:auto; }
+}
 .supervisor-evaluations { display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,2fr);gap:24px;align-items:start; }
 .supervisor-selection-prompt { display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:340px;padding:32px;border:1px dashed var(--bw-border);border-radius:12px;text-align:center;color:var(--bw-text-secondary); }
 .supervisor-selection-prompt > i { font-size:28px;color:var(--bw-text-muted);margin-bottom:18px; }
@@ -43,6 +61,51 @@
   .evaluation-detail-heading { flex-direction:column; }
   .evaluation-metadata { grid-template-columns:1fr; }
   .company-workspace .evaluation-score-table td,.company-workspace .evaluation-score-table th { padding:12px 8px;font-size:12px; }
+}
+
+/* A single reading canvas instead of a stack of separate panels. */
+#supervisorReportDetail { background:var(--bw-surface);border:1px solid var(--bw-border);border-radius:16px;padding:28px 32px; }
+#supervisorReportDetail > .supervisor-change-student { display:block;margin:0 0 20px auto;padding:6px 0;border:0;border-radius:4px;min-height:44px;color:var(--bw-primary);background:transparent; }
+#supervisorReportDetail > .supervisor-change-student::before { content:'← '; }
+#page-supervisor-dashboard #supervisorReportDetail > .bw-card-panel { border:1px solid var(--bw-border);box-shadow:none;border-radius:14px; }
+#page-supervisor-dashboard #supervisorReportDetail > .report-week-tracker { padding:0;margin-bottom:24px;border:0; }
+#page-supervisor-dashboard .report-week-tracker [data-style="s38"] { font-size:14px;text-transform:none;letter-spacing:0;color:var(--bw-text); }
+#page-supervisor-dashboard #curriculumTimelineGrid { display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:0;padding-top:8px; }
+#curriculumTimelineGrid .report-week { padding:8px 4px;text-align:center;position:relative;background:transparent;border:0; }
+#curriculumTimelineGrid .report-week:not(:last-child)::before { content:'';position:absolute;left:50%;top:25px;width:100%;height:2px;background:var(--bw-border); }
+#curriculumTimelineGrid .report-week strong { position:relative;display:grid;place-items:center;width:34px;height:34px;margin:0 auto 10px;font-size:13px;font-weight:600;color:var(--bw-text-secondary);border:1px solid var(--bw-border);border-radius:50%;background:var(--bw-surface); }
+#curriculumTimelineGrid .report-week span { display:block;font-size:11px;line-height:1.5;color:var(--bw-text-secondary); }
+#curriculumTimelineGrid .report-week small { display:block;margin-top:3px;font-size:11px;color:var(--bw-text-secondary); }
+#curriculumTimelineGrid .is-verified strong { background:var(--bw-success-light);border-color:var(--bw-success);color:var(--bw-text); }
+#curriculumTimelineGrid .is-review strong { background:var(--bw-primary);border-color:var(--bw-primary);color:white;box-shadow:0 0 0 4px var(--bw-primary-light); }
+#curriculumTimelineGrid .is-review span { color:var(--bw-primary);font-weight:600; }
+#page-supervisor-dashboard #supervisorReportDetail > .report-student-summary { background:transparent;border:0;border-top:1px solid var(--bw-border);border-bottom:1px solid var(--bw-border);border-radius:0;padding:20px 0;margin:0; }
+#page-supervisor-dashboard .report-student-summary [data-style="s27"] { gap:18px; }
+#page-supervisor-dashboard .report-student-summary [data-style="s30"] { font-size:18px;letter-spacing:-.02em; }
+#page-supervisor-dashboard .report-student-summary [data-style="s35"] { font-size:19px; }
+#page-supervisor-dashboard .report-student-summary [data-style="s32"] { gap:14px; }
+#page-supervisor-dashboard #supervisorReportDetail > .report-document { padding:24px 0 0;border:0; }
+#page-supervisor-dashboard .report-document .bw-card-panel-header { align-items:flex-start;gap:16px;margin-bottom:24px;padding-bottom:0;border:0; }
+#activeStudentWeekBadge { display:none; }
+#page-supervisor-dashboard .report-document [data-style="s49"] { font-size:19px;line-height:1.5; }
+#page-supervisor-dashboard .report-document .bw-form-group { margin-bottom:28px; }
+#page-supervisor-dashboard .report-document .bw-form-label { font-size:13px;font-weight:600;line-height:1.5;margin:0 0 10px; }
+#page-supervisor-dashboard #reportDeliverablesText { padding:0;background:transparent;border:0;max-width:78ch;font-size:14px;line-height:1.8; }
+#page-supervisor-dashboard #reportTechContainer { gap:8px; }
+#page-supervisor-dashboard #reportTechContainer .bw-badge { padding:6px 10px;background:var(--bw-bg-alt);border-color:var(--bw-border);color:var(--bw-text-secondary); }
+#page-supervisor-dashboard #supervisorFeedback { min-height:105px;font-size:14px;line-height:1.7;border-radius:8px;padding:14px; }
+#page-supervisor-dashboard .report-document [data-style="s53"] { border-top:1px solid var(--bw-border);padding-top:20px;gap:12px; }
+#page-supervisor-dashboard .report-document [data-style="s53"] button { min-height:44px;padding:12px 18px;border-radius:8px;font-size:13px; }
+@media(max-width:600px) {
+  #supervisorReportDetail { padding:18px; }
+  #page-supervisor-dashboard #curriculumTimelineGrid { grid-template-columns:repeat(4,minmax(0,1fr));row-gap:16px; }
+  #curriculumTimelineGrid .report-week:nth-child(4)::before { display:none; }
+  #page-supervisor-dashboard .report-student-summary [data-style="s27"] { flex-direction:column;align-items:stretch; }
+  #page-supervisor-dashboard .report-student-summary [data-style="s32"] { justify-content:space-between; }
+  #page-supervisor-dashboard .report-student-summary [data-style="s33"] { text-align:left; }
+  #page-supervisor-dashboard .report-document { padding:20px; }
+  #page-supervisor-dashboard .report-document .bw-card-panel-header { flex-direction:column; }
+  #page-supervisor-dashboard .report-document [data-style="s53"] { flex-wrap:wrap; }
 }
 /* Page presentation, deduplicated from former inline styles. */ #page-supervisor-dashboard [data-style="s1"] { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 #page-supervisor-dashboard [data-style="s2"] { font-size: 0.82rem; padding: 6px 14px; }
@@ -113,3 +176,36 @@
 #page-supervisor-dashboard [data-style="s67"] { font-family: var(--bw-font-head); font-size: 1.5rem; font-weight: 800; color: var(--bw-success); }
 #page-supervisor-dashboard [data-style="s68"] { font-size: 0.85rem; color: var(--bw-text); margin-bottom: 0.75rem; }
 #page-supervisor-dashboard [data-style="s69"] { width: auto; background: var(--bw-amber); color: #000; font-weight: 700; }
+
+/* A scannable roster: identity opens the record, one action opens reports. */
+#supervisedStudentsTable { table-layout:fixed;width:100%;min-width:0; }
+#supervisedStudentsTable th:nth-child(1) { width:22%; }
+#supervisedStudentsTable th:nth-child(2) { width:16%; }
+#supervisedStudentsTable th:nth-child(3) { width:23%; }
+#supervisedStudentsTable th:nth-child(4) { width:18%; }
+#supervisedStudentsTable th:nth-child(5) { width:10%; }
+#supervisedStudentsTable th:nth-child(6) { width:11%; }
+#supervisedStudentsTable :is(th,td) { white-space:normal;overflow-wrap:normal;padding:20px 14px;vertical-align:middle; }
+#page-supervisor-dashboard #supervisedStudentsTable [data-style="s16"] { min-width:0; }
+#supervisedStudentsTable [data-style="s8"] { gap:12px;align-items:center; }
+#supervisedStudentsTable [data-style="s8"] > div:last-child { min-width:0; }
+#supervisedStudentsTable .bw-user-avatar { width:40px;height:40px;flex:0 0 40px;margin:0;box-shadow:none; }
+#supervisedStudentsTable .bw-record-name { display:block;padding:0;min-height:44px;font:600 14px/1.5 var(--bw-font-body);color:var(--bw-text); }
+#supervisedStudentsTable .bw-record-name:hover { color:var(--bw-primary);text-decoration:underline;text-underline-offset:4px; }
+#page-supervisor-dashboard #supervisedStudentsTable [data-style="s11"] { font:12px/1.6 var(--bw-font-body);white-space:nowrap; }
+#supervisedStudentsTable .roster-hours { font-size:12px;line-height:1.6;color:var(--bw-text-secondary);margin-top:8px; }
+#supervisedStudentsTable .bw-btn-mini { display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-surface);color:var(--bw-primary);font:500 12px/1.4 var(--bw-font-body);cursor:pointer; }
+#supervisedStudentsTable .bw-badge { font-size:11px;line-height:1.5;white-space:normal;padding:5px 8px; }
+#supervisedStudentsTable :is(.bw-btn-mini,.bw-record-name):focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
+@media(max-width:1200px) {
+  #supervisedStudentsTable:not(.bw-reading-record) thead { display:none; }
+  #supervisedStudentsTable:not(.bw-reading-record) tbody { display:block; }
+  #supervisedStudentsTable:not(.bw-reading-record) tbody tr { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:22px 0;border-bottom:1px solid var(--bw-border); }
+  #supervisedStudentsTable:not(.bw-reading-record) td { display:block;width:auto;min-width:0;padding:0;border:0; }
+  #supervisedStudentsTable:not(.bw-reading-record) td:first-child { grid-column:1/-1; }
+  #supervisedStudentsTable:not(.bw-reading-record) td:not(:first-child)::before { content:attr(data-record-label);display:block;font-size:11px;color:var(--bw-text-secondary);margin-bottom:8px; }
+}
+@media(max-width:550px) {
+  #supervisedStudentsTable.bw-reading-record .bw-record-expanded { grid-template-columns:minmax(0,1fr); }
+  #page-supervisor-dashboard #tab-roster [data-style="s7"] { width:100%; }
+}

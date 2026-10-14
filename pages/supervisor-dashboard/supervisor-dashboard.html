@@ -16,9 +16,11 @@
   <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=9">
 
-<link rel="stylesheet" href="supervisor-dashboard.css?v=2">
+<link rel="stylesheet" href="supervisor-dashboard.css?v=6">
+  <link rel="stylesheet" href="../../shared/css/evaluation-radar.css?v=1">
+  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=3">
   <link rel="stylesheet" href="../../shared/css/interactions.css">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="supervisor" id="page-supervisor-dashboard">
@@ -77,20 +79,12 @@
 
         </button></nav></div><div class="bw-masar-bottom-group"><div class="bw-masar-divider"></div><div class="bw-masar-bottom"><a class="bw-masar-link" href="../account-settings/account-settings.html?role=supervisor"><i class="bi bi-person-circle" aria-hidden="true"></i><span>Account</span></a><button type="button" class="bw-masar-link bw-masar-btn-link" id="bwThemeToggle"><i class="bi bi-moon-stars" id="bwThemeIcon" aria-hidden="true"></i><span id="bwThemeText">Dark Mode</span></button><a class="bw-masar-link" href="../login/login.html"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></a></div></div></aside><main class="bw-company-content bw-main-content"><header class="company-topbar"><div class="company-breadcrumb">Workspace <span>/</span> <strong id="portalRoleLabel">Supervisor</strong></div><div class="company-account-wrap"><button type="button" class="company-account" id="portalAccountToggle" aria-expanded="false" aria-controls="portalAccountDropdown" aria-label="Account options"><span class="company-monogram" id="portalInitials">DA</span><span id="portalAccountName">Dr. Ahmad</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><nav class="company-account-dropdown" id="portalAccountDropdown" aria-label="Account options" hidden><a href="../account-settings/account-settings.html?role=supervisor" data-portal-profile>Account profile</a><a href="../login/login.html" class="company-account-logout">Logout</a></nav></div></header>
 
-    <section class="bw-page-header">
-      <div data-style="s1">
-        <div>
-          <span class="bw-eyebrow">Department of Software Engineering • Al-Balqa Applied University</span>
-          <h1 class="bw-title">Academic Supervisor Dashboard</h1>
-          <p class="bw-subtitle">Monitor assigned undergraduate interns, verify 8-week curriculum reports, and endorse official 3.0 degree audit credits.</p>
-        </div>
-        <div class="bw-badge bw-badge-blue" data-style="s2">
-          <i class="bi bi-mortarboard-fill"></i> Term: Fall 2026 (8-Wk Cycle)
-        </div>
-      </div>
+    <section class="bw-page-header supervisor-page-heading" aria-label="Page heading">
+      <h1 class="bw-title">My students</h1>
+      <div id="supervisorHeadingTools" class="supervisor-heading-tools"></div>
     </section>
 
-    <section class="bw-kpi-grid">
+    <section class="bw-kpi-grid" data-arrange-toolbar="#supervisorHeadingTools">
       <div class="bw-kpi-card" data-style="s3" data-onclick="switchTab-tab-roster-1">
         <div class="bw-kpi-icon icon--blue">
           <i class="bi bi-people-fill"></i>
@@ -168,8 +162,7 @@
                   <th>Student</th>
                   <th>Department &amp; GPA</th>
                   <th>Host Company &amp; Mentor</th>
-                  <th>Curriculum Progress</th>
-                  <th>Hours Logged</th>
+                  <th>Training progress</th>
                   <th>Standing</th>
                   <th>Action</th>
                 </tr>
@@ -198,16 +191,14 @@
                     <div class="bw-progress-track">
                       <div class="bw-progress-fill" data-style="s18"></div>
                     </div>
-                  </td>
-                  <td>
-                    <span data-style="s14" data-presentation="font-weight font-weight-700">240h / 320h</span>
+                    <div class="roster-hours">240 / 320 hours</div>
                   </td>
                   <td>
                     <span class="bw-badge bw-badge-amber"><i class="bi bi-clock-history me-1"></i>Review W6</span>
                   </td>
                   <td>
                     <button type="button" class="bw-btn-mini" data-onclick="reviewStudentReport-GA-3">
-                      <i class="bi bi-search me-1"></i> Review Report
+                      Weekly reports
                     </button>
                   </td>
                 </tr>
@@ -235,16 +226,14 @@
                     <div class="bw-progress-track">
                       <div class="bw-progress-fill" data-style="s21"></div>
                     </div>
+                    <div class="roster-hours">320 / 320 hours</div>
                   </td>
                   <td>
-                    <span data-style="s22" data-presentation="font-weight font-weight-700">320h / 320h</span>
+                    <span class="bw-badge bw-badge-success"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
                   </td>
                   <td>
-                    <span class="bw-badge bw-badge-success"><i class="bi bi-patch-check-fill me-1"></i>Endorsed</span>
-                  </td>
-                  <td>
-                    <button type="button" class="bw-btn-mini" data-onclick="switchTab-tab-endorsement-4">
-                      <i class="bi bi-award me-1"></i> View evaluation
+                    <button type="button" class="bw-btn-mini" data-onclick="reviewStudentReport-SA-5">
+                      Weekly reports
                     </button>
                   </td>
                 </tr>
@@ -266,7 +255,7 @@
           <section class="supervisor-selection-prompt" id="supervisorReportPrompt"><i class="bi bi-journal-text" aria-hidden="true"></i><h2>Select a student</h2><p>Choose an assigned student to review their weekly reports, training hours, and submitted work.</p></section>
           <div id="supervisorReportDetail" hidden>
             <button type="button" class="supervisor-change-student" id="clearSupervisorReport">Change student</button>
-        <div class="bw-card-panel" data-style="s26">
+        <div class="bw-card-panel report-student-summary" data-style="s26">
           <div data-style="s27">
             <div data-style="s28">
               <div class="bw-avatar-large" data-style="s29" id="activeStudentAvatar">GA</div>
@@ -292,14 +281,14 @@
           </div>
         </div>
 
-        <div class="bw-card-panel" data-style="s36">
+        <div class="bw-card-panel report-week-tracker" data-style="s36">
           <div data-style="s37">
             <span data-style="s38" data-presentation="font-weight font-weight-700">
-              <i class="bi bi-calendar3 me-1"></i> 8-Week Curriculum Verification Timeline
+              Training weeks
             </span>
             <span data-style="s13" id="timelineCurriculumSummary">6 of 8 Weeks Submitted (75%)</span>
           </div>
-          <div data-style="s39" data-presentation="grid grid-template-columns" id="curriculumTimelineGrid">
+          <div data-style="s39" id="curriculumTimelineGrid">
             <div data-style="s40">
               <div data-style="s41" data-presentation="font-weight font-weight-800">W1</div>
               <div data-style="s42"><i class="bi bi-check-circle-fill"></i> 40h</div>
@@ -335,7 +324,7 @@
           </div>
         </div>
 
-        <div class="bw-card-panel" data-style="s48">
+        <div class="bw-card-panel report-document" data-style="s48">
           <div class="bw-card-panel-header">
             <div>
               <div data-style="s49" data-presentation="font-weight font-weight-800" id="reportWeekHeading">
@@ -351,14 +340,14 @@
           </div>
 
           <div class="bw-form-group">
-            <label class="bw-form-label">Technical Tasks &amp; Project Deliverables Completed:</label>
+            <h3 class="bw-form-label">Work completed</h3>
             <div id="reportDeliverablesText" data-style="s51">
               Developed RESTful API endpoints for internship candidate evaluation using ASP.NET Core Web API. Implemented custom authorization filters, FluentValidation validators, and Entity Framework Core migrations for PostgreSQL. Wrote comprehensive xUnit integration tests.
             </div>
           </div>
 
           <div class="bw-form-group">
-            <label class="bw-form-label">Technologies &amp; Frameworks Applied:</label>
+            <h3 class="bw-form-label">Tools and technologies</h3>
             <div id="reportTechContainer" data-style="s52">
               <span class="bw-badge bw-badge-blue">C# 12</span>
               <span class="bw-badge bw-badge-blue">ASP.NET Core Web API</span>
@@ -370,8 +359,7 @@
 
           <div class="bw-form-group">
             <label class="bw-form-label" for="supervisorFeedback">
-              <span>Faculty Academic Feedback / Endorsement Notes</span>
-              <small>Dispatched to student portal</small>
+              <span>Academic feedback</span>
             </label>
             <textarea id="supervisorFeedback" class="bw-textarea" placeholder="Enter academic feedback or comments regarding this submission...">Deliverables verified. Architecture demonstrates clean adherence to repository pattern and separation of concerns.</textarea>
           </div>
@@ -381,7 +369,7 @@
               <i class="bi bi-arrow-counterclockwise"></i> Request Revision
             </button>
             <button type="button" class="bw-btn-block bw-btn-primary" data-style="s54" id="approveWeekBtn">
-              <i class="bi bi-check2-all"></i> Approve &amp; Verify Week 6 (40.0 Hours)
+              <i class="bi bi-check2-all" aria-hidden="true"></i> Verify training hours
             </button>
           </div>
         </div>
@@ -400,11 +388,11 @@
 <section class="supervisor-selection-prompt" id="supervisorEvaluationPrompt"><i class="bi bi-clipboard-check" aria-hidden="true"></i><h2>Select a student</h2><p>Choose an assigned student to view their company’s end-of-term evaluation. Evaluations are read-only.</p></section>
 <section class="bw-card-panel evaluation-detail" aria-labelledby="supervisorEvaluationName" hidden>
 <button type="button" class="supervisor-change-student" id="clearSupervisorEvaluation">Change student</button>
-<div class="evaluation-detail-heading"><div><p class="portal-muted">Fall 2026 / Company evaluation</p><h2 id="supervisorEvaluationName"></h2><p id="supervisorEvaluationIdentity" class="portal-muted"></p></div><span id="supervisorEvaluationStatus" class="bw-badge"></span></div>
+<div class="evaluation-detail-heading"><div><p class="portal-muted">Company evaluation</p><h2 id="supervisorEvaluationName"></h2><p id="supervisorEvaluationIdentity" class="portal-muted"></p></div><span id="supervisorEvaluationStatus" class="bw-badge"></span></div>
 <p class="evaluation-readonly">Read-only view of the host company's assessment.</p>
 <div id="supervisorEvaluationPending" class="evaluation-pending" hidden><i class="bi bi-hourglass-split" aria-hidden="true"></i><h3>Evaluation not submitted</h3><p>The host company has not submitted this student's end-of-term evaluation yet. Scores and comments will appear here after submission.</p></div>
 <div id="supervisorEvaluationSubmitted"><dl class="evaluation-metadata"><div><dt>Host company</dt><dd id="supervisorEvaluationCompany"></dd></div><div><dt>Evaluated by</dt><dd id="supervisorEvaluationMentor"></dd></div><div><dt>Submitted</dt><dd id="supervisorEvaluationDate"></dd></div><div><dt>Overall score</dt><dd id="supervisorEvaluationScore"></dd></div></dl>
-<h3>Assessment scores</h3><p class="portal-muted">Each criterion is rated from 1 (Weak) to 5 (Excellent).</p><div class="bw-table-responsive"><table class="bw-table evaluation-score-table"><thead><tr><th scope="col">Criterion</th><th scope="col">Score</th><th scope="col">Rating</th></tr></thead><tbody id="supervisorEvaluationScores"></tbody></table></div>
+<div class="evaluation-radar-workspace"><div id="supervisorEvaluationRadar"></div><div><h3>Assessment scores</h3><p class="portal-muted">Each criterion is rated from 1 (Weak) to 5 (Excellent).</p><div class="bw-table-responsive"><table class="bw-table evaluation-score-table"><thead><tr><th scope="col">Criterion</th><th scope="col">Score</th><th scope="col">Rating</th></tr></thead><tbody id="supervisorEvaluationScores"></tbody></table></div></div></div>
 <h3>Company comments</h3><p id="supervisorEvaluationComments" class="evaluation-comments"></p></div>
 <p class="portal-muted evaluation-demo-note">Fixed sample data for this frontend preview.</p></section></div></section>
     </section>
@@ -444,10 +432,6 @@
             <div data-style="s63" data-presentation="font-weight font-weight-700">College</div>
             <div data-style="s64" data-presentation="font-weight">Prince Abdullah Ben Ghazi Faculty of IT</div>
           </div>
-          <div data-style="s62">
-            <div data-style="s63" data-presentation="font-weight font-weight-700">Academic Term</div>
-            <div data-style="s64" data-presentation="font-weight">Fall Semester 2026</div>
-          </div>
         </div>
 
         <div data-style="s65" data-presentation="grid grid-template-columns">
@@ -481,28 +465,30 @@
       </div>
       <div class="bw-modal-body">
         <p data-style="s68">
-          Provide academic feedback notes detailing what the intern and mentor need to revise in Week 6:
+          Describe what needs to change in the selected student's weekly report:
         </p>
         <div class="bw-form-group">
           <label class="bw-form-label" for="revisionNotesInput">Revision Notes &amp; Specific Changes Required *</label>
-          <textarea id="revisionNotesInput" class="bw-textarea" placeholder="Detail the required changes (e.g. elaborate on query optimizations and include xUnit integration test coverage metrics)...">Please elaborate on EF Core query optimization and include xUnit test coverage metrics before academic endorsement.</textarea>
+          <textarea id="revisionNotesInput" class="bw-textarea" required placeholder="Describe the changes needed before the training hours can be verified."></textarea>
         </div>
       </div>
       <div class="bw-modal-footer">
         <button type="button" class="bw-btn-block bw-btn-outline" data-style="s54" data-close-modal="requestRevisionModal">Cancel</button>
         <button type="button" class="bw-btn-block" id="confirmRevisionModalBtn" data-style="s69" data-presentation="font-weight font-weight-700">
-          <i class="bi bi-send me-1"></i> Send Revision Request
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Preview revision request
         </button>
       </div>
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=3"></script>
+  <script src="../../shared/js/portal.js?v=19"></script>
 
   <script src="../../shared/js/navigation.js"></script>
-  <script src="supervisor-dashboard.js?v=2"></script>
+  <script src="../../shared/js/evaluation-radar.js?v=1"></script>
+  <script src="supervisor-dashboard.js?v=7"></script>
 <script src="../../shared/js/enhancements.js"></script>
 
   <script src="../../shared/js/interactions.js"></script>
+  <script src="../../shared/js/portal-motion.js?v=3"></script>
 </body>
 </html>

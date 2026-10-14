@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     element.onclick = function(event) { window.switchTab('tab-approved') };
   });
   document.querySelectorAll('[data-onchange="showPortalToast--10"]').forEach(element => {
-    element.onchange = function(event) { showPortalToast('Supervisor assigned successfully!') };
+    element.onchange = function(event) { showPortalToast('Supervisor assignment changed in this preview only.') };
   });
   document.querySelectorAll('[data-onclick="openUnassignModal--11"]').forEach(element => {
     element.onclick = function(event) { openUnassignModal(1, 'Alice Johnson', 'Dr. John Smith') };

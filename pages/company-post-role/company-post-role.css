@@ -11,3 +11,7 @@
 #page-company-post-role [data-style="s11"] { margin-top: 1.5rem; background: var(--bw-bg-alt); }
 #page-company-post-role [data-style="s12"] { font-size: 0.85rem; font-weight: 700; color: var(--bw-text); margin-bottom: 0.35rem; }
 #page-company-post-role [data-style="s13"] { font-size: 13px; color: var(--bw-text-secondary); margin: 0; line-height: 1.4; }
+@media(max-width:650px) {
+  #page-company-post-role [data-style="s3"] { grid-template-columns:minmax(0,1fr); }
+  #page-company-post-role [data-style="s6"] { flex-wrap:wrap; }
+}

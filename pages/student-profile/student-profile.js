@@ -1,33 +1,28 @@
+const previewStudent = window.BridgewayStudent.current();
+if (previewStudent.id === 'lina') {
+  document.querySelector('.profile-avatar').textContent = 'LH';
+  document.querySelector('.profile-identity-copy h2').textContent = previewStudent.name;
+  document.querySelector('.profile-identity-copy span').textContent = 'Student ID ' + previewStudent.studentId;
+  document.querySelector('.profile-verified').textContent = 'Sample student';
+  document.getElementById('profileFullName').value = previewStudent.name;
+  document.getElementById('profilePhone').value = '';
+  document.getElementById('profileEmail').value = 'lina@bau.edu.jo';
+  document.getElementById('profileBio').value = '';
+  document.getElementById('profileGpa').textContent = previewStudent.gpa + ' / 4.00';
+  document.querySelector('.profile-academic > div:last-child dd').textContent = 'Not assigned · After company acceptance';
+}
 document.getElementById('studentProfileForm')?.addEventListener('submit', function(e) {
       e.preventDefault();
       showPortalToast('Profile validated in this preview. Changes are not saved.');
     });
 
-document.querySelectorAll('[data-withdraw-application]').forEach(button => {
-  button.addEventListener('click', () => {
-    const cells = button.closest('tr').cells;
-    window.openWithdrawModal(cells[1].textContent.trim(), cells[0].textContent.trim());
-  });
-});
-function showProfileView(focus = false) {
-  const applications = location.hash === '#my-applications';
-  document.getElementById('student-profile-details').hidden = applications;
-  const panel = document.getElementById('my-applications');
-  panel.hidden = !applications;
-  document.querySelector('main h1').textContent = applications ? 'My Applications' : 'Student Profile';
-  document.querySelector('.bw-subtitle').textContent = applications
-    ? 'Your internship applications and company decisions, all in one place.'
-    : 'Your details, academic record, and CV.';
-  document.querySelectorAll('[data-profile-view]').forEach(link => {
-    const active = link.dataset.profileView === (applications ? 'applications' : 'profile');
-    link.classList.toggle('is-active', active);
-    if (active) link.setAttribute('aria-current', 'page');
-    else link.removeAttribute('aria-current');
-  });
-  if (focus && applications) panel.focus({ preventScroll:true });
+// Old bookmarks now open the dashboard Applications view.
+function redirectLegacyApplications() {
+  if (location.hash === '#my-applications') location.replace(window.BridgewayStudent.url('../student-dashboard/student-dashboard.html#tab-applications'));
 }
-showProfileView();
-window.addEventListener('hashchange', () => showProfileView(true));
+redirectLegacyApplications();
+window.addEventListener('hashchange', redirectLegacyApplications);
+
 
 // Select a local file for the frontend preview; no file bytes leave the browser.
 const cvInput = document.getElementById('studentCvFile');

@@ -16,10 +16,11 @@
   <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=11">
 
   <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="student-dashboard.css?v=3">
+  <link rel="stylesheet" href="student-dashboard.css?v=8">
+  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=4">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="student" id="page-student-dashboard">
 
@@ -69,13 +70,15 @@
         </div><div class="portal-role-label">Student</div><nav class="bw-masar-nav"><button type="button" class="bw-masar-item bw-tab-btn is-active" data-tab="tab-opportunities">
           <i class="bi bi-briefcase-fill"></i><span>Available Internships</span>
           <span class="bw-tab-badge" id="tabBadgeOpportunities">6</span>
+        </button><button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-applications">
+          <i class="bi bi-send-check" aria-hidden="true"></i><span>My Applications</span>
         </button><button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-progress">
           <i class="bi bi-graph-up-arrow"></i><span>Training Progress</span>
           <span class="bw-tab-badge" id="tabBadgeProgress" data-style="s1">6/8 Wks</span>
         </button></nav></div><div class="bw-masar-bottom-group"><div class="bw-masar-divider"></div><div class="bw-masar-bottom"><a class="bw-masar-link" href="../student-profile/student-profile.html"><i class="bi bi-person-circle" aria-hidden="true"></i><span>Profile</span></a><button type="button" class="bw-masar-link bw-masar-btn-link" id="bwThemeToggle"><i class="bi bi-moon-stars" id="bwThemeIcon" aria-hidden="true"></i><span id="bwThemeText">Dark Mode</span></button><a class="bw-masar-link" href="../login/login.html"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></a></div></div></aside><main class="bw-company-content bw-main-content"><header class="company-topbar"><div class="company-breadcrumb">Workspace <span>/</span> <strong id="portalRoleLabel">Student</strong></div><div class="company-account-wrap"><button type="button" class="company-account" id="portalAccountToggle" aria-expanded="false" aria-controls="portalAccountDropdown" aria-label="Account options"><span class="company-monogram" id="portalInitials">GA</span><span id="portalAccountName">Ghaith Amourah</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><nav class="company-account-dropdown" id="portalAccountDropdown" aria-label="Account options" hidden><a href="../student-profile/student-profile.html" data-portal-profile>Account profile</a><a href="../login/login.html" class="company-account-logout">Logout</a></nav></div></header>
 
     <section class="bw-page-header" id="studentDashboardHeading">
-      <div><span class="bw-eyebrow">Academic Internship Management • Fall 2026</span>
+      <div><span class="bw-eyebrow">Academic Internship Management</span>
       <h1 class="bw-title">Student Dashboard</h1></div>
     </section>
 
@@ -87,7 +90,7 @@
         <div class="bw-kpi-info">
           <div class="bw-kpi-value" id="kpiOpenOpps">6</div>
           <div class="bw-kpi-label">Open Opportunities</div>
-          <div class="bw-kpi-desc">Curated for Software Eng</div>
+          <div class="bw-kpi-desc">From active college partners</div>
         </div>
       </div>
 
@@ -97,7 +100,7 @@
         </div>
         <div class="bw-kpi-info">
           <div class="bw-kpi-value" id="kpiApplicationsSent">2</div>
-          <div class="bw-kpi-label">Applications Sent</div>
+          <div class="bw-kpi-label">Active applications</div>
           <div class="bw-kpi-desc">1 pending application</div>
         </div>
       </div>
@@ -129,7 +132,6 @@
 
         <div class="bw-tab-panel is-active" id="tab-opportunities">
           <div class="internship-intro">
-            <p class="applications-lead">Explore internship opportunities below. To check your application status or past applications, visit <a href="../student-profile/student-profile.html#my-applications">My Applications</a>.</p>
             <span id="acceptedInternshipNotice" hidden><i class="bi bi-lock" aria-hidden="true"></i> Accepted internship · View-only</span>
           </div>
 
@@ -367,6 +369,90 @@
           </div>
         </div>
 
+        <div class="bw-tab-panel" id="tab-applications">
+        <section class="profile-applications" id="my-applications" tabindex="-1" aria-label="My Applications">
+          <section class="student-meeting" id="studentMeeting" aria-labelledby="studentMeetingTitle" hidden>
+            <div class="student-meeting-top"><div class="student-meeting-heading"><i class="bi bi-camera-video" aria-hidden="true"></i><div><span>COMPANY MEETING · SAMPLE</span><h2 id="studentMeetingTitle"></h2><p id="studentMeetingDetails"></p></div></div><a id="studentMeetingJoin" class="bw-tag-btn" target="_blank" rel="noopener noreferrer" hidden>Join Jitsi meeting <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div>
+            <p class="student-meeting-note">Try the meeting preview. This opens a real Jitsi room with camera and microphone initially muted. No invitation was sent; no company host is waiting. The host must sign in to start the room.</p>
+          </section>
+          <div class="bw-card-panel">
+            <div class="bw-card-panel-header">
+              <div class="bw-card-panel-title">
+                <i class="bi bi-send-check text-primary"></i>
+                <h2>My Applications</h2>
+              </div>
+              <span class="bw-badge bw-badge-blue">2 applications</span>
+            </div>
+
+            <div class="bw-table-responsive">
+              <table class="bw-table">
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>Position</th>
+                    <th>Location</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="studentApplicationsTable">
+                  <tr data-application-status="accepted">
+                    <td>
+                      <div>Tech Corp Inc.</div>
+                    </td>
+                    <td>
+                      <div>Software Engineering Intern</div>
+                    </td>
+                    <td>
+                      <span><i class="bi bi-geo-alt me-1"></i>Amman</span>
+                    </td>
+                    <td>
+                      <span>Nov 30, 2026</span>
+                    </td>
+                    <td>
+                      <span class="bw-badge bw-badge-success">
+                        <i class="bi bi-check-circle-fill me-1"></i>Accepted
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        <i class="bi bi-shield-check me-1"></i>Enrolled
+                      </span>
+                    </td>
+                  </tr>
+                  <tr data-application-status="pending">
+                    <td>
+                      <div>Nexus Cloud Systems</div>
+                    </td>
+                    <td>
+                      <div>Full-Stack .NET Developer Intern</div>
+                    </td>
+                    <td>
+                      <span><i class="bi bi-geo-alt me-1"></i>Amman</span>
+                    </td>
+                    <td>
+                      <span>Nov 30, 2026</span>
+                    </td>
+                    <td>
+                      <span class="bw-badge bw-badge-amber">
+                        <i class="bi bi-hourglass-split me-1"></i>Pending
+                      </span>
+                    </td>
+                    <td>
+                      <button type="button" class="bw-tag-btn text-danger" data-withdraw-application>
+                        <i class="bi bi-x-circle me-1"></i> Withdraw
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </section>
+        </div>
+
         <div class="bw-tab-panel" id="tab-progress">
           <section class="training-summary" aria-labelledby="trainingPlacementTitle">
             <div class="training-placement"><span class="training-eyebrow">INTERNSHIP LOGBOOK</span><h2 id="trainingPlacementTitle">Tech Corp Inc.</h2><p>Software Engineering Intern <span aria-hidden="true">/</span> 8-week placement</p></div>
@@ -423,15 +509,39 @@
               </details>
               </div>
             </section>
-            <aside class="training-sidebar" aria-label="Training review and evaluation">
-              <section class="training-review-panel"><span class="training-eyebrow">REVIEW STATUS</span><h2>One report in review</h2><p>Week 6 is submitted. Your logged hours are recorded; supervisor verification is still pending.</p><button type="button" class="training-text-button" data-training-week="6">Read week 6 <i class="bi bi-arrow-up-right" aria-hidden="true"></i></button></section>
-              <section class="training-evaluation" aria-labelledby="studentEvaluationTitle"><div class="training-aside-heading"><i class="bi bi-file-earmark-text" aria-hidden="true"></i><h2 id="studentEvaluationTitle">End-of-term evaluation</h2></div><span class="training-status training-status--upcoming">Not submitted</span><p>Tech Corp Inc. has not submitted your end-of-term evaluation yet.</p><div class="training-aside-foot">Available here after the company submits it.</div></section>
-              <div class="training-process-note"><i class="bi bi-info-circle" aria-hidden="true"></i><p>The host company records weekly reports. Your assigned supervisor reviews them.</p></div>
-            </aside>
           </div>
         </div>
     </section>
   </main></div>
+
+  <div class="bw-modal-backdrop" id="withdrawModal">
+    <div class="bw-modal-dialog">
+      <div class="bw-modal-header">
+        <div class="bw-modal-title">
+          <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+          <span>Withdraw Application</span>
+        </div>
+        <button type="button" class="bw-modal-close" data-close-modal="withdrawModal">&times;</button>
+      </div>
+      <div class="bw-modal-body">
+        <p>
+          Are you sure you want to withdraw your application for <strong id="withdrawModalRole">Cloud Operations &amp; DevOps Trainee</strong> at <strong id="withdrawModalCompany">Tech Corp Inc.</strong>?
+        </p>
+        <div>
+          <i class="bi bi-info-circle-fill me-1"></i>
+          This withdraws the pending application in this preview only. Your accepted internship is unchanged.
+        </div>
+      </div>
+      <div class="bw-modal-footer">
+        <button type="button" class="bw-btn-block bw-btn-outline" data-close-modal="withdrawModal">Cancel</button>
+        <button type="button" class="bw-btn-block bw-btn-primary" id="confirmWithdrawBtn">
+          <i class="bi bi-x-circle me-1"></i> Confirm Withdrawal
+        </button>
+      </div>
+    </div>
+  </div>
+
+
 
   <div class="bw-modal-backdrop" id="applyModal">
     <div class="bw-modal-dialog">
@@ -446,7 +556,7 @@
         <div data-style="s65">
           <div data-style="s66">
             <span data-style="s67" data-presentation="font-weight font-weight-700">Position</span>
-            <div data-style="s68" data-presentation="font-weight font-weight-700" id="applyModalTitle">Software Engineering Intern</div>
+            <div data-style="s68" data-presentation="font-weight font-weight-700" id="applyModalPosition">Software Engineering Intern</div>
           </div>
           <div data-style="s66">
             <span data-style="s67" data-presentation="font-weight font-weight-700">Company</span>
@@ -458,10 +568,17 @@
           </div>
         </div>
 
+        <section class="application-cv" aria-labelledby="applicationCvLabel">
+          <label id="applicationCvLabel" for="applicationCvFile">Application CV</label>
+          <p>Use your profile CV or choose a different file. PDF or DOCX, up to 5 MB.</p>
+          <input id="applicationCvFile" type="file" accept=".pdf,.docx" aria-describedby="applicationCvStatus">
+          <p id="applicationCvStatus" role="status">No CV selected.</p>
+          <small>Preview only: file contents are not uploaded, saved, or analyzed.</small>
+        </section>
         <div data-style="s71">
           <i class="bi bi-info-circle-fill" data-style="s72"></i>
           <small data-style="s73">
-            Your application is sent to the <strong data-style="s74">host company</strong>, which decides whether to accept or reject it. You can withdraw a pending application.
+            The <strong data-style="s74">host company</strong> decides whether to accept or reject applications. Confirming here creates a pending application in this preview only; nothing is sent.
           </small>
         </div>
       </div>
@@ -474,11 +591,12 @@
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=3"></script>
+  <script src="../../shared/js/portal.js?v=20"></script>
 
   <script src="../../shared/js/navigation.js"></script>
-  <script src="student-dashboard.js?v=3"></script>
-  <script src="../../shared/js/enhancements.js"></script>
+  <script src="student-dashboard.js?v=9"></script>
+  <script src="../../shared/js/portal-motion.js?v=4"></script>
+  <script src="../../shared/js/enhancements.js?v=8"></script>
 
   <script src="../../shared/js/interactions.js"></script>
 </body>

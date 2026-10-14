@@ -1,16 +1,19 @@
 /* Student profile: identity, editable details, and clearly separated records. */
+.student-preview-picker { display:grid; gap:6px; margin-top:12px; max-width:290px; color:var(--bw-text-muted); font-size:12px; }
+.student-preview-picker select { width:100%; min-height:44px; }
 #page-student-profile [hidden] { display:none !important; }
 #page-student-profile .bw-page-header { margin:0; }
 #page-student-profile .bw-subtitle { margin:0; }
 .student-profile-layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(300px,1fr); gap:24px; align-items:start; }
 .student-profile-layout > * { min-width:0; }
-.profile-identity { grid-column:1 / -1; display:flex; align-items:center; gap:18px; padding:22px 26px; border-bottom:1px solid var(--bw-border); }
+.profile-identity { grid-column:1 / -1; display:flex; align-items:center; gap:20px; padding:26px 28px; border:1px solid var(--bw-border);border-radius:16px;background:var(--bw-surface);box-shadow:0 4px 18px rgb(15 23 42 / .025); }
 .profile-avatar { width:64px; height:64px; flex-shrink:0; display:grid; place-items:center; border-radius:16px; background:var(--bw-primary-light); color:var(--bw-primary); font-size:22px; font-weight:600; }
-.profile-identity-copy h2 { margin:0 0 5px; font-size:22px; font-weight:600; letter-spacing:-.03em; color:var(--bw-text); }
+.profile-identity-copy h2 { margin:0 0 7px; font-size:26px; font-weight:600; letter-spacing:-.035em; color:var(--bw-text); }
 .profile-identity-copy p { margin:0 0 5px; font-size:13px; color:var(--bw-text-secondary); }
 .profile-identity-copy p span { margin:0 5px; }
 .profile-identity-copy > span { font-size:12px; color:var(--bw-text-muted); }
-.profile-verified { margin-left:auto; display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--bw-text-secondary); white-space:nowrap; }
+.profile-identity-meta { display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--bw-text-muted); }
+.profile-verified { display:inline-flex; align-items:center; gap:5px;padding:3px 8px;border-radius:6px;background:var(--bw-primary-light);font-size:11px; color:var(--bw-primary); white-space:nowrap; }
 .profile-verified i { color:var(--bw-primary); font-size:17px; }
 .profile-panel { background:var(--bw-surface); border:1px solid var(--bw-border); border-radius:12px; padding:24px; }
 .profile-panel-heading { margin-bottom:22px; }
@@ -61,16 +64,14 @@
 .profile-placement-meta strong { font-size:12px; font-weight:500; color:var(--bw-text); }
 .profile-placement-meta span { font-size:11px; color:var(--bw-text-muted); }
 .profile-placement > a { margin-left:20px; }
-.profile-applications { margin:0; scroll-margin-top:24px; }
-.profile-applications h2 { margin:0; font-size:16px; color:var(--bw-text); }
-.profile-applications td:first-child, .profile-applications td:nth-child(2) { font-weight:500; }
+
 #page-student-profile :is(input, textarea, a, button):focus-visible, .profile-applications:focus-visible { outline:2px solid var(--bw-primary); outline-offset:3px; }
 @media (max-width:1250px) {
   .student-profile-layout { grid-template-columns:1fr; }
   .profile-records { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media (max-width:700px) {
-  .profile-identity { padding:12px 0 20px; gap:12px; flex-wrap:wrap; }
+  .profile-identity { padding:20px; gap:14px; }
   .profile-identity-copy h2 { font-size:19px; }
   .profile-verified { margin-left:0; }
   .profile-fields, .profile-records { grid-template-columns:1fr; }
@@ -80,3 +81,10 @@
   .profile-placement-meta { margin-left:0; width:100%; }
   .profile-placement > a { margin-left:0; }
 }
+
+/* Let the person's identity lead the page instead of repeating a page title. */
+#page-student-profile .bw-page-header { position:absolute!important;width:1px;height:1px;padding:0!important;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+#page-student-profile .portal-workspace-identity { display:flex;align-items:center;max-width:none; }
+#page-student-profile .portal-workspace-identity strong { font-size:12px;font-weight:500;color:var(--bw-text-secondary); }
+#page-student-profile .portal-workspace-identity > span { display:none; }
+#page-student-profile .company-topbar { min-height:44px;padding-bottom:12px!important; }

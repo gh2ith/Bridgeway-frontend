@@ -15,10 +15,13 @@
   <link rel="stylesheet" href="../../shared/css/base.css">
   <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
 
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=8">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=11">
 
   <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="company-dashboard.css?v=10">
+  <link rel="stylesheet" href="company-dashboard.css?v=16">
+  <link rel="stylesheet" href="../../shared/css/evaluation-radar.css?v=2">
+  <link rel="stylesheet" href="../../shared/css/company-evaluation.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=2">
 </head>
 <body class="company-workspace" data-portal-role="company" id="page-company-dashboard">
 
@@ -83,6 +86,10 @@
           <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-candidates">
             <i class="bi bi-people-fill"></i>
             <span>Applications</span><span class="company-nav-count" id="companyApplicationCount">1</span>
+          </button>
+
+          <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-meetings">
+            <i class="bi bi-camera-video" aria-hidden="true"></i><span>Scheduled meetings</span><span class="company-nav-count" id="companyMeetingCount">1</span>
           </button>
 
           <button type="button" class="bw-masar-item bw-tab-btn" data-tab="tab-accepted-students">
@@ -207,8 +214,16 @@
         </div>
       </div>
 
+      <div class="bw-tab-panel" id="tab-meetings">
+        <section class="company-meetings-panel" aria-labelledby="scheduledMeetingsTitle">
+          <div class="company-section-heading"><div><h2 id="scheduledMeetingsTitle">Scheduled meetings</h2><p>Interviews and training check-ins, together in one place.</p></div></div>
+          <div id="companyScheduledMeetings" class="company-meetings-list"></div>
+          <p class="company-meetings-note">Local preview only. Schedules reset on reload and no invitations are sent. Sample rooms do not have a student waiting.</p>
+        </section>
+      </div>
+
       <div class="bw-tab-panel" id="tab-candidates">
-        <section class="applicants-workspace" aria-label="Student applications">
+        <section class="applicants-workspace" id="applicationsWorkspace" aria-label="Student applications">
           <div class="company-section-heading applicants-heading"><div><h2>Student applications</h2><p>Review pending applications and keep a record of past decisions.</p></div></div>
 
         <div class="applicants-toolbar">
@@ -316,6 +331,16 @@
             </tbody>
           </table>
         </div>
+        <section id="studentSpotlight" class="student-spotlight" aria-labelledby="spotlightName" hidden>
+          <div class="spotlight-topline"><span>APPLICATION REVIEW</span><button type="button" id="closeSpotlight" class="bw-tag-btn"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to applications</button></div>
+          <header class="spotlight-identity"><span id="spotlightAvatar" class="spotlight-avatar" aria-hidden="true"></span><div><h2 id="spotlightName" tabindex="-1"></h2><p id="spotlightCollege"></p></div><span id="spotlightStatus" class="bw-badge"></span></header>
+          <dl class="spotlight-facts"><div><dt>Student ID</dt><dd id="spotlightId"></dd></div><div><dt>Major</dt><dd id="spotlightMajor"></dd></div><div><dt>GPA</dt><dd id="spotlightGpa"></dd></div></dl>
+          <div class="spotlight-body">
+            <section class="spotlight-document" aria-labelledby="spotlightCvTitle"><div class="spotlight-section-title"><h3 id="spotlightCvTitle">CV preview</h3><span>Not attached</span></div><div class="spotlight-cv-empty"><i class="bi bi-file-earmark-text" aria-hidden="true"></i><h4>No CV available</h4><p>This sample applicant has no attached CV. There is no document to preview or download.</p><span>Applicant details are shown above.</span></div></section>
+            <section class="spotlight-opportunity" aria-labelledby="spotlightRole"><span class="spotlight-eyebrow">APPLIED OPPORTUNITY</span><h3 id="spotlightRole"></h3><p id="spotlightLocation"></p><div class="spotlight-divider"></div><h4>Listing requirements</h4><div id="spotlightSkills" class="listing-skills"></div><dl><div><dt>Application deadline</dt><dd id="spotlightDeadline"></dd></div><div><dt>Decision by</dt><dd>Host company</dd></div></dl><p class="spotlight-placement-note">After company acceptance, the college handles placement administration and assigns an academic supervisor.</p></section>
+          </div>
+          <footer class="spotlight-footer"><p>Preview only. Decisions reset on reload; nothing is sent or shared.</p><div><button type="button" id="spotlightMeeting" class="bw-tag-btn"><i class="bi bi-camera-video" aria-hidden="true"></i> Meeting</button><button type="button" id="spotlightReject" class="bw-tag-btn text-danger">Reject applicant</button><button type="button" id="spotlightAccept" class="company-primary">Accept applicant <i class="bi bi-arrow-right" aria-hidden="true"></i></button></div></footer>
+        </section>
         </section>
       </div>
 
@@ -396,213 +421,75 @@
       </div>
 
       <div class="bw-tab-panel" id="tab-final-evaluation">
-        <div class="evaluation-workspace">
-          <aside class="evaluation-student-picker" aria-label="Students to evaluate">
-            <h2>Students</h2><p>Select a student for the college’s end-of-term assessment.</p>
-            <label class="company-search"><i class="bi bi-search" aria-hidden="true"></i><input id="evaluationStudentSearch" type="search" placeholder="Search name, ID, or college" aria-label="Search students to evaluate"></label>
+        <div class="evaluation-workspace assessment-workspace">
+          <aside class="evaluation-student-picker assessment-directory" aria-label="Students to evaluate">
+            <div class="assessment-directory-heading"><i class="bi bi-people" aria-hidden="true"></i><h2>Your interns</h2></div>
+            <label class="company-search"><i class="bi bi-search" aria-hidden="true"></i><input id="evaluationStudentSearch" type="search" placeholder="Find an intern" aria-label="Search students to evaluate"></label>
             <div id="companyEvaluationStudents" class="company-student-list"></div>
             <select id="evaluationStudentSelect" hidden aria-label="Student to evaluate">
               <option value="alice" data-name="Alice Johnson" data-role="Frontend Developer Intern" data-gpa="3.50" data-status="4 of 8 weeks completed">Alice Johnson · 20220042</option>
               <option value="ghaith" data-name="Ghaith Amourah" data-role="Software Engineering Intern" data-gpa="3.75" data-status="6 of 8 weeks completed">Ghaith Amourah · 20220148</option>
-              <option value="omar" data-name="Omar Majed" data-role="Cybersecurity Intern" data-gpa="3.42" data-status="4 of 8 weeks completed">Omar Majed · 20220088</option>
             </select>
-            <p id="evaluationStudentEmpty" hidden>No matching students.</p>
+            <p id="evaluationStudentEmpty" hidden>No matching interns.</p>
           </aside>
-          <section id="companyEvaluationPrompt" class="company-selection-prompt"><i class="bi bi-clipboard-check" aria-hidden="true"></i><h2>Select a student</h2><p>Choose a student from the list to open their evaluation form.</p></section>
-          <div class="evaluation-form-area" hidden><button type="button" class="company-change-student" id="clearCompanyEvaluation">Change student</button><p id="evaluationCollege" class="company-student-college"></p>
-        <div class="bw-card-panel">
-          <div class="bw-card-panel-header">
-            <div>
-              <div data-style="s21" data-presentation="font-weight font-weight-800">
-                Evaluation form
+          <section id="companyEvaluationPrompt" class="assessment-empty company-selection-prompt"><i class="bi bi-radar" aria-hidden="true"></i><h2>A clear picture of their progress.</h2><p>Choose an intern to assess their work across the college’s eight criteria.</p></section>
+          <div class="evaluation-form-area" hidden>
+            <header class="assessment-header"><div><h2>End-of-term evaluation</h2><p>Your assessment of the internship.</p></div><button type="button" id="clearCompanyEvaluation" class="assessment-text-button">Change intern</button></header>
+            <section class="assessment-canvas" aria-label="Evaluation overview">
+              <div class="assessment-context">
+                <div class="assessment-person"><span id="assessmentStudentAvatar" class="assessment-avatar" aria-hidden="true">GA</span><div><h3 id="assessmentStudentName">Ghaith Amourah</h3><p id="assessmentStudentRole">Software Engineering Intern</p></div></div>
+                <p id="evaluationCollege" class="assessment-college"></p>
+                <p id="assessmentStudentProgress" class="assessment-training">6 of 8 weeks completed</p>
+                <span id="activeInternBadge" hidden></span>
+                <div class="assessment-score"><span>Overall score</span><div><strong id="rubricScoreTotal">0</strong><span>/ 40</span></div></div>
+                <div class="assessment-completion"><span id="rubricRatedCounterText">0 of 8 criteria rated</span><div class="bw-progress-track"><div class="bw-progress-fill" id="rubricRatedPercent" data-style="s23"></div></div></div>
               </div>
-              <div data-style="s9">
-                Complete the college-required assessment of the student’s internship performance.
+              <div id="companyEvaluationRadar"></div>
+            </section>
+            <section class="assessment-sheet" aria-labelledby="assessmentCriteriaTitle">
+              <header class="assessment-sheet-heading"><div><h3 id="assessmentCriteriaTitle">Assessment criteria</h3><p>Choose a rating from 1 to 5 for each criterion.</p></div><div class="assessment-sheet-tools"><button type="button" id="autoFillRubricBtn" data-onclick="autoFillRubricDemo--20" class="assessment-text-button" title="Fill sample ratings for demonstration">Fill sample</button><button type="button" id="resetRubricBtn" data-onclick="resetRubricRatings--21" class="assessment-text-button">Reset</button></div></header>
+              <div id="rubricCriteriaContainer">
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Performance Level</div><p class="bw-rubric-criterion-desc">Quality and consistency of the work delivered.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Sense of Responsibility</div><p class="bw-rubric-criterion-desc">Ownership, accountability, and reliability.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Accuracy in Execution</div><p class="bw-rubric-criterion-desc">Attention to detail, precision, and testing.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Attendance &amp; Punctuality</div><p class="bw-rubric-criterion-desc">Attendance, working hours, and punctuality.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Teamwork &amp; Collaboration</div><p class="bw-rubric-criterion-desc">Communication and contribution to the team.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Adaptability &amp; Flexibility</div><p class="bw-rubric-criterion-desc">Response to changing requirements and tools.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Speed of Learning</div><p class="bw-rubric-criterion-desc">Ability to learn and apply new concepts.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
+                <div class="bw-rubric-rating-row assessment-row">
+                  <div class="bw-rubric-criterion-info"><div class="bw-rubric-criterion-name">Curriculum Completion</div><p class="bw-rubric-criterion-desc">Completion of the assigned training deliverables.</p></div>
+                  <div class="bw-rubric-buttons"><button type="button" class="bw-scale-btn scale--1" data-val="1"><b>1</b><span>Weak</span></button><button type="button" class="bw-scale-btn scale--2" data-val="2"><b>2</b><span>Acceptable</span></button><button type="button" class="bw-scale-btn scale--3" data-val="3"><b>3</b><span>Good</span></button><button type="button" class="bw-scale-btn scale--4" data-val="4"><b>4</b><span>Very good</span></button><button type="button" class="bw-scale-btn scale--5" data-val="5"><b>5</b><span>Excellent</span></button></div>
+                </div>
               </div>
-            </div>
-            <div data-style="s22">
-              <span class="bw-badge bw-badge-success" id="activeInternBadge">Alice Johnson — 4 of 8 weeks completed</span>
-            </div>
-          </div>
-
-          <div class="bw-rubric-hud">
-            <div class="bw-hud-score-box">
-              <span class="bw-hud-score-label">Cumulative Score</span>
-              <div class="bw-hud-score-row">
-                <span class="bw-hud-score-val" id="rubricScoreTotal">0</span>
-                <span class="bw-hud-score-max">/ 40 pts</span>
-                <span class="bw-hud-grade-pill" id="rubricGradePill">Incomplete (0%)</span>
+            </section>
+            <section class="assessment-feedback" aria-labelledby="assessmentFeedbackTitle">
+              <div class="assessment-feedback-intro"><h3 id="assessmentFeedbackTitle">The story behind the scores</h3><p>Share what they did well and where they can grow.</p></div>
+              <div><label class="bw-form-label" for="evaluationComments">Mentor feedback</label><textarea id="evaluationComments" class="bw-textarea" placeholder="Describe contributions, strengths, and areas to develop…"></textarea>
+                <div class="assessment-prompts"><span>Start with</span><button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--22">Technical contribution</button><button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--23">Teamwork</button><button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--24">Recommendation</button></div>
               </div>
-            </div>
-
-            <div class="bw-hud-progress-wrap">
-              <div class="bw-hud-progress-info">
-                <span>Grading Progress</span>
-                <span id="rubricRatedCounterText">0 of 8 Dimensions Evaluated (0%)</span>
-              </div>
-              <div class="bw-progress-track">
-                <div class="bw-progress-fill" id="rubricRatedPercent" data-style="s23"></div>
-              </div>
-            </div>
-
-            <div class="bw-hud-tools">
-              <button type="button" class="bw-tag-btn" id="autoFillRubricBtn" data-onclick="autoFillRubricDemo--20" title="Auto-fill high performance ratings for demo preview">
-                <i class="bi bi-magic me-1"></i> Quick Fill (4–5)
-              </button>
-              <button type="button" class="bw-tag-btn text-muted" id="resetRubricBtn" data-onclick="resetRubricRatings--21" title="Reset all rubric ratings">
-                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-              </button>
-            </div>
-          </div>
-
-          <div data-style="s24" id="rubricCriteriaContainer">
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">1. Performance Level</div>
-                <div class="bw-rubric-criterion-desc">Work quality, consistency & deliverable standards</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">2. Sense of Responsibility</div>
-                <div class="bw-rubric-criterion-desc">Ownership, accountability & dependability for tasks</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">3. Accuracy in Execution</div>
-                <div class="bw-rubric-criterion-desc">Precision, attention to detail & thorough testing</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">4. Attendance & Punctuality</div>
-                <div class="bw-rubric-criterion-desc">Adherence to work hours, standups & team meetings</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">5. Teamwork & Collaboration</div>
-                <div class="bw-rubric-criterion-desc">Constructive communication & proactive team support</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">6. Adaptability & Flexibility</div>
-                <div class="bw-rubric-criterion-desc">Handling shifting project requirements & new frameworks</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">7. Speed of Learning</div>
-                <div class="bw-rubric-criterion-desc">Rapidly mastering new technologies and code repositories</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-
-            <div class="bw-rubric-rating-row">
-              <div class="bw-rubric-criterion-info">
-                <div class="bw-rubric-criterion-name">8. Curriculum Completion</div>
-                <div class="bw-rubric-criterion-desc">Full completion of 8-week assigned deliverables</div>
-              </div>
-              <div class="bw-rubric-buttons">
-                <button type="button" class="bw-scale-btn scale--1" data-val="1">1 Weak</button>
-                <button type="button" class="bw-scale-btn scale--2" data-val="2">2 Acceptable</button>
-                <button type="button" class="bw-scale-btn scale--3" data-val="3">3 Good</button>
-                <button type="button" class="bw-scale-btn scale--4" data-val="4">4 Very Good</button>
-                <button type="button" class="bw-scale-btn scale--5" data-val="5">5 Excellent</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="evaluationComments">
-              <span>Company Mentor Endorsements & Employment Recommendations</span>
-              <small>Submitted to Academic Faculty</small>
-            </label>
-            <textarea id="evaluationComments" class="bw-textarea" placeholder="Detail the student's primary achievements, work attitude, and recommendation for graduation or future employment..."></textarea>
-
-            <div class="bw-prompt-chips">
-              <span data-style="s25" data-presentation="font-weight font-weight-700">Insert Feedback Prompt:</span>
-              <button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--22">
-                + Exceptional Technical Velocity
-              </button>
-              <button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--23">
-                + Proactive Team Communicator
-              </button>
-              <button type="button" class="bw-prompt-chip" data-onclick="insertFeedbackText--24">
-                + Recommended for Full-Time Hire
-              </button>
-            </div>
-          </div>
-
-          <div data-style="s26">
-            <div data-style="s27">
-              <span data-style="s28" data-presentation="font-weight font-weight-700" id="rubricRatedCount">0 of 8 rated</span>
-              <div data-style="s9">
-                Score: <strong id="rubricFooterScore" data-style="s29">0 / 40</strong> (<span id="rubricFooterGrade">Incomplete</span>)
-              </div>
-            </div>
-            <button type="button" class="bw-btn-block bw-btn-outline" id="submitRubricBtn" data-style="s30" data-presentation="font-weight font-weight-700" disabled>
-              Complete All 8 Dimensions (0/8)
-            </button>
-          </div>
-        </div>
+            </section>
+            <footer class="assessment-footer"><div><strong id="rubricRatedCount">0 of 8 rated</strong><span>Score <b id="rubricFooterScore">0 / 40</b></span><small>Preview only. Nothing is submitted or sent.</small></div><button type="button" class="bw-btn-block bw-btn-outline" id="submitRubricBtn" disabled>Complete all 8 criteria</button></footer>
           </div>
         </div>
       </div>
@@ -641,43 +528,22 @@
       <div class="bw-modal-header">
         <div class="bw-modal-title">
           <i class="bi bi-camera-video-fill text-primary"></i>
-          <span>HR Meetings & Candidate Interviews</span>
+          <span>Student meeting</span>
         </div>
         <button type="button" class="bw-modal-close" data-close-modal="hrMeetingsModal">&times;</button>
       </div>
       <div class="bw-modal-body">
-        <div data-style="s36">
-          <div data-style="s37">
-            <div data-style="s38">
-              <span data-style="s28" data-presentation="font-weight font-weight-700">Technical Screening: Ghaith Al-Student</span>
-              <span class="bw-badge bw-badge-blue">Today • 2:00 PM</span>
-            </div>
-            <p data-style="s39">Video screening for Software Engineering Intern role with Engineering Lead.</p>
-            <div data-style="s40">
-              <a href="https://meet.google.com" target="_blank" rel="noopener noreferrer" class="bw-tag-btn" data-style="s41">
-                <i class="bi bi-camera-video me-1"></i> Launch Call
-              </a>
-              <button type="button" class="bw-tag-btn" data-onclick="showPortalToast--25" data-style="s42">
-                <i class="bi bi-bell me-1"></i> Send Ping
-              </button>
-            </div>
-          </div>
-
-          <div data-style="s37">
-            <div data-style="s38">
-              <span data-style="s28" data-presentation="font-weight font-weight-700">Faculty Midterm Review: Dr. Tariq Al-Husseini</span>
-              <span class="bw-badge bw-badge-amber">Tomorrow • 11:30 AM</span>
-            </div>
-            <p data-style="s39">Sync with BAU University Academic Supervisor regarding 8-week trainee milestones.</p>
-            <button type="button" class="bw-tag-btn" data-onclick="showPortalToast--26" data-style="s42">
-              <i class="bi bi-calendar-plus me-1"></i> Add to Calendar
-            </button>
-          </div>
-        </div>
-
-        <button type="button" class="bw-btn-block bw-btn-primary" data-onclick="showPortalToast--27">
-          <i class="bi bi-plus-lg me-1"></i> Schedule New HR Interview
-        </button>
+        <h3 id="companyMeetingStudent"></h3><p id="companyMeetingState" role="status"></p>
+        <a id="companyMeetingJoin" class="company-primary" target="_blank" rel="noopener noreferrer" hidden>Join meeting <i class="bi bi-camera-video" aria-hidden="true"></i></a>
+        <button type="button" id="companyMeetingEdit" class="bw-tag-btn" hidden>Edit schedule</button>
+        <p id="companyMeetingFeedback" role="status"></p>
+        <form id="companyMeetingForm" class="company-meeting-form">
+          <label for="companyMeetingTitle">Meeting title</label><input id="companyMeetingTitle" class="bw-input" required maxlength="100" placeholder="Interview or training check-in">
+          <label for="companyMeetingDate">Date and time (Amman)</label><input id="companyMeetingDate" class="bw-input" type="datetime-local" required>
+          <button type="submit" class="company-primary">Schedule meeting · preview</button>
+          <button type="button" id="companyMeetingCancel" class="bw-tag-btn" hidden>Cancel editing</button>
+        </form>
+        <p class="spotlight-placement-note">A unique Jitsi link is assigned automatically when you preview a new schedule. The host signs in to start the room. Schedules reset on reload; no invitation is sent and the student portal is not updated.</p>
       </div>
       <div class="bw-modal-footer">
         <button type="button" class="bw-btn-block bw-btn-outline" data-style="s32" data-close-modal="hrMeetingsModal">Close</button>
@@ -758,10 +624,12 @@
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=12"></script>
+  <script src="../../shared/js/portal.js?v=19"></script>
 
-  <script src="company-dashboard.js?v=7"></script>
-  <script src="../../shared/js/enhancements.js?v=4"></script>
+  <script src="company-dashboard.js?v=14"></script>
+  <script src="../../shared/js/evaluation-radar.js?v=3"></script>
+  <script src="../../shared/js/portal-motion.js?v=2"></script>
+  <script src="../../shared/js/enhancements.js?v=8"></script>
 
   <script src="../../shared/js/interactions.js"></script>
 </body>

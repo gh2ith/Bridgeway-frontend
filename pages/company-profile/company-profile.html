@@ -16,10 +16,10 @@
   <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=12">
 
   <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="company-profile.css">
+  <link rel="stylesheet" href="company-profile.css?v=2">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="company" id="page-company-profile">
 
@@ -88,53 +88,19 @@
 
     <div class="bw-portal-layout" data-style="s5" data-presentation="grid grid-template-columns">
 
-      <aside class="bw-profile-card">
-        <div data-style="s6">
-          <div class="bw-avatar-large" data-style="s7">
-            TC
-          </div>
-          <h2 data-style="s8" data-presentation="font-weight font-weight-800">
-            Tech Corp Inc.
-          </h2>
-          <div data-style="s9">
-            Amman, Jordan &bull; Downtown Tech Hub
-          </div>
-        </div>
-
-        <div class="bw-meta-list">
-          <div class="bw-meta-item">
-            <span class="bw-meta-key"><i class="bi bi-briefcase"></i> Active Posts</span>
-            <span class="bw-meta-val" data-style="s10">2 Active Listings</span>
-          </div>
-          <div class="bw-meta-item">
-            <span class="bw-meta-key"><i class="bi bi-people"></i> Placed Interns</span>
-            <span class="bw-meta-val" data-style="s11">2 Active Interns</span>
-          </div>
-          <div class="bw-meta-item">
-            <span class="bw-meta-key"><i class="bi bi-clock-history"></i> Logged Hours</span>
-            <span class="bw-meta-val">400 Total Hours</span>
-          </div>
-          <div class="bw-meta-item">
-            <span class="bw-meta-key"><i class="bi bi-award"></i> Evaluations</span>
-            <span class="bw-meta-val">Not submitted</span>
-          </div>
-        </div>
-
-        <div data-style="s12">
-          <a href="../company-post-role/company-post-role.html" class="bw-btn-block bw-btn-primary" data-style="s13">
-            <i class="bi bi-plus-lg me-1"></i> Post New Role
-          </a>
-        </div>
-      </aside>
+      <section class="company-profile-identity" aria-label="Company identity">
+        <div class="company-profile-avatar" aria-hidden="true">TC</div>
+        <div><h2>Tech Corp Inc.</h2><p>Enterprise software &amp; fintech</p><span><i class="bi bi-geo-alt" aria-hidden="true"></i> Amman, Jordan</span></div>
+      </section>
 
       <section class="bw-card-panel">
         <div class="bw-card-panel-header">
           <div>
             <h3 data-style="s14" data-presentation="font-weight font-weight-800">
-              Company Information
+              Company details
             </h3>
             <div data-style="s15">
-              Corporate profile and point-of-contact details for students and faculty
+              Your organization’s information and contact details.
             </div>
           </div>
         </div>
@@ -157,10 +123,9 @@
           </div>
 
           <div class="bw-form-group">
-            <label class="bw-form-label" for="companyEmailInput">Contact Email Address (Read-only)</label>
+              <label class="bw-form-label" for="companyEmailInput">Account email <span class="company-readonly-note">Read-only</span></label>
             <div data-style="s17">
-              <input type="email" id="companyEmailInput" class="bw-input" value="hr@techcorp.com" disabled data-style="s18">
-              <span class="bw-badge bw-badge-blue" data-style="s19"><i class="bi bi-lock-fill me-1"></i> Login Email</span>
+              <input type="email" id="companyEmailInput" class="bw-input" value="hr@techcorp.com" readonly data-style="s18">
             </div>
           </div>
 
@@ -171,18 +136,18 @@
 
           <div class="bw-form-group">
             <label class="bw-form-label" for="companyAboutInput">
-              <span>About Company &amp; Mentorship Culture</span>
-              <small>Visible on student opportunity cards</small>
+              <span>About your company</span>
             </label>
             <textarea id="companyAboutInput" class="bw-textarea" data-style="s20">Tech Corp Inc. is a leading enterprise software firm in Amman, Jordan specializing in cloud architectures, microservices, and AI-driven platforms. We provide structured 8-week university internship mentorship in partnership with Al-Balqa Applied University.</textarea>
           </div>
 
           <div data-style="s21">
+            <small class="company-profile-preview-note">Preview only · Changes are not saved.</small>
             <a href="../company-dashboard/company-dashboard.html" class="bw-btn-block bw-btn-outline" data-style="s22">
               Cancel
             </a>
             <button type="submit" class="bw-btn-block bw-btn-primary" data-style="s23">
-              <i class="bi bi-save me-1"></i> Save Company Profile
+              Save profile changes
             </button>
           </div>
         </form>
@@ -194,7 +159,7 @@
 
   <script src="../../shared/js/navigation.js"></script>
   <script src="company-profile.js"></script>
-  <script src="../../shared/js/enhancements.js"></script>
+  <script src="../../shared/js/enhancements.js?v=9"></script>
 
   <script src="../../shared/js/interactions.js"></script>
 </body>

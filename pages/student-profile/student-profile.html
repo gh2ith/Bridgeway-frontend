@@ -16,10 +16,10 @@
   <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=12">
 
   <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="student-profile.css?v=2">
+  <link rel="stylesheet" href="student-profile.css?v=6">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="student" id="page-student-profile">
 
@@ -66,7 +66,7 @@
           <button type="button" class="bw-masar-toggle" id="bwSidebarToggle" aria-label="Toggle Sidebar Menu">
             <i class="bi bi-list"></i>
           </button>
-        </div><div class="portal-role-label">Student</div><nav class="bw-masar-nav"><a class="bw-masar-item" href="../student-dashboard/student-dashboard.html" title="Dashboard"><i class="bi bi-grid" aria-hidden="true"></i><span>Dashboard</span></a><a class="bw-masar-item" href="#my-applications" data-profile-view="applications" title="My Applications"><i class="bi bi-send-check" aria-hidden="true"></i><span>My Applications</span></a></nav></div><div class="bw-masar-bottom-group"><div class="bw-masar-divider"></div><div class="bw-masar-bottom"><a class="bw-masar-link" href="#profile" data-profile-view="profile"><i class="bi bi-person-circle" aria-hidden="true"></i><span>Profile</span></a><button type="button" class="bw-masar-link bw-masar-btn-link" id="bwThemeToggle"><i class="bi bi-moon-stars" id="bwThemeIcon" aria-hidden="true"></i><span id="bwThemeText">Dark Mode</span></button><a class="bw-masar-link" href="../login/login.html"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></a></div></div></aside><main class="bw-company-content bw-main-content"><header class="company-topbar"><div class="company-breadcrumb">Workspace <span>/</span> <strong id="portalRoleLabel">Student</strong></div><div class="company-account-wrap"><button type="button" class="company-account" id="portalAccountToggle" aria-expanded="false" aria-controls="portalAccountDropdown" aria-label="Account options"><span class="company-monogram" id="portalInitials">GA</span><span id="portalAccountName">Ghaith Amourah</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><nav class="company-account-dropdown" id="portalAccountDropdown" aria-label="Account options" hidden><a href="../student-profile/student-profile.html" data-portal-profile>Account profile</a><a href="../login/login.html" class="company-account-logout">Logout</a></nav></div></header>
+        </div><div class="portal-role-label">Student</div><nav class="bw-masar-nav"><a class="bw-masar-item" href="../student-dashboard/student-dashboard.html" title="Dashboard"><i class="bi bi-grid" aria-hidden="true"></i><span>Dashboard</span></a></nav></div><div class="bw-masar-bottom-group"><div class="bw-masar-divider"></div><div class="bw-masar-bottom"><a class="bw-masar-link" href="#profile" data-profile-view="profile"><i class="bi bi-person-circle" aria-hidden="true"></i><span>Profile</span></a><button type="button" class="bw-masar-link bw-masar-btn-link" id="bwThemeToggle"><i class="bi bi-moon-stars" id="bwThemeIcon" aria-hidden="true"></i><span id="bwThemeText">Dark Mode</span></button><a class="bw-masar-link" href="../login/login.html"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></a></div></div></aside><main class="bw-company-content bw-main-content"><header class="company-topbar"><div class="company-breadcrumb">Workspace <span>/</span> <strong id="portalRoleLabel">Student</strong></div><div class="company-account-wrap"><button type="button" class="company-account" id="portalAccountToggle" aria-expanded="false" aria-controls="portalAccountDropdown" aria-label="Account options"><span class="company-monogram" id="portalInitials">GA</span><span id="portalAccountName">Ghaith Amourah</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><nav class="company-account-dropdown" id="portalAccountDropdown" aria-label="Account options" hidden><a href="../student-profile/student-profile.html" data-portal-profile>Account profile</a><a href="../login/login.html" class="company-account-logout">Logout</a></nav></div></header>
     <section class="bw-page-header">
       <span class="bw-eyebrow">STUDENT WORKSPACE</span>
       <h1 class="bw-title">Student Profile</h1>
@@ -79,9 +79,8 @@
         <div class="profile-identity-copy">
           <h2>Ghaith Amourah</h2>
           <p>B.Sc. Software Engineering</p>
-          <span>Student ID 20220148</span>
+          <div class="profile-identity-meta"><span>Student ID 20220148</span><span class="profile-verified"><i class="bi bi-patch-check" aria-hidden="true"></i> SIS verified</span></div>
         </div>
-        <span class="profile-verified"><i class="bi bi-patch-check" aria-hidden="true"></i> SIS verified</span>
       </section>
 
       <section class="profile-panel profile-personal" aria-labelledby="profilePersonalTitle">
@@ -140,125 +139,15 @@
         </section>
       </div>
 
-      <section class="profile-placement" aria-labelledby="profilePlacementTitle">
-        <div class="profile-placement-icon"><i class="bi bi-briefcase" aria-hidden="true"></i></div>
-        <div><span class="profile-field-note">CURRENT PLACEMENT</span><h2 id="profilePlacementTitle">Tech Corp Inc.</h2><p>Software Engineering Intern</p></div>
-        <div class="profile-placement-meta"><strong>Week 6 of 8</strong><span>240 / 320 hours · 40h per week</span></div>
-        <a class="profile-text-link" href="../student-dashboard/student-dashboard.html#tab-progress">Training progress <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-      </section>
     </div>
-        <section class="profile-applications" id="my-applications" hidden tabindex="-1" aria-label="My Applications">
-          <div class="bw-card-panel">
-            <div class="bw-card-panel-header">
-              <div class="bw-card-panel-title">
-                <i class="bi bi-send-check text-primary"></i>
-                <h2>My Applications</h2>
-              </div>
-              <span class="bw-badge bw-badge-blue">2 applications</span>
-            </div>
 
-            <div class="bw-table-responsive">
-              <table class="bw-table">
-                <thead>
-                  <tr>
-                    <th>Company</th>
-                    <th>Position</th>
-                    <th>Location</th>
-                    <th>Deadline</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="studentApplicationsTable">
-                  <tr data-application-status="accepted">
-                    <td>
-                      <div>Tech Corp Inc.</div>
-                    </td>
-                    <td>
-                      <div>Software Engineering Intern</div>
-                    </td>
-                    <td>
-                      <span><i class="bi bi-geo-alt me-1"></i>Amman</span>
-                    </td>
-                    <td>
-                      <span>Nov 30, 2026</span>
-                    </td>
-                    <td>
-                      <span class="bw-badge bw-badge-success">
-                        <i class="bi bi-check-circle-fill me-1"></i>Accepted
-                      </span>
-                    </td>
-                    <td>
-                      <span>
-                        <i class="bi bi-shield-check me-1"></i>Enrolled
-                      </span>
-                    </td>
-                  </tr>
-                  <tr data-application-status="pending">
-                    <td>
-                      <div>Nexus Cloud Systems</div>
-                    </td>
-                    <td>
-                      <div>Full-Stack .NET Developer Intern</div>
-                    </td>
-                    <td>
-                      <span><i class="bi bi-geo-alt me-1"></i>Amman</span>
-                    </td>
-                    <td>
-                      <span>Nov 30, 2026</span>
-                    </td>
-                    <td>
-                      <span class="bw-badge bw-badge-amber">
-                        <i class="bi bi-hourglass-split me-1"></i>Pending
-                      </span>
-                    </td>
-                    <td>
-                      <button type="button" class="bw-tag-btn text-danger" data-withdraw-application>
-                        <i class="bi bi-x-circle me-1"></i> Withdraw
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-          </div>
-        </section>
   </main></div>
-  <div class="bw-modal-backdrop" id="withdrawModal">
-    <div class="bw-modal-dialog">
-      <div class="bw-modal-header">
-        <div class="bw-modal-title">
-          <i class="bi bi-exclamation-triangle-fill text-warning"></i>
-          <span>Withdraw Application</span>
-        </div>
-        <button type="button" class="bw-modal-close" data-close-modal="withdrawModal">&times;</button>
-      </div>
-      <div class="bw-modal-body">
-        <p>
-          Are you sure you want to withdraw your application for <strong id="withdrawModalRole">Cloud Operations &amp; DevOps Trainee</strong> at <strong id="withdrawModalCompany">Tech Corp Inc.</strong>?
-        </p>
-        <div>
-          <i class="bi bi-info-circle-fill me-1"></i>
-          This withdraws the pending application in this preview only. Your accepted internship is unchanged.
-        </div>
-      </div>
-      <div class="bw-modal-footer">
-        <button type="button" class="bw-btn-block bw-btn-outline" data-close-modal="withdrawModal">Cancel</button>
-        <button type="button" class="bw-btn-block bw-btn-primary" id="confirmWithdrawBtn">
-          <i class="bi bi-x-circle me-1"></i> Confirm Withdrawal
-        </button>
-      </div>
-    </div>
-  </div>
 
-
-
-  <script src="../../shared/js/portal.js?v=3"></script>
+  <script src="../../shared/js/portal.js?v=20"></script>
 
   <script src="../../shared/js/navigation.js"></script>
-  <script src="student-profile.js?v=2"></script>
-  <script src="../../shared/js/enhancements.js"></script>
+  <script src="student-profile.js?v=6"></script>
+  <script src="../../shared/js/enhancements.js?v=9"></script>
 
   <script src="../../shared/js/interactions.js"></script>
 </body>

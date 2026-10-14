@@ -2,19 +2,21 @@
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import assert from 'node:assert/strict';
+import {webcrypto} from 'node:crypto';
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 const storage = new Map();
 const node = () => ({hidden:false, textContent:'', value:'', files:[], handlers:{}, addEventListener(event, handler) {this.handlers[event] = handler;}});
 const input = node(), status = node(), remove = node(), notice = node();
 const scores = [98, 91, 89].map(value => ({...node(), dataset:{cvScore:String(value)}, parentElement:{querySelector:() => node()}}));
 const scope = {
+  crypto:webcrypto,
   window:{addEventListener() {}},
   sessionStorage:{getItem:key => storage.get(key) || null, setItem:(key, value) => storage.set(key, value), removeItem:key => storage.delete(key)},
   document:{getElementById:id => ({studentCvFile:input, studentCvStatus:status, removeStudentCv:remove, cvMatchPreviewNote:notice})[id], querySelectorAll:() => scores}
 };
 runInNewContext(read('shared/js/portal.js').split('/* Shared sample relationships.')[0], scope);
 runInNewContext('// Select a local file' + read('pages/student-profile/student-profile.js').split('// Select a local file')[1], scope);
-const refresh = () => runInNewContext(read('pages/student-dashboard/student-dashboard.js').split('(function ()')[0], scope);
+const refresh = () => runInNewContext('function updateCvMatches() {' + read('pages/student-dashboard/student-dashboard.js').split('function updateCvMatches() {')[1].split('window.addEventListener(\'pageshow\', updateCvMatches);')[0], scope);
 const select = file => {input.files = [file]; input.handlers.change();};
 refresh();
 assert(scores.every(score => score.hidden) && notice.hidden, 'No CV: do not display a percentage.');

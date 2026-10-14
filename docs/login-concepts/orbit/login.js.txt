@@ -1,0 +1,442 @@
+/**
+ * The Orbit: a decorative five-role network for the static login preview.
+ * Role radios and the existing form remain the source of truth.
+ */
+(function () {
+  'use strict';
+  // DOM Elements — Form & Roles
+  const loginForm = document.getElementById('hrLoginForm');
+  const emailInput = document.getElementById('loginEmail');
+  const emailLabel = document.getElementById('loginEmailLabel');
+  const emailHint = document.getElementById('loginEmailHint');
+  const passwordInput = document.getElementById('loginPassword');
+  const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+  const toggleIcon = document.getElementById('toggleIcon');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const loginSubmitBtnText = document.getElementById('loginSubmitBtnText');
+  const loginToast = document.getElementById('loginToast');
+  const loginToastMsg = document.getElementById('loginToastMsg');
+
+
+  const scene=document.getElementById('orbitScene');
+  const nodesLayer=document.getElementById('orbitNodes');
+  const linksLayer=document.getElementById('orbitLinks');
+  const tokensLayer=document.getElementById('orbitTokens');
+  if(!scene) return;
+  const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const phoneLayout=window.matchMedia('(max-width: 768px)');
+  // 5 Role Definitions & Metadata
+  const ROLES = {
+    student: {
+      key: 'student',
+      title: 'Student',
+      label: 'Student Institutional Email',
+      hint: 'Domain: <code>bau.edu.jo</code> or <code>oca.jo</code>',
+      defaultEmail: 'student@bau.edu.jo',
+      btnText: 'Sign In as Student',
+      badgeName: 'Ghaith Al-Student',
+      badgeRole: 'Student Intern • Al-Balqa Applied Univ.',
+      badgeInitials: 'GA',
+      badgeSerial: '#STU-2026-BAU',
+      avatarBg: 'linear-gradient(135deg, #2563EB, #1D4ED8)'
+    },
+    supervisor: {
+      key: 'supervisor',
+      title: 'Supervisor',
+      label: 'Academic Supervisor Institutional Email',
+      hint: 'Domain: <code>bau.edu.jo</code> (Faculty of IT)',
+      defaultEmail: 'dr.ahmad@bau.edu.jo',
+      btnText: 'Sign In as Supervisor',
+      badgeName: 'Dr. Ahmad S.',
+      badgeRole: 'Academic Supervisor • SE Dept',
+      badgeInitials: 'AS',
+      badgeSerial: '#SUP-2026-OCA',
+      avatarBg: 'linear-gradient(135deg, #059669, #047857)'
+    },
+    company: {
+      key: 'company',
+      title: 'Partner Company',
+      label: 'Corporate HR / Mentor Email',
+      hint: 'Domain: <code>techcorp.com</code> / Partner Org',
+      defaultEmail: 'hr@techcorp.com',
+      btnText: 'Sign In as Partner Company',
+      badgeName: 'Tech Corp HR',
+      badgeRole: 'Host Partner • Tech Corp Inc.',
+      badgeInitials: 'TC',
+      badgeSerial: '#CMP-2026-TC',
+      avatarBg: 'linear-gradient(135deg, #4F46E5, #3730A3)'
+    },
+    platform_admin: {
+      key: 'platform_admin', title: 'Platform Admin', label: 'Platform Administrator Email',
+      hint: 'Platform account provided by Bridgeway', defaultEmail: 'platform@bridgeway.edu',
+      btnText: 'Sign In as Platform Admin', badgeName: 'Platform Admin',
+      badgeRole: 'Bridgeway Platform Administration', badgeInitials: 'PA',
+      badgeSerial: '#PLT-2026-001', avatarBg: 'linear-gradient(135deg, #4338CA, #6366F1)'
+    },
+    admin: {
+      key: 'admin',
+      title: 'College Admin',
+      label: 'University Administrator Email',
+      hint: 'Domain: <code>uni.edu</code> or <code>bau.edu.jo</code>',
+      defaultEmail: 'admin@uni.edu',
+      btnText: 'Sign In as Administrator',
+      badgeName: 'College Admin',
+      badgeRole: 'College Administration',
+      badgeInitials: 'UA',
+      badgeSerial: '#ADM-2026-001',
+      avatarBg: 'linear-gradient(135deg, #4338CA, #6366F1)'
+    }
+  };
+
+
+  let activeRole='student', pending=false, privateMode=false;
+  const roleOrder=['student','supervisor','admin','company','platform_admin'];
+  const icons={student:'mortarboard',supervisor:'person-check',admin:'building',company:'briefcase',platform_admin:'shield-check'};
+  const relatedRoles={
+    student:['company','supervisor','admin'],
+    supervisor:['student','company','admin'],
+    admin:['student','supervisor','company'],
+    company:['student','supervisor','admin'],
+    platform_admin:['admin','company']
+  };
+  const workflows=[
+    {from:'student',to:'company',label:'Application',offset:0},
+    {from:'company',to:'supervisor',label:'Weekly report',offset:.34},
+    {from:'company',to:'admin',label:'Evaluation',offset:.68}
+  ];
+  const svgNS='http://www.w3.org/2000/svg', nodes=[], links=[], tokens=[];
+  let phase=Math.PI/2, tween=null, previousTime=0, elapsed=0, rafId=null, errorTimer, entranceTimer;
+  const points={};
+  function svgElement(tag,attrs,text){
+    const el=document.createElementNS(svgNS,tag);
+    Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));
+    if(text) el.textContent=text;
+    return el;
+  }
+  function createOrbitNodes(){
+    roleOrder.forEach((key,i)=>{
+      const node=svgElement('g',{class:'orbit-node','data-orbit-role':key});
+      const visual=svgElement('g',{class:'orbit-orb'});
+      visual.append(svgElement('circle',{r:50,class:'orbit-node-halo'}));
+      visual.append(svgElement('circle',{r:32,class:'orbit-node-disc'}));
+      visual.append(svgElement('circle',{r:42,pathLength:1,class:'orbit-check-ring'}));
+      visual.append(svgElement('path',{d:'M24 29l5 5 9-10',class:'orbit-checkmark'}));
+      visual.append(svgElement('circle',{r:51,pathLength:1,class:'orbit-shield'}));
+      const icon=svgElement('foreignObject',{x:-16,y:-16,width:32,height:32});
+      const glyph=document.createElement('i'); glyph.className='bi bi-'+icons[key];
+      icon.append(glyph); visual.append(icon);
+      visual.append(svgElement('text',{x:0,y:62,'text-anchor':'middle',class:'orbit-node-label'},ROLES[key].title));
+      node.append(visual); nodesLayer.append(node);
+      nodes.push({key,index:i,node,visual});
+    });
+    roleOrder.forEach(key=>{
+      const path=svgElement('path',{class:'orbit-link','data-orbit-link':key});
+      linksLayer.append(path); links.push({key,path});
+    });
+    workflows.forEach(flow=>{
+      const trail=svgElement('circle',{r:2,class:'orbit-token-tail'});
+      const dot=svgElement('circle',{r:4,class:'orbit-token','data-workflow':flow.label,'data-from':flow.from,'data-to':flow.to});
+      const line=svgElement('path',{class:'orbit-workflow-line'});
+      linksLayer.append(line);
+      tokensLayer.append(trail,dot); tokens.push({...flow,dot,trail,line});
+    });
+  }
+  function renderOrbit(){
+    const compact=phoneLayout.matches;
+    nodes.forEach(({key,index,node})=>{
+      const theta=phase+index*Math.PI*2/5;
+      const depth=(Math.sin(theta)+1)/2;
+      const x=380+260*Math.cos(theta), y=305+185*Math.sin(theta);
+      points[key]={x,y};
+      node.setAttribute('transform','translate('+x.toFixed(2)+' '+y.toFixed(2)+')');
+      node.style.setProperty('--orb-scale',(key===activeRole?1.18:.76+.12*depth).toFixed(3));
+    });
+    const source=points[activeRole];
+    links.forEach(({key,path})=>{
+      const destination=points[key];
+      path.setAttribute('d','M'+source.x+' '+source.y+' Q380 305 '+destination.x+' '+destination.y);
+    });
+    tokens.forEach(({from,to,offset,dot,trail,line})=>{
+      const a=points[from],b=points[to];
+      const relevant=from===activeRole||to===activeRole||activeRole==='platform_admin';
+      const visible=!privateMode&&!pending&&!prefersReducedMotion.matches&&!compact;
+      line.setAttribute('d','M'+a.x+' '+a.y+' Q380 305 '+b.x+' '+b.y);
+      line.style.opacity=privateMode?'.02':relevant?'.2':'.08';
+      dot.style.opacity=visible?(relevant?'1':'.3'):'0'; trail.style.opacity=visible?(relevant?'.35':'.1'):'0';
+      const t=(elapsed/7+offset)%1;
+      [dot,trail].forEach((el,i)=>{
+        const u=Math.max(0,t-i*.045),v=1-u;
+        el.setAttribute('cx',(v*v*a.x+2*v*u*380+u*u*b.x).toFixed(2));
+        el.setAttribute('cy',(v*v*a.y+2*v*u*305+u*u*b.y).toFixed(2));
+      });
+    });
+  }
+  function tickPhysics(time){
+    if(document.hidden||phoneLayout.matches||prefersReducedMotion.matches){rafId=null;previousTime=0;return;}
+    const dt=Math.min(.05,previousTime?(time-previousTime)/1000:0); previousTime=time; elapsed+=dt;
+    if(tween){
+      const t=Math.min(1,(time-tween.start)/850),ease=t*t*(3-2*t);
+      phase=tween.from+(tween.to-tween.from)*ease;
+      if(t===1)tween=null;
+    }else if(!pending)phase+=dt*(privateMode?.0015:.027);
+    renderOrbit();
+    rafId=requestAnimationFrame(tickPhysics);
+  }
+  function startPhysicsLoop(){
+    if(rafId===null&&!document.hidden&&!phoneLayout.matches&&!prefersReducedMotion.matches){
+      previousTime=0; rafId=requestAnimationFrame(tickPhysics);
+    }
+  }
+  function settleScene(){
+    cancelAnimationFrame(rafId);rafId=null;previousTime=0;tween=null;
+    phase=Math.PI/2-roleOrder.indexOf(activeRole)*Math.PI*2/5;
+    renderOrbit();
+  }
+  function updateSceneSelection(){
+    const destination=Math.PI/2-roleOrder.indexOf(activeRole)*Math.PI*2/5;
+    const delta=Math.atan2(Math.sin(destination-phase),Math.cos(destination-phase));
+    tween={from:phase,to:phase+delta,start:performance.now()};
+    nodes.forEach(({key,node})=>node.classList.toggle('is-active',key===activeRole));
+    links.forEach(({key,path})=>path.classList.toggle('is-related',relatedRoles[activeRole].includes(key)));
+    document.querySelectorAll('[data-strip-role]').forEach(dot=>dot.classList.toggle('is-active',dot.dataset.stripRole===activeRole));
+    if(phoneLayout.matches||prefersReducedMotion.matches)settleScene();else startPhysicsLoop();
+    renderOrbit();
+  }
+  function triggerDropIn(){
+    scene.classList.add('is-entering');
+    entranceTimer=setTimeout(()=>scene.classList.remove('is-entering'),1800);
+    if(phoneLayout.matches||prefersReducedMotion.matches)settleScene();else startPhysicsLoop();
+  }
+  function syncEmailState(){
+    const email=emailInput?.value.trim()||'';
+    scene.classList.toggle('is-email-ready',/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+  }
+  emailInput?.addEventListener('input',syncEmailState);
+  function syncBadgeFlipState(){
+    privateMode=document.activeElement===passwordInput||document.activeElement===togglePasswordBtn;
+    scene.classList.toggle('is-private',privateMode);
+    renderOrbit();
+  }
+  passwordInput?.addEventListener('focus',syncBadgeFlipState);
+  passwordInput?.addEventListener('blur',()=>queueMicrotask(syncBadgeFlipState));
+  togglePasswordBtn?.addEventListener('focus',syncBadgeFlipState);
+  togglePasswordBtn?.addEventListener('blur',()=>queueMicrotask(syncBadgeFlipState));
+  togglePasswordBtn?.addEventListener('click',e=>{
+    e.preventDefault();
+    const revealed=passwordInput.type!=='text';
+    passwordInput.type=revealed?'text':'password';
+    toggleIcon.className=revealed?'bi bi-eye text-primary':'bi bi-eye-slash';
+    scene.classList.toggle('is-password-revealed',revealed);
+  });
+  function triggerBadgeErrorShake(){
+    clearTimeout(errorTimer); scene.classList.remove('is-error-kick');
+    // Restart feedback without a forced layout read.
+    const kick=()=>{
+      scene.classList.add('is-error-kick');
+      errorTimer=setTimeout(()=>scene.classList.remove('is-error-kick'),850);
+    };
+    if(phoneLayout.matches||prefersReducedMotion.matches)kick();else requestAnimationFrame(kick);
+  }
+  phoneLayout.addEventListener('change',()=>{settleScene();startPhysicsLoop();});
+  prefersReducedMotion.addEventListener('change',()=>{settleScene();startPhysicsLoop();});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){cancelAnimationFrame(rafId);rafId=null;previousTime=0;}else startPhysicsLoop();
+  });
+  window.addEventListener('pagehide',()=>{cancelAnimationFrame(rafId);clearTimeout(errorTimer);clearTimeout(entranceTimer);});
+  function selectRole(roleKey) {
+    if (!ROLES[roleKey] || pending) return;
+    activeRole = roleKey;
+    const roleData = ROLES[roleKey];
+
+    // Update Role Cards Active State
+    document.querySelectorAll('.lb-role-card').forEach(btn => {
+      const isCurrent = btn.getAttribute('data-role') === roleKey;
+      btn.classList.toggle('is-active', isCurrent);
+      btn.setAttribute('aria-checked', isCurrent ? 'true' : 'false');
+    });
+
+    // Update Inputs & Hints
+    if (emailInput) {
+      emailInput.placeholder = roleData.defaultEmail;
+      emailInput.value = roleData.defaultEmail;
+      emailInput.classList.remove('is-invalid');
+    }
+    if (emailLabel) {
+      emailLabel.innerHTML = `<i class="bi bi-envelope me-1"></i> ${roleData.label}`;
+    }
+    if (emailHint) {
+      emailHint.innerHTML = `<i class="bi bi-info-circle me-1"></i> ${roleData.hint}`;
+    }
+    if (loginSubmitBtnText) {
+      loginSubmitBtnText.textContent = roleData.btnText;
+    }
+    if (emailError) emailError.style.display = 'none';
+    if (passwordError) passwordError.style.display = 'none';
+
+    updateSceneSelection();
+    syncEmailState();
+  }
+
+  // Bind Role Buttons
+  document.querySelectorAll('.lb-role-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const roleKey = card.getAttribute('data-role');
+      selectRole(roleKey);
+    });
+  });
+
+  // FORM SUBMISSION & ROUTING
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = emailInput ? emailInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+
+      let hasError = false;
+      if (!email || !email.includes('@')) {
+        if (emailError) {
+          emailError.textContent = 'Please enter a valid official email address.';
+          emailError.style.display = 'block';
+        }
+        if (emailInput) emailInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        if (emailError) emailError.style.display = 'none';
+        if (emailInput) emailInput.classList.remove('is-invalid');
+      }
+
+      if (!password) {
+        if (passwordError) {
+          passwordError.textContent = 'Please enter your password.';
+          passwordError.style.display = 'block';
+        }
+        if (passwordInput) passwordInput.classList.add('is-invalid');
+        hasError = true;
+      } else {
+        if (passwordError) passwordError.style.display = 'none';
+        if (passwordInput) passwordInput.classList.remove('is-invalid');
+      }
+
+      if (hasError) {
+        triggerBadgeErrorShake();
+        return;
+      }
+
+      pending=true; scene.classList.remove('is-private');
+      scene.classList.add('is-pending');
+      startPhysicsLoop();
+
+      if (loginSubmitBtn) {
+        loginSubmitBtn.disabled = true;
+        loginSubmitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Authenticating...';
+      }
+
+      setTimeout(() => {
+        const roleData = ROLES[activeRole];
+        showToast(`Authenticated as ${roleData.title}! Returning to Journey...`);
+
+        setTimeout(() => {
+          const dashboardMap = {
+            student: '../student-dashboard/student-dashboard.html',
+            supervisor: '../supervisor-dashboard/supervisor-dashboard.html',
+            company: '../company-dashboard/company-dashboard.html',
+            admin: '../admin-dashboard/admin-dashboard.html',
+            platform_admin: '../platform-admin/platform-admin.html'
+          };
+          window.location.href = dashboardMap[activeRole] || '../student-dashboard/student-dashboard.html';
+        }, 1200);
+      }, 700);
+    });
+  }
+
+  function showToast(message) {
+    if (loginToast && loginToastMsg) {
+      loginToastMsg.textContent = message;
+      loginToast.style.display = 'flex';
+      setTimeout(() => {
+        loginToast.style.display = 'none';
+      }, 3500);
+    }
+  }
+  // FORGOT PASSWORD MODAL
+  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+  const forgotModal = document.getElementById('forgotPasswordModal');
+  const closeForgotModalBtn = document.getElementById('closeForgotModalBtn');
+  const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+  const resetEmailInput = document.getElementById('resetEmail');
+
+  function openForgotModal() {
+    if (!forgotModal) return;
+    if (emailInput && resetEmailInput) {
+      resetEmailInput.value = emailInput.value.trim();
+    }
+    forgotModal.style.display = 'block';
+    setTimeout(() => forgotModal.classList.add('show'), 10);
+  }
+
+  function closeForgotModal() {
+    if (!forgotModal) return;
+    forgotModal.classList.remove('show');
+    setTimeout(() => forgotModal.style.display = 'none', 200);
+  }
+
+  if (forgotPasswordLink) forgotPasswordLink.addEventListener('click', (e) => { e.preventDefault(); openForgotModal(); });
+  if (closeForgotModalBtn) closeForgotModalBtn.addEventListener('click', closeForgotModal);
+  if (forgotModal) {
+    forgotModal.addEventListener('click', (e) => {
+      if (e.target === forgotModal) closeForgotModal();
+    });
+  }
+
+  if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const resetAlert = document.getElementById('resetSuccessAlert');
+      const submitBtn = document.getElementById('resetSubmitBtn');
+      if (resetAlert) resetAlert.classList.remove('d-none');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i> Verification Dispatched';
+      }
+      setTimeout(closeForgotModal, 1800);
+    });
+  }
+  // DARK / LIGHT THEME CONTROLLER
+  const loginThemeToggle = document.getElementById('loginThemeToggle');
+  const loginThemeIcon = document.getElementById('loginThemeIcon');
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+
+    const isDark = theme === 'dark';
+    if (loginThemeIcon) {
+      loginThemeIcon.className = isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars';
+    }
+  }
+
+  const savedTheme =
+    'light';
+  applyTheme(savedTheme);
+
+  if (loginThemeToggle) {
+    loginThemeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(isDark ? 'light' : 'dark');
+    });
+  }
+  // INITIALIZATION & LIFECYCLE
+  function init() {
+    createOrbitNodes();
+    selectRole('student');
+    triggerDropIn();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();

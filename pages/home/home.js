@@ -176,7 +176,7 @@
     });
   }
   // Three.js 3D Bridge Scene Architecture
-  let scene, camera, renderer, bridgeGroup, capMesh, capBoardMat, capSkullMat, waterMesh, foamRings = [];
+  let scene, camera, renderer, bridgeGroup, capMesh, capBoardMat, capSkullMat, waterMesh, foamRings = [], seaRipples = [];
   let ambientLight, sunLight, fillLight, oceanSunLight, seaHemisphere, seaGlintLight, bedMesh;
   let nightSkyGroup, moonMesh, moonHalo, starPoints, starMat, moonLight;
   let lampGlowMat, lampHaloMat, lampHalos = [];
@@ -576,28 +576,34 @@
     const towerGroup = new THREE.Group();
     towerGroup.position.set(0, 0, zPos);
 
-    const pierMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 });
-
-    // Concrete Foundations (Piers) in water extending deep into the sea
-    const pierGeom = new THREE.BoxGeometry(4.6, 20, 6.4);
-    const leftPier = new THREE.Mesh(pierGeom, pierMat);
-    leftPier.position.set(-7.6, -11, 0);
-    towerGroup.add(leftPier);
-
-    const rightPier = new THREE.Mesh(pierGeom, pierMat);
-    rightPier.position.set(7.6, -11, 0);
-    towerGroup.add(rightPier);
-
-    // Architectural Waterline Pier Collars
-    const collarGeom = new THREE.BoxGeometry(5.2, 2.2, 7.2);
-    const collarMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.82 });
-    const leftCollar = new THREE.Mesh(collarGeom, collarMat);
-    leftCollar.position.set(-7.6, -6.0, 0);
-    towerGroup.add(leftCollar);
-
-    const rightCollar = new THREE.Mesh(collarGeom, collarMat);
-    rightCollar.position.set(7.6, -6.0, 0);
-    towerGroup.add(rightCollar);
+    // Sculpted, elliptical piers: flared shoulders taper into the deep water.
+    const profile = new THREE.SplineCurve([
+      new THREE.Vector2(2.8,-196), new THREE.Vector2(3.1,-110),
+      new THREE.Vector2(3.7,-45), new THREE.Vector2(4.2,-22),
+      new THREE.Vector2(5.6,-12), new THREE.Vector2(5.6,-7),
+      new THREE.Vector2(4.2,-4), new THREE.Vector2(2.6,-1)
+    ]);
+    const pierGeom = new THREE.LatheGeometry(profile.getPoints(64), 24);
+    const positions = pierGeom.attributes.position;
+    const colors = new Float32Array(positions.count * 3);
+    const deepColor = new THREE.Color(0x3d779b);
+    const surfaceColor = new THREE.Color(0xd4e7f1);
+    for (let i = 0; i < positions.count; i++) {
+      const depth = Math.max(0, Math.min(1, (positions.getY(i) + 196) / 190));
+      const color = deepColor.clone().lerp(surfaceColor, depth * depth);
+      color.toArray(colors, i * 3);
+    }
+    pierGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const pierMat = new THREE.MeshStandardMaterial({
+      vertexColors:true, roughness:.72, metalness:.04,
+      emissive:0x24445c, emissiveIntensity:.25
+    });
+    [-7.6,7.6].forEach(x => {
+      const pier = new THREE.Mesh(pierGeom,pierMat);
+      pier.position.x = x;
+      pier.scale.set(.65,1,1.35);
+      towerGroup.add(pier);
+    });
 
     // Tower Pylon Columns (Twin steel legs)
     // Left leg at x = -7.6, Right leg at x = 7.6
@@ -965,13 +971,34 @@
       emissive: new THREE.Color(0x011e38),
       emissiveIntensity: 0.15,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.64,
+      depthWrite: false,
       flatShading: false
     });
     waterMesh = new THREE.Mesh(waterGeom, waterMat);
     waterMesh.position.set(0, -5.5, 240);
     waterMesh.receiveShadow = true;
     scene.add(waterMesh);
+
+    // Tapered wave ribbons catch the light across the sea's surface.
+    seaRipples = [];
+    for (let i = 0; i < 42; i++) {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(33 * 2 * 3), 3));
+      const indices = [];
+      for (let j = 0; j < 32; j++) {
+        const a = j * 2;
+        indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+      }
+      geometry.setIndex(indices);
+      const material = new THREE.MeshBasicMaterial({color:0xd9f1ff, transparent:true, opacity:.45, side:THREE.DoubleSide, depthWrite:false, depthTest:false, fog:false, toneMapped:false});
+      const ripple = new THREE.Mesh(geometry, material);
+      ripple.renderOrder = 2;
+      ripple.frustumCulled = false;
+      ripple.userData = {x:30 + (i * 43) % 230, z:20 + (i * 97) % 440, length:25 + (i * 11) % 48, phase:i * 1.73};
+      scene.add(ripple);
+      seaRipples.push(ripple);
+    }
 
     // 2. Deep Ocean Bed Layer (Prevents light leak, provides deep nautical color graduation)
     const bedGeom = new THREE.PlaneGeometry(2600, 2600);
@@ -982,7 +1009,7 @@
       metalness: 0.04
     });
     bedMesh = new THREE.Mesh(bedGeom, bedMat);
-    bedMesh.position.set(0, -28, 240);
+    bedMesh.position.set(0, -196, 240);
     scene.add(bedMesh);
 
     // 3. Pier Foundation Marine Foam Rings (At Tower 1 z=110 and Tower 2 z=370)
@@ -1155,7 +1182,7 @@
         const col = colorAttr.array;
         const base = waterMesh.geometry.userData.base;
         // Calm, gentle temporal pacing (moved less, natural slow rolling swell)
-        const t = time * 0.00065;
+        const t = reduceMotion ? 0 : time * 0.00065;
 
         // Realistic Deep Oceanic Water Palette (Organic, non-plastic, sophisticated depth graduation)
         let rTrough, gTrough, bTrough;
@@ -1222,9 +1249,31 @@
         waterMesh.geometry.computeVertexNormals();
       }
 
+      // Reuse the main render loop; no extra timers or animation loops.
+      const rippleTime = reduceMotion ? 0 : time * .00065;
+      seaRipples.forEach(ripple => {
+        const {x,z,length,phase} = ripple.userData;
+        const positions = ripple.geometry.attributes.position;
+        const fade = .5 + .5 * Math.sin(rippleTime * .65 + phase);
+        ripple.material.opacity = (isDarkMode ? .28 : .65) * (.45 + fade * .55);
+        for (let j = 0; j < 33; j++) {
+          const u = j / 32;
+          const wx = x + Math.sin(u * Math.PI) * 5 + Math.sin(rippleTime * .4 + phase) * 6;
+          const wz = z + (u - .5) * length + Math.sin(rippleTime * .3 + phase) * 2;
+          const bz = wz - 240;
+          const height = Math.sin(wx * .010 + bz * .007 + rippleTime * .85) * .65
+            + Math.cos(wx * -.008 + bz * .012 + rippleTime * .95) * .38
+            + Math.sin(wx * .022 - bz * .018 + rippleTime * 1.30) * .16;
+          const width = Math.sin(u * Math.PI) * (1 + fade * .6);
+          positions.setXYZ(j * 2, wx - width, -5.5 + height + .65, wz);
+          positions.setXYZ(j * 2 + 1, wx + width, -5.5 + height + .65, wz);
+        }
+        positions.needsUpdate = true;
+      });
+
       // Animate pier foundation foam rings
       if (foamRings && foamRings.length) {
-        const ft = time * 0.0010;
+        const ft = reduceMotion ? 0 : time * 0.0010;
         foamRings.forEach(ring => {
           const s = 1.0 + Math.sin(ft + ring.userData.phase) * 0.15;
           ring.scale.set(s, s, 1);
@@ -1691,4 +1740,24 @@
     init();
   }
 
+})();
+
+/* Preview motion stays local and stops when hidden, off-screen, or paused. */
+(() => {
+  const preview = document.querySelector('.hero-preview');
+  const button = document.getElementById('previewMotionToggle');
+  if (!preview || !button) return;
+  let paused = false, visible = true;
+  const sync = () => preview.classList.toggle('is-paused', paused || !visible || document.hidden);
+  button.addEventListener('click', () => {
+    paused = !paused;
+    button.setAttribute('aria-pressed', String(paused));
+    button.textContent = paused ? 'Resume animation' : 'Pause animation';
+    sync();
+  });
+  const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }, {threshold:.05});
+  observer.observe(preview);
+  document.addEventListener('visibilitychange', sync);
+  window.addEventListener('pagehide', () => observer.disconnect(), {once:true});
+  sync();
 })();
