@@ -174,63 +174,18 @@
   --ticket-paper-highlight: #244d85;
 }
 .bw-ticket-stub[hidden] { display: none; }
-/* Last-hole hinge and matching scalloped edges, inspired by CSS 3D Lab's ticket. */
-.bw-paper-ticket[data-tearing] { transition: none; }
-.bw-paper-ticket:is(.is-cutting, .is-cut) .bw-ticket-stub {
-  transform-origin:14px 0;
-  backface-visibility: hidden;
-  -webkit-mask: radial-gradient(circle at 5px 0, transparent 2px, #000 2.8px) 0 0 / 10px 100% repeat-x;
-  mask: radial-gradient(circle at 5px 0, transparent 2px, #000 2.8px) 0 0 / 10px 100% repeat-x;
-}
-.bw-paper-ticket:is(.is-cutting, .is-cut) .bw-ticket-stub::before { opacity: 0; }
-.bw-paper-ticket:is(.is-cutting, .is-cut) .bw-ticket-main {
-  -webkit-mask: radial-gradient(circle at 5px 100%, transparent 2px, #000 2.8px) 0 0 / 10px 100% repeat-x;
-  mask: radial-gradient(circle at 5px 100%, transparent 2px, #000 2.8px) 0 0 / 10px 100% repeat-x;
-}
-.bw-paper-ticket.is-cutting .bw-ticket-stub {
-  filter: drop-shadow(0 12px 24px rgba(8, 23, 46, 0.42)) brightness(0.96);
-}
-.bw-ticket-burst {
-  position: absolute;
-  inset-inline: 14px;
-  bottom: 0;
-  height: 0;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 10;
-}
-.bw-ticket-fiber {
-  position: absolute;
-  box-shadow: 0 1px 3px rgba(8, 23, 46, 0.35);
-}
-.bw-paper-ticket.is-cut .bw-ticket-main {
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 22px rgba(22, 51, 93, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-.bw-paper-ticket.is-cut .bw-ticket-brand > small {
-  background: rgba(56, 189, 248, 0.25);
-  border-color: rgba(125, 211, 252, 0.55);
-  color: #e0f2fe;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-.bw-paper-ticket.is-cut .bw-ticket-main::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(115deg, transparent 15%, rgba(255, 255, 255, 0.05) 35%, rgba(255, 255, 255, 0.28) 50%, rgba(255, 255, 255, 0.05) 65%, transparent 85%);
-  transform: translateX(-100%);
-  animation: bw-ticket-sheen 0.88s cubic-bezier(0.16, 1, 0.3, 1) 0.04s forwards;
-  pointer-events: none;
-}
-@keyframes bw-ticket-sheen {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
+/* The receipt stays still while its lower strip rolls away from the left. */
+.bw-paper-ticket[data-tearing] { transition:none; }
+.bw-ticket-reference { display:grid;gap:5px;margin-top:24px;padding-top:16px;border-top:1px solid #ffffff26;opacity:0;transform:translateY(5px);transition:opacity .28s ease,transform .35s cubic-bezier(.16,1,.3,1); }
+.bw-ticket-reference span { font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#b4c9e7; }
+.bw-ticket-reference strong { font:600 14px/1.5 var(--bw-font-body,system-ui);letter-spacing:.08em;color:#fff; }
+.bw-paper-ticket .bw-ticket-curl { position:absolute;z-index:2;pointer-events:none;filter:none; }
+.bw-paper-ticket:is(.is-cutting,.is-cut) .bw-ticket-main { overflow:hidden;-webkit-mask:none;mask:none;transform-origin:90% 100%; }
+.bw-paper-ticket.is-cut .bw-ticket-reference { opacity:1;transform:none; }
+.bw-paper-ticket.is-cut .bw-ticket-brand > small { background:#69e4bd20;border-color:#69e4bd70;color:#adf5dc;box-shadow:none; }
 .bw-ticket-compose-form.is-issued { grid-template-columns: minmax(0, 1fr); justify-items: center; overflow: hidden; padding-bottom: 12px; }
 .bw-ticket-compose-form.is-issued > .bw-paper-ticket { width: min(100%, 440px); position: relative; top: auto; }
 .bw-ticket-composer.is-ticket-issued { width: min(650px, calc(100vw - 32px)); }
-.bw-paper-ticket.is-cut { padding-bottom: var(--torn-space, 0px); }
 .bw-ticket-issued-actions { width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center; }.bw-ticket-issued-actions p { font-size:13px;color:var(--bw-text-secondary);line-height:1.7;margin:0; }
 .bw-meeting-pass { position:relative;overflow:hidden; }.bw-meeting-pass .student-meeting-actions { border-top:1px dashed var(--bw-border);padding-top:18px; }
 .bw-meeting-stub { margin:18px -18px -18px;padding:18px;border-top:1px dashed var(--bw-border);background:var(--bw-bg-alt); }
@@ -248,4 +203,4 @@
 .bw-credential:focus-visible,.bw-hold-delete:focus-visible,.bw-delete-alternative:focus-visible { outline:2px solid var(--bw-primary);outline-offset:4px; }
 .bw-credential.is-progress { padding:18px; }.bw-credential.is-progress h2 { font-size:17px;margin:0 0 8px; }.bw-credential.is-progress progress { width:100%;height:5px;accent-color:var(--bw-primary);margin:8px 0 12px; }
 @media(max-width:700px) { .bw-ticket-compose-form { grid-template-columns:minmax(0,1fr);gap:28px; }.bw-ticket-compose-form > .bw-paper-ticket { position:relative; }.bw-undo-toast { bottom:16px;gap:8px;padding:10px; }.bw-undo-toast span { font-size:12px; }.bw-ticket-main { min-height:310px;padding:26px; }.bw-ticket-stub { padding:24px 26px; }.bw-ticket-main h3 { margin-top:38px;font-size:34px; } }
-@media(prefers-reduced-motion:reduce) { .bw-magnetic-cv,.bw-paper-ticket { transform:none;transition:none; } }
+@media(prefers-reduced-motion:reduce) { .bw-magnetic-cv,.bw-paper-ticket,.bw-ticket-reference { transform:none;transition:none; } }

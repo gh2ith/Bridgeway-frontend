@@ -189,14 +189,15 @@
         form.dataset.committed='true';chosen=id;ticketView='mine';
         commit(`Ticket ${id} opened`);render();
         if(!kinetic?.ticketPaper||!kinetic?.tearTicket){d.close();focusHeading();say('Ticket created in this workspace.');return;}
-        const receipt=preview||kinetic.ticketPaper(),origin=receipt.paper.getBoundingClientRect();receipt.title.textContent=subject.input.value.trim();receipt.body.textContent=body.input.value.trim();
+        const receipt=preview||kinetic.ticketPaper();receipt.title.textContent=subject.input.value.trim();receipt.body.textContent=body.input.value.trim();
         receipt.brand.querySelector('small').textContent='Created';receipt.stub.querySelector('strong').textContent=id;
         const note=E('p','Your ticket has been created.','support-issued-note');note.setAttribute('role','status');
         const view=B('View ticket',()=>{d.close();focusHeading();},true);view.disabled=true;
         form.classList.add('support-issued');d.classList.add('support-issued-dialog');form.setAttribute('aria-busy','true');
+        d.querySelector('h2').textContent='Ticket created';
         form.replaceChildren(receipt.paper,A(E('div',null,'support-issued-actions'),note,view));
         d.addEventListener('close',focusHeading,{once:true});
-        Promise.resolve().then(()=>kinetic.tearTicket(receipt.paper,origin)).catch(()=>{
+        Promise.resolve().then(()=>kinetic.tearTicket(receipt.paper)).catch(()=>{
           // The ticket is already recorded; an animation failure must never submit it again.
           note.textContent='Your ticket is ready to view.';
         }).finally(()=>{form.setAttribute('aria-busy','false');view.disabled=false;if(d.open)view.focus();say('Ticket created in this workspace.');});

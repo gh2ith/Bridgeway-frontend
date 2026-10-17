@@ -98,118 +98,139 @@
     paper.addEventListener('pointerleave',()=>{paper.style.transform='';});
     return {paper,title,body,brand,stub};
   }
-  function playSnapAcoustic(){
-    try {
-      const AudioCtx=window.AudioContext||window.webkitAudioContext;
-      if(!AudioCtx)return;
-      const ctx=new AudioCtx();
-      if(ctx.state==='suspended')ctx.resume();
-      const now=ctx.currentTime;
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      osc.type='triangle';
-      osc.frequency.setValueAtTime(320,now);
-      osc.frequency.exponentialRampToValueAtTime(80,now+0.06);
-      gain.gain.setValueAtTime(0.18,now);
-      gain.gain.exponentialRampToValueAtTime(0.001,now+0.07);
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.start(now);osc.stop(now+0.08);
-
-      const length=Math.floor(ctx.sampleRate*0.12);
-      const buffer=ctx.createBuffer(1,length,ctx.sampleRate);
-      const data=buffer.getChannelData(0);
-      for(let i=0;i<length;i++){
-        const t=i/length;
-        data[i]=(Math.random()*2-1)*Math.sin(t*Math.PI)*0.08;
+  // A deterministic paper edge keeps the remaining ticket and the loose stub matched.
+  const ticketTooth=x=>1.2+Math.abs(Math.sin(x*1.73)*Math.cos(x*.61))*3.2;
+  function ticketEdge(width,front=width){
+    const points=['0 0','100% 0','100% 100%'];
+    for(let x=width;x>=0;x-=4)points.push(`${x}px calc(100% - ${x<front?ticketTooth(x):0}px)`);
+    points.push('0 100%');return `polygon(${points.join(',')})`;
+  }
+  function ticketCurl(stub,width,height){
+    const canvas=el('canvas',null,'bw-ticket-curl'),ctx=canvas.getContext?.('2d');
+    if(!ctx)return null;
+    canvas.setAttribute('aria-hidden','true');
+    const ratio=Math.min(window.devicePixelRatio||1,2),pad=36,depth=260;
+    canvas.width=(width+pad*2)*ratio;canvas.height=depth*ratio;
+    canvas.style.width=(width+pad*2)+'px';canvas.style.height=depth+'px';canvas.style.left=-pad+'px';
+    const texture=el('canvas'),back=el('canvas'),layer=el('canvas');
+    texture.width=back.width=Math.ceil(width*ratio);texture.height=back.height=Math.ceil(height*ratio);
+    layer.width=canvas.width;layer.height=canvas.height;
+    const frontCtx=texture.getContext('2d'),backCtx=back.getContext('2d'),surface=layer.getContext('2d');
+    const style=getComputedStyle(stub),font=style.fontFamily;
+    for(const [paint,isBack] of [[frontCtx,false],[backCtx,true]]){
+      paint.scale(ratio,ratio);paint.beginPath();paint.moveTo(0,12);
+      for(let x=0;x<=width;x+=2)paint.lineTo(x,Math.max(ticketTooth(x),12-Math.sqrt(Math.max(0,144-(x<12?12-x:x>width-12?x-width+12:0)**2))));
+      paint.lineTo(width,height-18);paint.quadraticCurveTo(width,height,width-18,height);
+      paint.lineTo(18,height);paint.quadraticCurveTo(0,height,0,height-18);paint.closePath();paint.clip();
+      const fill=paint.createLinearGradient(0,0,width,height);
+      if(isBack){fill.addColorStop(0,'#f2f1e9');fill.addColorStop(.55,'#dce4ec');fill.addColorStop(1,'#b5c5d8');}
+      else{fill.addColorStop(0,style.getPropertyValue('--ticket-paper').trim()||'#16335d');fill.addColorStop(1,'#0d1e38');}
+      paint.fillStyle=fill;paint.fillRect(0,0,width,height);
+      // Fine, stationary fibers belong to the paper, so they travel with the curl.
+      for(let i=0;i<650;i++){
+        const x=(i*73.31)%width,y=(i*31.73)%height;
+        paint.fillStyle=isBack?'#ffffff30':'#ffffff08';paint.fillRect(x,y,.7+(i%3)*.4,.4);
       }
-      const noise=ctx.createBufferSource();noise.buffer=buffer;
-      const filter=ctx.createBiquadFilter();filter.type='bandpass';
-      filter.frequency.setValueAtTime(2200,now);filter.Q.setValueAtTime(1.5,now);
-      noise.connect(filter);filter.connect(ctx.destination);
-      noise.start(now);noise.onended=()=>ctx.close();
-    } catch {}
-  }
-  function burstFibers(target){
-    if(reduced.matches||!target)return;
-    const burst=el('div',null,'bw-ticket-burst');
-    for(let i=0;i<10;i++){
-      const p=el('span',null,'bw-ticket-fiber');
-      const x=10+i*8.5+(Math.random()*4-2);
-      const dx=(Math.random()-0.5)*36;
-      const dy=14+Math.random()*24;
-      p.style.cssText=`position:absolute;left:${x}%;top:calc(100% - 2px);width:${Math.random()>0.5?3:2}px;height:${Math.random()>0.5?2.5:1.5}px;background:${i%2===0?'#ffffff':'#7dd3fc'};border-radius:1px;pointer-events:none;`;
-      burst.append(p);
-      motion(p,[
-        {transform:'translate(0,0) scale(1)',opacity:0.95},
-        {transform:`translate(${dx}px,${dy}px) scale(0.6)`,opacity:0}
-      ],{duration:320+i*15,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+      if(!isBack){
+        paint.strokeStyle='#ffffff66';paint.lineWidth=1;paint.setLineDash([4,5]);paint.beginPath();paint.moveTo(18,1);paint.lineTo(width-18,1);paint.stroke();paint.setLineDash([]);
+        for(const selector of ['span','strong']){
+          const node=stub.querySelector(selector),textStyle=getComputedStyle(node),rect=node.getBoundingClientRect(),base=stub.getBoundingClientRect();
+          paint.font=`${textStyle.fontWeight} ${textStyle.fontSize} ${font}`;paint.fillStyle=textStyle.color;paint.textBaseline='middle';
+          paint.fillText(node.textContent,rect.left-base.left,rect.top-base.top+rect.height/2,width-48);
+        }
+      }
     }
-    target.append(burst);
-    setTimeout(()=>burst.remove(),500);
+    const columns=Math.ceil(width/7),rows=12,nx=1/Math.hypot(1,2.8),ny=2.8*nx,radius=15;
+    // Bend a textured sheet around a diagonal cylinder. The underside is a real
+    // second surface; perspective and normals provide the fold's light and shade.
+    const project=(x,y,front,drop)=>{
+      const distance=Math.max(0,(front-x-2.8*y)*nx),angle=Math.min(distance/radius,2.72);
+      const tail=Math.max(0,distance-radius*2.72),arc=radius*Math.sin(angle)+tail*Math.cos(angle);
+      const z=radius*(1-Math.cos(angle))+tail*Math.sin(angle);
+      let px=x+nx*(distance-arc),py=y+ny*(distance-arc);
+      const perspective=850/(850-z);px=width/2+(px-width/2)*perspective;py*=perspective;
+      const rotation=-.1*drop,dx=px-width/2;
+      return {x:pad+width/2+dx*Math.cos(rotation)-py*Math.sin(rotation)-14*drop,y:dx*Math.sin(rotation)+py*Math.cos(rotation)+96*drop*drop,z,angle,u:x*ratio,v:y*ratio};
+    };
+    function triangle(a,b,c){
+      const det=(b.u-a.u)*(c.v-a.v)-(c.u-a.u)*(b.v-a.v);
+      const angle=(a.angle+b.angle+c.angle)/3,isBack=Math.cos(angle)<0;
+      surface.save();surface.beginPath();surface.moveTo(a.x,a.y);surface.lineTo(b.x,b.y);surface.lineTo(c.x,c.y);surface.closePath();surface.clip();
+      const ax=((b.x-a.x)*(c.v-a.v)-(c.x-a.x)*(b.v-a.v))/det;
+      const bx=((c.x-a.x)*(b.u-a.u)-(b.x-a.x)*(c.u-a.u))/det;
+      const ay=((b.y-a.y)*(c.v-a.v)-(c.y-a.y)*(b.v-a.v))/det;
+      const by=((c.y-a.y)*(b.u-a.u)-(b.y-a.y)*(c.u-a.u))/det;
+      surface.transform(ax,ay,bx,by,a.x-ax*a.u-bx*a.v,a.y-ay*a.u-by*a.v);
+      surface.drawImage(isBack?back:texture,0,0);
+      // The narrow dark valley and bright ridge make the roll legible at phone size.
+      const shade=isBack?.12+.2*Math.sin(angle):.32*Math.sin(angle);
+      surface.globalCompositeOperation='source-atop';surface.fillStyle=`rgba(8,24,43,${shade})`;surface.fillRect(0,0,texture.width,texture.height);
+      surface.restore();
+    }
+    return {canvas,draw(front,drop){
+      surface.setTransform(ratio,0,0,ratio,0,0);surface.clearRect(0,0,canvas.width/ratio,depth);
+      const grid=Array.from({length:rows+1},(_,r)=>Array.from({length:columns+1},(_,c)=>project(c*width/columns,r*height/rows,front,drop))),triangles=[];
+      for(let r=0;r<rows;r++)for(let c=0;c<columns;c++){
+        const a=grid[r][c],b=grid[r][c+1],d=grid[r+1][c],e=grid[r+1][c+1];triangles.push([a,b,d],[b,e,d]);
+      }
+      triangles.sort((a,b)=>a.reduce((sum,p)=>sum+p.z,0)-b.reduce((sum,p)=>sum+p.z,0));
+      triangles.forEach(points=>triangle(...points));
+      ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,canvas.width/ratio,depth);
+      ctx.globalAlpha=1-Math.pow(drop,1.5);ctx.shadowColor='#08172e38';ctx.shadowBlur=12;ctx.shadowOffsetY=6;
+      ctx.drawImage(layer,0,0,canvas.width/ratio,depth);ctx.shadowColor='transparent';
+      // A thin exposed stock edge follows the actual torn top of the sheet.
+      ctx.beginPath();
+      for(let x=0;x<=Math.min(width,front);x+=2){const p=project(x,ticketTooth(x),front,drop);if(x===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);}
+      ctx.strokeStyle='#e3e8eec9';ctx.lineWidth=.8;ctx.stroke();ctx.globalAlpha=1;
+    }};
   }
-  async function tearTicket(paper,from,dialogFrom){
+  async function tearTicket(paper){
     if(paper.dataset.tearing)return;
     paper.dataset.tearing='true';paper.style.transform='';
     const stub=paper.querySelector('.bw-ticket-stub'),main=paper.querySelector('.bw-ticket-main');
-    const stubHeight=stub.getBoundingClientRect().height;
+    const reference=el('div',null,'bw-ticket-reference');
+    reference.append(el('span','Ticket reference'),el('strong',stub.querySelector('strong').textContent));main.append(reference);
+    const width=paper.getBoundingClientRect().width,modal=paper.closest?.('dialog');
+    let curl,frame=0,settle;
     const finish=()=>{
-      paper.style.setProperty('--torn-space',stubHeight+'px');
-      paper.classList.remove('is-cutting');paper.classList.add('is-cut');stub.hidden=true;
-    };
-    if(reduced.matches){finish();return;}
-    const modal=paper.closest?.('dialog');
-    if(modal&&dialogFrom){const target=modal.getBoundingClientRect();motion(modal,[{width:dialogFrom.width+'px',height:dialogFrom.height+'px'},{width:target.width+'px',height:target.height+'px'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});}
-    const r=paper.getBoundingClientRect(),scale=r.width?from.width/r.width:1;
-    try {
-      await motion(paper,[{transform:'translate('+(from.left-r.left)+'px,'+(from.top-r.top)+'px) scale('+scale+')'},{transform:'none'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
-      if(!paper.isConnected)return;
-      // Phase 1 (140ms): Physical cardstock tension pull
-      await Promise.all([
-        motion(main,[
-          {transform:'none'},
-          {transform:'translateY(-4px)'}
-        ],{duration:140,easing:'ease-out',fill:'forwards'}),
-        motion(stub,[
-          {transform:'none'},
-          {transform:'translateY(3px)'}
-        ],{duration:140,easing:'ease-out',fill:'forwards'})
-      ]);
-      if(!paper.isConnected)return;
-      // Phase 2 (260ms): Crisp horizontal perforation fracture & clean separation
-      paper.classList.add('is-cutting');
-      burstFibers(main);
-      playSnapAcoustic();
-      const snap='perspective(900px) translateY(16px) rotateX(14deg) scale(0.99)';
-      await Promise.all([
-        motion(stub,[
-          {transform:'translateY(3px)'},
-          {transform:'perspective(900px) translateY(8px) rotateX(6deg) scale(0.995)',offset:0.35},
-          {transform:snap}
-        ],{duration:260,easing:'cubic-bezier(.2,.9,.3,1)',fill:'forwards'}),
-        motion(main,[
-          {transform:'translateY(-4px)'},
-          {transform:'translateY(-6px)'}
-        ],{duration:260,easing:'ease-out',fill:'forwards'})
-      ]);
-      if(!paper.isConnected)return;
-      // Phase 3 (stub 440ms, main 400ms): Gravity slide ejection & damped elastic cardstock recoil
+      cancelAnimationFrame(frame);curl?.canvas.remove();stub.hidden=true;stub.style.visibility='';
+      main.style.transform='';main.style.clipPath=ticketEdge(width);
+      paper.style.height='';
       paper.classList.remove('is-cutting');paper.classList.add('is-cut');
-      await Promise.all([
-        motion(stub,[
-          {transform:snap,opacity:1},
-          {transform:'perspective(900px) translateY(60px) rotateX(20deg) scale(0.96)',opacity:0.9,offset:0.35},
-          {transform:'perspective(900px) translateY(120px) rotateX(26deg) scale(0.93)',opacity:0.45,offset:0.70},
-          {transform:'perspective(900px) translateY(175px) rotateX(32deg) scale(0.90)',opacity:0}
-        ],{duration:440,easing:'cubic-bezier(.35,0,.75,.45)',fill:'forwards'}),
-        motion(main,[
-          {transform:'translateY(-6px)'},
-          {transform:'translateY(3px)',offset:0.30},
-          {transform:'translateY(-1.2px)',offset:0.60},
-          {transform:'translateY(0.4px)',offset:0.85},
-          {transform:'none'}
-        ],{duration:400,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'})
-      ]);
-    } finally { finish(); }
+      modal?.removeEventListener?.('close',finish);window.removeEventListener('resize',finish);
+      document.removeEventListener?.('visibilitychange',onVisibility);reduced.removeEventListener?.('change',finish);
+      settle?.();
+    };
+    const onVisibility=()=>{if(document.hidden)finish();};
+    if(reduced.matches||document.hidden){finish();return;}
+    try{
+      curl=ticketCurl(stub,width,stub.getBoundingClientRect().height);
+      if(!curl){finish();return;}
+      curl.canvas.style.top=main.getBoundingClientRect().height+'px';paper.append(curl.canvas);
+      paper.classList.add('is-cutting');stub.style.visibility='hidden';
+      modal?.addEventListener('close',finish,{once:true});window.addEventListener('resize',finish,{once:true});
+      document.addEventListener('visibilitychange',onVisibility);reduced.addEventListener?.('change',finish,{once:true});
+      await new Promise(resolve=>{
+        settle=resolve;const start=performance.now();
+        const smooth=t=>t*t*(3-2*t);
+        function tick(now){
+          const t=now-start;
+          if(!paper.isConnected||t>=1580){finish();return;}
+          let front;
+          if(t<180)front=22*smooth(t/180);
+          else if(t<1120)front=22+(width-27)*smooth((t-180)/940);
+          else if(t<1230)front=width-5+13*smooth((t-1120)/110);
+          else front=width+8+40*smooth(Math.min(1,(t-1230)/350));
+          const drop=Math.max(0,(t-1230)/350);
+          curl.draw(front,drop);main.style.clipPath=ticketEdge(width,front);
+          const tension=t<1230?Math.min(1,front/width):Math.exp(-drop*6)*Math.cos(drop*10);
+          main.style.transform=`translateY(${-1.5*tension}px) rotate(${.22*tension}deg)`;
+          if(t>=1230)paper.classList.add('is-cut');
+          frame=requestAnimationFrame(tick);
+        }
+        tick(start);
+      });
+    }finally{finish();}
   }
   function credential({student,company,hours,complete,start,end}){
     const card=el('section',null,'bw-credential'+(complete?' is-complete':''));card.setAttribute('aria-label',complete?'Training completion card':'Training verification progress');
