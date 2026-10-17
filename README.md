@@ -23,9 +23,7 @@ shared/js/                      Portal model, behavior, navigation, and effects
 shared/data/                    Existing JSON reference/demo data
 assets/                         Original logo and reusable media
 docs/                           Reference specification, project notes, saved login concept
-tools/check-site.mjs             Structure, syntax, and link validation
-tools/compact-css.mjs            Safe one-rule-per-line CSS formatting
-tools/refactor-site.mjs          One-time migration utility; do not rerun
+tools/                          Workbook formatting utilities
 ```
 
 The homepage uses `pages/home/index.html`, `home.css`, and `home.js`. Every actual page lives in its named folder under `pages/`; only the homepage entry point remains at the repository root.
@@ -42,7 +40,7 @@ The homepage uses `pages/home/index.html`, `home.css`, and `home.js`. Every actu
 
 ## Validate
 
-Run `node tools/check-site.mjs`, `node tools/check-workflow.mjs`, `node tools/check-cv-preview.mjs`, and `node tools/check-ux.mjs`. These validate page structure and links, workflow boundaries, metadata-only CV preview behavior, and in-memory edit tracking. Also test changed interactions in the browser. Unfinished form protection is page-local only: it does not save drafts or send records.
+Test changed interactions directly in the browser across all roles and viewports. Unfinished form protection is page-local only: it does not save drafts or send records.
 
 Edit the actual pages inside `pages/`. Use these folder-based URLs for links and bookmarks; the old root-level portal redirects have been removed. Root `index.html` still opens the homepage and preserves query parameters and section hashes.
 

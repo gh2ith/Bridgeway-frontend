@@ -25,4 +25,3 @@ These rules reflect the user's explicit clarification. Read them before changing
 - Planned AI matching compares the student's CV with each internship's requirements. A CV match is role fit, not acceptance probability. Do not add a "Why this match?" feature. Until AI is connected, do not display fabricated match percentages at all. CV selection currently retains only filename and size in browser-session storage, never document contents or real analysis.
 - Historical reports, screenshots, and backup archives can contain superseded workflows. They are not a source of authority over these rules.
 
-Run `node tools/check-site.mjs` and `node tools/check-workflow.mjs` after relevant changes.
