@@ -15,7 +15,9 @@ const scope = {
   document:{getElementById:id => ({studentCvFile:input, studentCvStatus:status, removeStudentCv:remove, cvMatchPreviewNote:notice})[id], querySelectorAll:() => scores}
 };
 runInNewContext(read('shared/js/portal.js').split('/* Shared sample relationships.')[0], scope);
-runInNewContext('// Select a local file' + read('pages/student-profile/student-profile.js').split('// Select a local file')[1], scope);
+scope.root={querySelector:selector=>scope.document.getElementById(selector.slice(1))};
+scope.buildProfile=()=>{};
+runInNewContext('// Select a local file' + read('pages/student-profile/student-profile.js').split('// Select a local file')[1].split('// End local CV selection.')[0], scope);
 const refresh = () => runInNewContext('function updateCvMatches() {' + read('pages/student-dashboard/student-dashboard.js').split('function updateCvMatches() {')[1].split('window.addEventListener(\'pageshow\', updateCvMatches);')[0], scope);
 const select = file => {input.files = [file]; input.handlers.change();};
 refresh();
@@ -26,7 +28,7 @@ assert.equal(scope.window.BridgewayCV.read().name, 'sample-cv.pdf');
 assert(status.textContent.includes('not uploaded or analyzed'));
 assert.deepEqual(Object.keys(JSON.parse([...storage.values()][0])).sort(), ['name', 'size']);
 refresh();
-assert(scores.every(score => !score.hidden) && !notice.hidden);
+assert(scores.every(score => score.hidden) && notice.hidden, 'Selecting a CV must not reveal fabricated AI scores.');
 for (const file of [{name:'bad.txt', size:20}, {name:'empty.pdf', size:0}, {name:'large.docx', size:6 * 1024 * 1024}]) {
   select(file);
   assert.equal(scope.window.BridgewayCV.read().name, 'sample-cv.pdf', 'Invalid files preserve the previous selection.');
@@ -42,4 +44,4 @@ assert.equal(scope.window.BridgewayCV.read(), null);
 scope.sessionStorage.setItem = () => {throw Error('Storage unavailable');};
 select({name:'local-only.pdf', size:100});
 assert(status.textContent.includes('cannot carry over to listings'));
-console.log('PASS: CV selection, replacement/removal, validation, metadata-only storage, and no-CV/sample-score states.');
+console.log('PASS: CV selection, replacement/removal, validation, metadata-only storage, and no synthetic match scores.');

@@ -2,6 +2,7 @@
 <html lang="en" data-page="supervisor-dashboard">
 <head>
   <meta charset="UTF-8">
+  <script src="../../shared/js/portal-theme-init.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bridgeway — Academic Supervisor Portal</title>
   <meta name="description" content="Bridgeway Academic Supervisor Portal — Review weekly student logbooks, verify training hours, and view company evaluations.">
@@ -12,16 +13,18 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <link rel="stylesheet" href="../../shared/css/base.css">
-  <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/base.css?v=night-2">
+  <link rel="stylesheet" href="../../shared/css/portal.css?v=night-2">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=9">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
 
-<link rel="stylesheet" href="supervisor-dashboard.css?v=6">
-  <link rel="stylesheet" href="../../shared/css/evaluation-radar.css?v=1">
-  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=3">
-  <link rel="stylesheet" href="../../shared/css/interactions.css">
+<link rel="stylesheet" href="supervisor-dashboard.css?v=roster-progress-9">
+  <link rel="stylesheet" href="../../shared/css/evaluation-radar.css?v=portal-clean-2">
+  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=portal-clean-2">
+  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
+<link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
+<link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-hinge-23"><script src="../../shared/js/bridgeway-kinetic.js?v=decision-dialogs-59"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=support-headset-64">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="supervisor" id="page-supervisor-dashboard">
 
@@ -84,7 +87,7 @@
       <div id="supervisorHeadingTools" class="supervisor-heading-tools"></div>
     </section>
 
-    <section class="bw-kpi-grid" data-arrange-toolbar="#supervisorHeadingTools">
+    <section class="bw-kpi-grid">
       <div class="bw-kpi-card" data-style="s3" data-onclick="switchTab-tab-roster-1">
         <div class="bw-kpi-icon icon--blue">
           <i class="bi bi-people-fill"></i>
@@ -155,7 +158,7 @@
             </div>
           </div>
 
-          <div class="bw-table-responsive">
+          <div class="bw-table-responsive supervisor-roster-table">
             <table class="bw-table" id="supervisedStudentsTable">
               <thead>
                 <tr>
@@ -394,7 +397,7 @@
 <div id="supervisorEvaluationSubmitted"><dl class="evaluation-metadata"><div><dt>Host company</dt><dd id="supervisorEvaluationCompany"></dd></div><div><dt>Evaluated by</dt><dd id="supervisorEvaluationMentor"></dd></div><div><dt>Submitted</dt><dd id="supervisorEvaluationDate"></dd></div><div><dt>Overall score</dt><dd id="supervisorEvaluationScore"></dd></div></dl>
 <div class="evaluation-radar-workspace"><div id="supervisorEvaluationRadar"></div><div><h3>Assessment scores</h3><p class="portal-muted">Each criterion is rated from 1 (Weak) to 5 (Excellent).</p><div class="bw-table-responsive"><table class="bw-table evaluation-score-table"><thead><tr><th scope="col">Criterion</th><th scope="col">Score</th><th scope="col">Rating</th></tr></thead><tbody id="supervisorEvaluationScores"></tbody></table></div></div></div>
 <h3>Company comments</h3><p id="supervisorEvaluationComments" class="evaluation-comments"></p></div>
-<p class="portal-muted evaluation-demo-note">Fixed sample data for this frontend preview.</p></section></div></section>
+</section></div></section>
     </section>
   </main></div>
 
@@ -475,20 +478,25 @@
       <div class="bw-modal-footer">
         <button type="button" class="bw-btn-block bw-btn-outline" data-style="s54" data-close-modal="requestRevisionModal">Cancel</button>
         <button type="button" class="bw-btn-block" id="confirmRevisionModalBtn" data-style="s69" data-presentation="font-weight font-weight-700">
-          <i class="bi bi-arrow-counterclockwise me-1"></i> Preview revision request
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Request revision
         </button>
       </div>
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=19"></script>
+  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
 
   <script src="../../shared/js/navigation.js"></script>
   <script src="../../shared/js/evaluation-radar.js?v=1"></script>
-  <script src="supervisor-dashboard.js?v=7"></script>
-<script src="../../shared/js/enhancements.js"></script>
+  <script src="supervisor-dashboard.js?v=student-details-1"></script>
+<script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
 
-  <script src="../../shared/js/interactions.js"></script>
-  <script src="../../shared/js/portal-motion.js?v=3"></script>
+  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-motion.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
+  <script src="../../shared/js/report-visibility.js?v=1"></script><script src="../../shared/js/workbook-download.js?v=workbook-clean-44"></script><script src="../../shared/js/workspace-cycle.js?v=support-headset-64"></script>
+  <script src="../../shared/js/partnership-review.js?v=ticket-lifecycle-54"></script>
+
+<script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
 </body>
 </html>

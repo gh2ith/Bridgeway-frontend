@@ -38,7 +38,7 @@
 #page-company-dashboard [data-style="s38"] { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 #page-company-dashboard [data-style="s39"] { font-size: 13px; color: var(--bw-text-muted); margin: 0 0 10px 0; }
 #page-company-dashboard [data-style="s40"] { display: flex; gap: 8px; }
-#page-company-dashboard [data-style="s41"] { text-decoration: none; padding: 4px 12px; font-size: 13px; background: var(--bw-primary); color: white; }
+#page-company-dashboard [data-style="s41"] { text-decoration: none; padding: 4px 12px; font-size: 13px; background:var(--bw-action,var(--bw-primary)); color: white; }
 #page-company-dashboard [data-style="s42"] { padding: 4px 12px; font-size: 13px; }
 #page-company-dashboard [data-style="s43"] { font-size: 0.86rem; color: var(--bw-text); display: flex; flex-direction: column; gap: 12px; }
 #page-company-dashboard [data-style="s44"] { background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 10px; padding: 12px; }
@@ -56,9 +56,9 @@
   background:var(--bw-bg);font:14px/1.6 Inter,system-ui,sans-serif;
 }
 [data-theme="dark"] #page-company-dashboard {
-  --bw-bg:#101722; --bw-bg-alt:#1c2839; --bw-surface:#162130; --bw-border:#314056;
-  --bw-text:#edf2fa; --bw-text-secondary:#c0cbe0; --bw-text-muted:#a6b4ca;
-  --bw-primary:#9abbff; --bw-primary-light:#223653; --company-shadow:none;
+  --bw-bg:var(--bw-night-bg); --bw-bg-alt:var(--bw-night-alt); --bw-surface:var(--bw-night-surface); --bw-border:var(--bw-night-border);
+  --bw-text:var(--bw-night-text); --bw-text-secondary:var(--bw-night-secondary); --bw-text-muted:var(--bw-night-muted);
+  --bw-primary:var(--bw-night-primary); --bw-primary-light:#203b60; --company-shadow:none;
 }
 #page-company-dashboard .bw-company-layout { max-width:1600px;padding:28px 36px 60px;gap:36px;align-items:start; }
 #page-company-dashboard .bw-company-content { min-width:0;gap:28px;--bw-text-muted:var(--bw-text-secondary); }
@@ -76,7 +76,6 @@
 #page-company-dashboard .company-page-heading p { font-size:14px;line-height:1.7; }
 .company-heading-tools { display:flex;flex-direction:column;align-items:flex-end;gap:8px; }
 #page-company-dashboard .bw-bridge-detail { display:none; }
-#page-company-dashboard .bw-arrange-hint { display:none; }
 #page-company-dashboard .bw-kpi-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;border:0;border-radius:0;background:transparent;overflow:visible; }
 #page-company-dashboard .bw-kpi-grid .bw-kpi-card { position:relative;display:flex;flex-direction:column;gap:14px;padding:22px;border:1px solid var(--bw-border);border-radius:14px;background:var(--bw-surface);box-shadow:var(--company-shadow);min-height:164px;transition:border-color .18s,background-color .18s; }
 #page-company-dashboard .bw-kpi-card:hover { border-color:var(--bw-primary);transform:none; }
@@ -87,9 +86,6 @@
 #page-company-dashboard .company-metric-label > i { position:absolute;right:18px;top:18px;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--bw-primary-light);color:var(--bw-primary);font-size:15px; }
 #page-company-dashboard .company-metric-caption { font-size:11px;line-height:1.5;color:var(--bw-text-muted); }
 #page-company-dashboard .company-metric-caption > i { color:var(--bw-text-muted); }
-#page-company-dashboard .bw-arrange-bar { min-height:32px;margin:0;padding:0;justify-content:flex-end; }
-#page-company-dashboard .bw-arrange-bar > :first-child { font-size:11px;color:var(--bw-text-muted); }
-#page-company-dashboard .bw-arrange-toggle { min-height:34px;font-size:11px;background:transparent;border:0;box-shadow:none; }
 #page-company-dashboard .company-overview-layout { display:block; }
 #page-company-dashboard :is(.company-listings,.applicants-workspace,.bw-card-panel,.partner-panel) { border:1px solid var(--bw-border);border-radius:16px;background:var(--bw-surface);box-shadow:var(--company-shadow); }
 #page-company-dashboard .company-section-heading { padding:26px 28px;gap:20px;border-bottom:1px solid var(--bw-border); }
@@ -141,17 +137,6 @@
 #page-company-dashboard .portal-listing-context { font-size:12px;margin:0 0 16px;color:var(--bw-text-muted);font-weight:500; }
 #page-company-dashboard .bw-company-content:not([data-current-view="tab-posts"]) > .bw-kpi-grid { display:none; }
 #page-company-dashboard :is(.bw-weekly-overview-grid,.evaluation-workspace) { display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,2fr);gap:24px;align-items:start; }
-#page-company-dashboard :is(.company-student-directory,.evaluation-student-picker) { position:sticky;top:28px;padding:24px;background:var(--bw-surface);border:1px solid var(--bw-border);border-radius:16px;box-shadow:var(--company-shadow); }
-#page-company-dashboard :is(.company-student-directory,.evaluation-student-picker) h2 { margin:0 0 7px;font-size:18px;font-weight:600; }
-#page-company-dashboard :is(.company-student-directory,.evaluation-student-picker) > p { font-size:13px;line-height:1.7;margin-bottom:18px;color:var(--bw-text-muted); }
-#page-company-dashboard :is(.company-student-directory,.evaluation-student-picker) .company-search input { width:100%;font-size:12px; }
-.company-student-list { display:flex;flex-direction:column;gap:10px;max-height:480px;overflow-y:auto;padding:3px;margin-top:20px; }
-#page-company-dashboard .company-student-button { position:relative;display:block;width:100%;text-align:left;padding:17px 16px;border:1px solid var(--bw-border);border-radius:10px;background:var(--bw-surface);color:var(--bw-text);cursor:pointer;box-shadow:none;transform:none; }
-#page-company-dashboard .company-student-button:hover { background:var(--bw-bg-alt);border-color:var(--bw-primary); }
-.company-student-button :is(strong,span,small) { display:block; }
-.company-student-button strong { font-size:14px;font-weight:600;line-height:1.5; }
-.company-student-button :is(span,small),.company-student-college { font-size:12px;color:var(--bw-text-muted);margin-top:5px;line-height:1.6; }
-#page-company-dashboard .company-student-button[aria-pressed="true"] { border-color:var(--bw-primary);background:var(--bw-primary-light);box-shadow:inset 3px 0 var(--bw-primary); }
 .company-selection-content { min-width:0; }
 .company-selection-prompt { min-height:410px;padding:48px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid var(--bw-border);border-radius:16px;background:var(--bw-surface);box-shadow:var(--company-shadow); }
 .company-selection-prompt i { display:grid;place-items:center;width:62px;height:62px;border-radius:18px;background:var(--bw-primary-light);font-size:25px;color:var(--bw-primary);margin-bottom:22px; }
@@ -170,7 +155,6 @@
 #page-company-dashboard .bw-form-label { font-size:13px; }
 #page-company-dashboard .evaluation-form-area .bw-card-panel { padding:28px; }
 #page-company-dashboard .bw-card-panel-header { margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--bw-border); }
-#page-company-dashboard .bw-rubric-hud { padding:20px;background:var(--bw-bg-alt);border:0;border-radius:12px; }
 #page-company-dashboard .bw-rubric-rating-row { border-radius:0;border:0;border-bottom:1px solid var(--bw-border);padding:20px 0;gap:16px;margin:0; }
 #page-company-dashboard .bw-rubric-criterion-name { font-weight:600;font-size:14px; }
 #page-company-dashboard .bw-rubric-criterion-desc { font-size:12px;margin-top:4px;line-height:1.7; }
@@ -272,15 +256,25 @@
 .company-meeting-form { display:grid;gap:10px;margin:20px 0; }
 /* Applications fit the canvas; smaller screens use labeled rows, not a scroll rail. */
 #page-company-dashboard #tab-candidates .portal-table-hint { display:none; }
-#page-company-dashboard #tab-candidates .bw-table-container { overflow:visible; }
-#page-company-dashboard #tab-candidates .bw-table { width:100%;min-width:0;table-layout:fixed; }
-#page-company-dashboard #tab-candidates .bw-table :is(th,td) { min-width:0;max-width:none;white-space:normal;overflow-wrap:anywhere;padding:18px 12px; }
-#page-company-dashboard #tab-candidates .bw-table tr > :first-child { width:28%;position:static;box-shadow:none; }
-#page-company-dashboard #tab-candidates .bw-table tr > :nth-child(2) { width:13%; }
-#page-company-dashboard #tab-candidates .bw-table tr > :nth-child(3) { width:20%; }
-#page-company-dashboard #tab-candidates .bw-table tr > :nth-child(4) { width:12%; }
-#page-company-dashboard #tab-candidates .bw-table tr > :nth-child(5) { width:10%; }
-#page-company-dashboard #tab-candidates .bw-table tr > :last-child { width:17%; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table-container { overflow:visible; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .applicants-workspace { container-type:inline-size; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table { width:100%;min-width:0;table-layout:fixed; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table :is(th,td) { min-width:0;max-width:none;white-space:normal;overflow-wrap:break-word;padding:18px 12px; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tr > :first-child { width:25%;position:static;box-shadow:none; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tr > :nth-child(2) { width:12%; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tr > :nth-child(3) { width:21%; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tr > :nth-child(4) { width:10%; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tr > :nth-child(5) { width:14%; }
+#page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tr > :last-child { width:18%; }
+@container(max-width:900px) {
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table thead { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); }
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tbody { display:block; }
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tbody > tr:not([hidden]):not([style*="display: none"]):not([style*="display:none"]):not(.bw-record-expanded) { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px;border-bottom:1px solid var(--bw-border); }
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table tbody > tr:not(.bw-record-expanded) > td { display:block;width:auto;padding:0!important;border:0; }
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table td::before { content:attr(data-mobile-label);display:block;margin-bottom:6px;font-size:12px;color:var(--bw-text-secondary); }
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table td:first-child { grid-column:1/-1; }
+ #page-company-dashboard :is(#tab-candidates,#tab-accepted-students) .bw-table td:first-child::before { display:none; }
+}
 #page-company-dashboard #tab-candidates .spotlight-review { white-space:normal;max-width:100%; }
 #page-company-dashboard #tab-candidates [data-style="s6"] > div { min-width:0; }
 .company-meetings-panel { border:1px solid var(--bw-border);border-radius:16px;background:var(--bw-surface);overflow:hidden; }

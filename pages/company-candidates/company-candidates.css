@@ -14,4 +14,6 @@
 #page-company-candidates [data-style="s14"] { background: linear-gradient(135deg, #059669, #047857); }
 #page-company-candidates [data-style="s15"] { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 #page-company-candidates [data-style="s16"] { background: linear-gradient(135deg, #f59e0b, #d97706); }
-#page-company-candidates [data-style="s17"] { background: var(--bw-primary); color: #fff; border-color: var(--bw-primary); }
+#page-company-candidates [data-style="s17"] { background:var(--bw-action,var(--bw-primary)); color: #fff; border-color:var(--bw-action,var(--bw-primary)); }
+/* Reserve space for the compact GPA heading and value before long role titles. */
+#page-company-candidates #portalMain #candidateTable th:nth-child(4) { width:132px;white-space:nowrap; }

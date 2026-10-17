@@ -736,6 +736,10 @@
 
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
+    if (loginThemeToggle) {
+      const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+      loginThemeToggle.setAttribute('aria-label', label);loginThemeToggle.title = label;
+    }
 
     const isDark = theme === 'dark';
     if (loginThemeIcon) {

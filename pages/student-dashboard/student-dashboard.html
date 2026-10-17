@@ -2,6 +2,8 @@
 <html lang="en" data-page="student-dashboard">
 <head>
   <meta charset="UTF-8">
+  <script src="../../shared/js/portal-theme-init.js"></script>
+  <script src="../../shared/js/student-workspace-init.js?v=1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bridgeway — Student Portal Dashboard</title>
   <meta name="description" content="Bridgeway Student Portal — Curated internship discovery, 1-click applications, and verified 8-week logbook tracking.">
@@ -12,16 +14,23 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <link rel="stylesheet" href="../../shared/css/base.css">
-  <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/base.css?v=night-2">
+  <link rel="stylesheet" href="../../shared/css/portal.css?v=night-2">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=11">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
 
-  <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="student-dashboard.css?v=8">
-  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=4">
-</head>
+  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
+  <link rel="stylesheet" href="student-dashboard.css?v=compact-grid-10">
+  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=portal-clean-2">
+<link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
+<link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-hinge-23"><script src="../../shared/js/bridgeway-kinetic.js?v=decision-dialogs-59"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=support-headset-64">
+  <link rel="stylesheet" href="../../shared/css/opportunity-deck.css?v=catalog-search-49">
+  <link rel="stylesheet" href="../../shared/css/student-chrome.css?v=my-tickets-7">
+  <link rel="stylesheet" href="../../shared/css/student-training.css?v=journal-2">
+  <link rel="stylesheet" href="../../shared/css/student-training-journal.css?v=apple-3">
+  <link rel="stylesheet" href="../student-profile/student-profile.css?v=persistent-profile-7">
+<link rel="stylesheet" href="../../shared/css/evaluation-radar.css?v=portal-clean-2"></head>
 <body class="company-workspace portal-unified" data-portal-role="student" id="page-student-dashboard">
 
   <div class="bw-company-layout"><aside class="bw-masar-sidebar" aria-label="Student navigation"><div class="bw-masar-top"><div class="bw-masar-header">
@@ -82,7 +91,7 @@
       <h1 class="bw-title">Student Dashboard</h1></div>
     </section>
 
-    <section class="bw-kpi-grid" data-arrange-toolbar="#studentDashboardHeading">
+    <section class="bw-kpi-grid">
       <div class="bw-kpi-card">
         <div class="bw-kpi-icon icon--blue">
           <i class="bi bi-briefcase"></i>
@@ -135,7 +144,7 @@
             <span id="acceptedInternshipNotice" hidden><i class="bi bi-lock" aria-hidden="true"></i> Accepted internship · View-only</span>
           </div>
 
-          <p class="cv-preview-note" id="cvMatchPreviewNote" hidden>CV match scores are samples, not AI analysis or acceptance probabilities.</p>
+          <p class="cv-preview-note" id="cvMatchPreviewNote" hidden></p>
           <div class="bw-filter-row">
             <div class="bw-search-input-wrap">
               <i class="bi bi-search bw-search-icon"></i>
@@ -161,7 +170,7 @@
               <div>
                 <div class="bw-opp-header">
                   <div class="bw-opp-company-logo">NC</div>
-                  <div class="cv-match-state"><span class="bw-opp-match-pill" data-cv-score="98" hidden><i class="bi bi-stars" aria-hidden="true"></i> 98% CV match · Sample</span><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Upload your CV to see your match</a></div>
+                  <div class="cv-match-state"><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Select your CV before applying</a></div>
                 </div>
                 <h3 class="bw-opp-title">.NET Full-Stack Developer Intern</h3>
                 <div class="bw-opp-company-name">Nexus Cloud Systems • Amman (King Hussein Business Park)</div>
@@ -196,7 +205,7 @@
               <div>
                 <div class="bw-opp-header">
                   <div class="bw-opp-company-logo">CS</div>
-                  <div class="cv-match-state"><span class="bw-opp-match-pill" data-cv-score="94" hidden><i class="bi bi-stars" aria-hidden="true"></i> 94% CV match · Sample</span><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Upload your CV to see your match</a></div>
+                  <div class="cv-match-state"><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Select your CV before applying</a></div>
                 </div>
                 <h3 class="bw-opp-title">Cybersecurity SOC Analyst Intern</h3>
                 <div class="bw-opp-company-name">Cybershield Defense • Amman (Abdali Innovation Hub)</div>
@@ -231,7 +240,7 @@
               <div>
                 <div class="bw-opp-header">
                   <div class="bw-opp-company-logo">AS</div>
-                  <div class="cv-match-state"><span class="bw-opp-match-pill" data-cv-score="91" hidden><i class="bi bi-stars" aria-hidden="true"></i> 91% CV match · Sample</span><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Upload your CV to see your match</a></div>
+                  <div class="cv-match-state"><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Select your CV before applying</a></div>
                 </div>
                 <h3 class="bw-opp-title">Cloud & DevOps Trainee</h3>
                 <div class="bw-opp-company-name">Aspire Cloud Services • Amman (Sweifieh)</div>
@@ -266,7 +275,7 @@
               <div>
                 <div class="bw-opp-header">
                   <div class="bw-opp-company-logo">OJ</div>
-                  <div class="cv-match-state"><span class="bw-opp-match-pill" data-cv-score="96" hidden><i class="bi bi-stars" aria-hidden="true"></i> 96% CV match · Sample</span><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Upload your CV to see your match</a></div>
+                  <div class="cv-match-state"><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Select your CV before applying</a></div>
                 </div>
                 <h3 class="bw-opp-title">AI & Big Data Analytics Intern</h3>
                 <div class="bw-opp-company-name">Orange Telecom Jordan • Orange Coding Academy</div>
@@ -301,7 +310,7 @@
               <div>
                 <div class="bw-opp-header">
                   <div class="bw-opp-company-logo">TC</div>
-                  <div class="cv-match-state"><span class="bw-opp-match-pill" data-cv-score="89" hidden><i class="bi bi-stars" aria-hidden="true"></i> 89% CV match · Sample</span><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Upload your CV to see your match</a></div>
+                  <div class="cv-match-state"><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Select your CV before applying</a></div>
                 </div>
                 <h3 class="bw-opp-title">Frontend React Developer Intern</h3>
                 <div class="bw-opp-company-name">Tech Corp Inc. • Amman (Downtown Office)</div>
@@ -336,7 +345,7 @@
               <div>
                 <div class="bw-opp-header">
                   <div class="bw-opp-company-logo">FT</div>
-                  <div class="cv-match-state"><span class="bw-opp-match-pill" data-cv-score="92" hidden><i class="bi bi-stars" aria-hidden="true"></i> 92% CV match · Sample</span><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Upload your CV to see your match</a></div>
+                  <div class="cv-match-state"><a class="cv-upload-link" href="../student-profile/student-profile.html#student-cv">Select your CV before applying</a></div>
                 </div>
                 <h3 class="bw-opp-title">Mobile Flutter Developer Intern</h3>
                 <div class="bw-opp-company-name">FinTech Solutions Jordan • Amman (Mecca St.)</div>
@@ -372,8 +381,8 @@
         <div class="bw-tab-panel" id="tab-applications">
         <section class="profile-applications" id="my-applications" tabindex="-1" aria-label="My Applications">
           <section class="student-meeting" id="studentMeeting" aria-labelledby="studentMeetingTitle" hidden>
-            <div class="student-meeting-top"><div class="student-meeting-heading"><i class="bi bi-camera-video" aria-hidden="true"></i><div><span>COMPANY MEETING · SAMPLE</span><h2 id="studentMeetingTitle"></h2><p id="studentMeetingDetails"></p></div></div><a id="studentMeetingJoin" class="bw-tag-btn" target="_blank" rel="noopener noreferrer" hidden>Join Jitsi meeting <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div>
-            <p class="student-meeting-note">Try the meeting preview. This opens a real Jitsi room with camera and microphone initially muted. No invitation was sent; no company host is waiting. The host must sign in to start the room.</p>
+            <div class="student-meeting-top"><div class="student-meeting-heading"><i class="bi bi-camera-video" aria-hidden="true"></i><div><span>Company meeting</span><h2 id="studentMeetingTitle"></h2><p id="studentMeetingDetails"></p></div></div><a id="studentMeetingJoin" class="bw-tag-btn" target="_blank" rel="noopener noreferrer" hidden>Join Jitsi meeting <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div>
+            <p class="student-meeting-note">Camera and microphone start muted. The host signs in to start the meeting.</p>
           </section>
           <div class="bw-card-panel">
             <div class="bw-card-panel-header">
@@ -529,7 +538,7 @@
         </p>
         <div>
           <i class="bi bi-info-circle-fill me-1"></i>
-          This withdraws the pending application in this preview only. Your accepted internship is unchanged.
+          Withdraw this pending application? Your accepted internship is unchanged.
         </div>
       </div>
       <div class="bw-modal-footer">
@@ -573,12 +582,12 @@
           <p>Use your profile CV or choose a different file. PDF or DOCX, up to 5 MB.</p>
           <input id="applicationCvFile" type="file" accept=".pdf,.docx" aria-describedby="applicationCvStatus">
           <p id="applicationCvStatus" role="status">No CV selected.</p>
-          <small>Preview only: file contents are not uploaded, saved, or analyzed.</small>
+          <small>File contents are not uploaded or analyzed.</small>
         </section>
         <div data-style="s71">
           <i class="bi bi-info-circle-fill" data-style="s72"></i>
           <small data-style="s73">
-            The <strong data-style="s74">host company</strong> decides whether to accept or reject applications. Confirming here creates a pending application in this preview only; nothing is sent.
+            The <strong data-style="s74">host company</strong> decides whether to accept or reject applications. Confirming creates a pending application.
           </small>
         </div>
       </div>
@@ -591,13 +600,23 @@
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=20"></script>
+  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
 
   <script src="../../shared/js/navigation.js"></script>
-  <script src="student-dashboard.js?v=9"></script>
-  <script src="../../shared/js/portal-motion.js?v=4"></script>
-  <script src="../../shared/js/enhancements.js?v=8"></script>
+  <script src="student-dashboard.js?v=interface-9"></script>
+  <script src="../../shared/js/portal-motion.js?v=discovery-8"></script>
+  <script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
 
-  <script src="../../shared/js/interactions.js"></script>
+  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
+  <script src="../../shared/js/evaluation-radar.js?v=1"></script><script src="../../shared/js/report-visibility.js?v=1"></script><script src="../../shared/js/workbook-download.js?v=workbook-clean-44"></script><script src="../../shared/js/workspace-cycle.js?v=support-headset-64"></script>
+  <script src="../../shared/js/partnership-review.js?v=ticket-lifecycle-54"></script>
+  <script src="../../shared/js/application-interviews.js?v=desktop-audit-29"></script>
+  <script src="../../shared/js/student-training-journal.js?v=private-status-4"></script>
+  <script src="../../shared/js/student-chrome.js?v=my-tickets-6"></script><script src="../../shared/js/opportunity-deck.js?v=catalog-search-49"></script><script src="../../shared/js/student-studio.js?v=catalog-search-49"></script>
+  <script src="../student-profile/student-profile.js?v=interface-9"></script>
+  <script src="../../shared/js/student-profile-content.js?v=interface-9"></script>
+  <script src="../../shared/js/student-profile-view.js?v=file-profile-2"></script>
+<script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
 </body>
 </html>

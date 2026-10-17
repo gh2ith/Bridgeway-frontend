@@ -53,9 +53,10 @@ assert(student.includes('id="withdrawModal"'), 'Pending withdrawal stays availab
 assert(profile.includes('href="../student-dashboard/student-dashboard.html"') && profile.includes('<span>Dashboard</span>'), 'Profile navigation must return to the student dashboard.');
 assert(!profile.includes('id="my-applications"'), 'Applications no longer belong in Profile.');
 
-assert(profile.includes('id="studentCvFile"') && profile.includes('no file is uploaded or analyzed'));
+assert(profile.includes('id="studentCvFile"') && /no file is uploaded or analyzed/i.test(profile));
 assert(!/\d+% Match<\/span>/.test(student), 'Do not display unqualified sample match scores.');
-assert(student.includes('Upload your CV to see your match') && student.includes('CV match · Sample'));
+assert(student.includes('cv-upload-link') && !student.includes('data-cv-score='), 'Do not relabel fixed percentages as real AI results.');
+assert(!read('shared/js/student-studio.js').includes("samples={'listing-tech'"), 'Synthetic role-fit scores must not be presented as live results.');
 assert(!student.includes('Why this match'), 'Do not add match explanations.');
 assert(read('shared/js/portal.js').includes('if (viewOnly || !pendingApplyBtn)'), 'Accepted students cannot confirm applications.');
 assert(!student.includes('Approval Process'), 'Remove the student academic-approval callout.');
@@ -69,3 +70,10 @@ assert(read('shared/js/portal.js').includes("id:'lina',name:'Lina Haddad',colleg
 assert(read('pages/student-dashboard/student-dashboard.js').includes("previewStudent.stage === 'Not applied'"), 'Fresh student must start with empty application and training views.');
 assert(read('shared/js/portal.js').includes("tr.dataset.applicationStatus = 'pending'"), 'New preview applications must be pending, not accepted.');
 console.log('PASS: Company application decisions, pending submission, and supervisor training-only boundaries.');
+const cycle=read('shared/js/workspace-cycle.js'),journal=read('shared/js/student-training-journal.js');
+assert(!cycle.includes('supervisor-objective-rating'),'Supervisors must not score weekly objectives.');
+assert(!cycle.includes('w.ratings[i]'),'Report approval must not depend on supervisor ratings.');
+assert(cycle.includes("verify.disabled=w.status!=='submitted'"),'Submitted company reports must be approvable without a new rating cycle.');
+assert(cycle.includes('Approve report · ${w.actualHours} h'),'Supervisor action must approve the company report.');
+assert(!journal.includes('Supervisor assessment:'),'Students must not see legacy supervisor-created scores.');
+console.log('PASS: Supervisor approves company reports without creating or requiring a separate student rating.');

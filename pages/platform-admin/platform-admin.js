@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   const $ = id => document.getElementById(id);
   let nextId = 10;
-  let editingOrganization = null;
   let editingIssue = null;
   let partnershipView = 'list', selectedNetworkOrg = null, selectedNetworkLink = null;
   let focusedNetworkCollege = 'all';
@@ -20,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'platform-companies':['Company accounts','Create accounts, maintain contact details, and manage company access.'],
     'platform-colleges':['College accounts','Manage college details and their administrator accounts.'],
     'platform-partnerships':['Partnerships','Connect colleges and companies for internship opportunities.'],
-    'platform-issues':['Escalated issues','Resolve requests raised by colleges and companies.']
+    'platform-issues':['My Tickets','Follow conversations and resolve requests across the platform.']
   };
   const orgName = id => organizations.find(org => org.id === id)?.name || 'Organization';
   function element(tag, text, className) {
@@ -48,13 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if(panelId==='platform-partnerships') renderPartnershipMap();
   }
   async function togglePartnership(link) {
-    if(link.status==='Active'&&!await window.confirmPartnershipPause(`Are you sure you want to pause the partnership between ${orgName(link.college)} and ${orgName(link.company)}? New applications and placements will stop; existing training continues. This change is preview-only.`))return;
+    if(link.status==='Active'&&!await window.confirmPartnershipPause(`Are you sure you want to pause the partnership between ${orgName(link.college)} and ${orgName(link.company)}? New applications and placements will stop; existing training continues. `))return;
     const members=organizations.filter(org=>[link.college,link.company].includes(org.id));
     if(link.status!=='Active'&&members.some(org=>org.status!=='Active')) {showPortalToast('Activate both organization accounts before reactivating this partnership.');return;}
     link.status=link.status==='Active'?'Inactive':'Active';
     render();
     if(partnershipView==='map') (document.querySelector(`[data-network-link="${link.id}"]`)||document.querySelector(`[data-network-org="${link.company}"]`))?.focus({preventScroll:true});
-    showPortalToast(link.status==='Active'?'Partnership resumed in this preview.':'Partnership paused in this preview. Existing training and history remain intact.');
+    showPortalToast(link.status==='Active'?'Partnership resumed in this workspace.':'Partnership paused in this workspace. Existing training and history remain intact.');
   }
   function networkSelection(orgId,linkId=null) {
     if(organizations.find(org=>org.id===orgId)?.type==='college') focusedNetworkCollege=orgId;
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       detail.append(element('span','PARTNERSHIP DETAILS','partnership-map-eyebrow'),element('h3',orgName(link.college)),element('p',`Connected to ${orgName(link.company)}`,'network-detail-company'),badge(linkStatus(link)));
       const members=window.BridgewayPartners.students.filter(s=>s.college===link.college&&s.company===link.company);
       const summary=element('dl',undefined,'network-detail-stats');
-      for(const [label,value] of [['Sample interns',members.filter(s=>s.stage==='Placed').length],['Pending applicants',members.filter(s=>s.stage==='Applied').length]]) {
+      for(const [label,value] of [['Interns',members.filter(s=>s.stage==='Placed').length],['Pending applicants',members.filter(s=>s.stage==='Applied').length]]) {
         const row=element('div');row.append(element('dt',label),element('dd',String(value)));summary.append(row);
       }
       detail.append(summary,element('p',linkStatus(link)==='Active'?'Students from this college can apply to this company’s open listings.':'New applications and placements are unavailable through this connection. Existing training and history remain intact.','network-detail-note'));
@@ -204,8 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
     $('platformCompanyCount').textContent=organizations.filter(org=>org.type==='company').length;
     $('platformCollegeCount').textContent=organizations.filter(org=>org.type==='college').length;
     $('platformPartnershipCount').textContent=partnerships.filter(link=>window.BridgewayPartners.effective(link)).length;
-    $('platformIssueCount').textContent=issues.filter(issue=>issue.status!=='Resolved').length;
-    for(const [id,key] of [['platformStudentCount','students'],['platformListingCount','listings'],['platformPlacementCount','placements']]) $(''+id).textContent=organizations.reduce((sum,org)=>sum+(org[key]||0),0);
+    const cycle=window.BridgewayCycle;
+    $('platformIssueCount').textContent=(cycle?.state.tickets||issues).filter(issue=>(!cycle||cycle.ticketVisible(issue,'platform'))&&issue.status!=='Resolved').length;
+    const totals=cycle?{platformStudentCount:window.BridgewayPartners.students.length,platformListingCount:cycle.state.listings.filter(listing=>listing.status!=='Deleted').length,platformPlacementCount:cycle.state.histories.filter(placement=>placement.status==='Active').length}:null;
+    for(const [id,key] of [['platformStudentCount','students'],['platformListingCount','listings'],['platformPlacementCount','placements']]) $(id).textContent=totals?totals[id]:organizations.reduce((sum,org)=>sum+(org[key]||0),0);
   }
   function openPartnerCycle(link) {
     let dialog=document.getElementById('partnerCycleDialog');
@@ -218,39 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
     students.forEach(s=>dialog.append(element('p',`${s.name} - ${s.stage} - ${s.role}`)));
     if(!students.length)dialog.append(element('p','No applicants or interns for this partnership yet.'));
     dialog.append(element('h3','College & supervisor view'),element('p','The college confirms placements and assigns supervisors. Assigned supervisors review weekly reports and the college reviews the final evaluation.'));
-    dialog.append(element('p','Existing placements retain reports and evaluations when this link is paused. Changes are temporary on this page; other pages show the same baseline sample data.','partner-scope'));
+    dialog.append(element('p','Existing placements retain reports and evaluations when this link is paused. Existing training and history remain intact.','partner-scope'));
+    if(window.BridgewayPartnerships)dialog.append(action('Review & export partnership',()=>{dialog.close();window.BridgewayPartnerships.open({college:link.college,company:link.company});}));
     dialog.append(action('Close',()=>dialog.close()));dialog.showModal();
   }
   function openOrganization(type,id=null) {
-    editingOrganization=id;
-    const form=$('organizationForm'); form.reset();
-    $('organizationType').disabled=Boolean(id); $('organizationType').value=type;
-    $('organizationError').hidden=true; $('organizationAccessGroup').hidden=!id; $('platformRecovery').hidden=!id; $('platformRecoveryNote').hidden=true;
-    if(id) {
-      const org=organizations.find(item=>item.id===id);
-      for(const field of ['name','location','phone','admin','email','status']) form.elements[field].value=org[field];
-    }
-    updateOrganizationTitle(); $('organizationDialog').showModal();
-  }
-  function updateOrganizationTitle() {
-    $('organizationDialogTitle').textContent=`${editingOrganization?'Manage':'Create'} ${$('organizationType').value} account`;
-    $('organizationSubmit').textContent=editingOrganization?'Save changes':'Create account';
+    if(!window.BridgewayAccountEditor){showPortalToast('Account editor could not load. Reload and try again.');return;}
+    window.BridgewayAccountEditor.open(type,id?organizations.find(org=>org.id===id):null,()=>{render();window.switchTab(type==='company'?'platform-companies':'platform-colleges');});
   }
   document.querySelectorAll('[data-create-org]').forEach(button=>button.addEventListener('click',()=>openOrganization(button.dataset.createOrg)));
-  $('organizationType').addEventListener('change',updateOrganizationTitle);
-  $('organizationForm').addEventListener('submit',event=>{
-    event.preventDefault(); const form=event.currentTarget;
-    const values={type:$('organizationType').value};
-    for(const key of ['name','location','phone','admin','email','status']) values[key]=form.elements[key].value.trim();
-    if(!values.name||!values.location||!values.admin) { $('organizationError').textContent='Enter the organization name, city, and administrator name.'; $('organizationError').hidden=false; return; }
-    if(organizations.some(org=>org.id!==editingOrganization&&org.email.toLowerCase()===values.email.toLowerCase())) { $('organizationError').textContent='This administrator email is already assigned to an account.'; $('organizationError').hidden=false; return; }
-    const current=organizations.find(org=>org.id===editingOrganization);
-    if(current) Object.assign(current,values); else organizations.push({id:`${values.type}-${nextId++}`,...values,students:0,listings:0,placements:0});
-    $('organizationDialog').close(); render();
-    window.switchTab(values.type==='company'?'platform-companies':'platform-colleges');
-    showPortalToast(current?'Account details updated in this preview.':'Account added to this preview.');
-  });
-  $('platformRecovery').addEventListener('click',()=>{$('platformRecoveryNote').hidden=false;});
   $('platformAddPartnership').addEventListener('click',()=>{
     for(const type of ['college','company']) {
       const select=$(`partnership${type==='college'?'College':'Company'}`); select.replaceChildren();
@@ -262,14 +239,14 @@ document.addEventListener('DOMContentLoaded', () => {
   $('partnershipForm').addEventListener('submit',event=>{
     event.preventDefault(); const college=$('partnershipCollege').value,company=$('partnershipCompany').value;
     if(partnerships.some(link=>link.college===college&&link.company===company)) { $('partnershipError').textContent='This partnership already exists. You can reactivate it from the table if needed.'; $('partnershipError').hidden=false; return; }
-    partnerships.push({id:`partnership-${nextId++}`,college,company,status:'Active'}); $('partnershipDialog').close(); render(); showPortalToast('Partnership added to this preview.');
+    partnerships.push({id:`partnership-${nextId++}`,college,company,status:'Active'}); $('partnershipDialog').close(); render(); showPortalToast('Partnership added to this workspace.');
   });
   function openIssue(issue) {
     editingIssue=issue.id; $('issueDialogTitle').textContent=issue.title; $('issueOrganization').textContent=`${issue.id} · ${orgName(issue.organization)}`;
     $('issueDescription').textContent=issue.description; $('issueStatus').value=issue.status; $('issueResolution').value=issue.resolution; $('issueDialog').showModal();
   }
   $('issueForm').addEventListener('submit',event=>{
-    event.preventDefault(); const issue=issues.find(item=>item.id===editingIssue); issue.status=$('issueStatus').value; issue.resolution=$('issueResolution').value.trim(); $('issueDialog').close(); render(); showPortalToast('Issue updated in this preview.');
+    event.preventDefault(); const issue=issues.find(item=>item.id===editingIssue); issue.status=$('issueStatus').value; issue.resolution=$('issueResolution').value.trim(); $('issueDialog').close(); render(); showPortalToast('Issue updated in this workspace.');
   });
   document.querySelectorAll('[data-close-dialog]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
   document.querySelectorAll('[data-platform-search]').forEach(input=>input.addEventListener('input',()=>filterTable(input.dataset.platformSearch)));

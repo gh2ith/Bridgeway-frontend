@@ -36,13 +36,12 @@
 .bw-motion-ready .training-report-body { padding:28px 32px;background:var(--bw-surface);border-radius:0 0 12px 12px; }
 .bw-motion-ready .training-report-body > p { max-width:65ch;font-size:15px;line-height:1.9; }
 .bw-motion-ready .training-tools { border-top:1px solid var(--bw-border);padding-top:20px;margin-top:24px; }
-.bw-motion-ready :is(#companyWeeklyDetail .weekly-report-panel,#supervisorReportDetail > .bw-card-panel,.evaluation-detail) { border-radius:16px;box-shadow:0 10px 40px rgb(15 23 42 / .04); }
+.bw-motion-ready :is(#companyWeeklyDetail .weekly-report-panel,#supervisorReportDetail > .bw-card-panel,.evaluation-detail) { border-radius:12px;box-shadow:none; }
 .bw-motion-ready #companyWeeklyForm { display:grid;grid-template-columns:1fr 1fr;gap:20px 24px; }
 .bw-motion-ready #companyWeeklyForm .bw-form-group:has(textarea),.bw-motion-ready #companyWeeklyForm > button,.bw-motion-ready #companyWeeklyForm > p { grid-column:1/-1; }
 .bw-motion-ready #companyWeeklyForm .bw-form-group { margin:0; }
 .bw-motion-ready #companyWeeklyForm textarea { min-height:180px;line-height:1.8; }
-.bw-motion-ready #companyWeeklyDetail .weekly-report-context { padding:24px;border-top:3px solid var(--bw-primary);background:var(--bw-bg-alt); }
-.bw-motion-ready #supervisorReportDetail .bw-card-panel { border-top:3px solid var(--bw-primary); }
+.bw-motion-ready #companyWeeklyDetail .weekly-report-context { padding:0 0 22px;border:0;border-bottom:1px solid var(--bw-border);border-radius:0;background:transparent; }
 .bw-motion-ready #reportDeliverablesText { font-size:15px;line-height:1.9;max-width:70ch; }
 .bw-motion-ready .company-meeting-row { display:grid;grid-template-columns:minmax(0,1fr) auto; }
 .company-meeting-expanded { grid-column:1/-1;padding:20px 24px;border:1px solid var(--bw-border);border-radius:12px;background:var(--bw-bg-alt); }
@@ -51,6 +50,10 @@
 .bw-motion-ready .company-meeting-actions button[aria-expanded="true"] { border-color:var(--bw-primary);color:var(--bw-primary); }
 .bw-motion-ready .bw-progress-fill { transform-origin:left; }
 .bw-motion-ready :is(.bw-tag-btn,.company-primary,.bw-btn-mini):active { transform:translateY(1px); }
+/* Training totals belong to the training summary, not every student task. */
+#page-student-dashboard:has(:is(#tab-progress,#tab-applications).is-active) main > .bw-kpi-grid { display:none; }
+#page-student-dashboard:has(#tab-opportunities.is-active) main > .bw-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+#page-student-dashboard:has(#tab-opportunities.is-active) main > .bw-kpi-grid > :nth-child(n+3) { display:none; }
 @media(max-width:750px) {
   .bw-motion-ready .bw-opportunity-expanded { grid-template-columns:minmax(0,1fr);padding:20px;gap:22px; }
   .bw-motion-ready .bw-reading-record .bw-record-expanded { padding:20px;gap:22px; }
@@ -60,3 +63,20 @@
   .company-meeting-expanded { padding:18px; }
 }
 @media(prefers-reduced-motion:reduce) { .bw-motion-ready *, .bw-motion-ready *::before,.bw-motion-ready *::after { animation:none!important;transition:none!important;scroll-behavior:auto!important; } }
+
+/* Mobile rosters retain the same records and actions, without a wide table. */
+@media(max-width:700px) {
+ .company-workspace .bw-records-container { overflow:visible;min-width:0; }
+ .company-workspace table.bw-mobile-records { display:block!important;width:100%!important;min-width:0!important;border:0; }
+ .company-workspace table.bw-mobile-records thead { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); }
+ .company-workspace table.bw-mobile-records tbody { display:block; }
+ .company-workspace table.bw-mobile-records tbody > tr:not([hidden]):not([style*="display: none"]):not([style*="display:none"]) { display:grid!important;grid-template-columns:minmax(0,1fr);gap:14px;padding:20px;border-bottom:1px solid var(--bw-border); }
+ .company-workspace table.bw-mobile-records tbody > tr[hidden] { display:none!important; }
+ .company-workspace table.bw-mobile-records tbody > tr > :is(td,th) { display:block!important;position:static!important;width:auto!important;min-width:0!important;max-width:none!important;padding:0!important;border:0!important;box-shadow:none!important;white-space:normal!important;overflow-wrap:anywhere;background:transparent!important; }
+ .company-workspace table.bw-mobile-records tbody > tr > :is(td,th)::before { content:attr(data-mobile-label);display:block;margin-bottom:6px;font-size:12px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--bw-text-secondary); }
+ .company-workspace table.bw-mobile-records td[colspan]::before,.company-workspace table.bw-mobile-records tbody > tr > :first-child::before { display:none; }
+ .company-workspace table.bw-mobile-records :is(button,a) { max-width:100%;white-space:normal; }
+ .company-workspace table.bw-mobile-records td > div { max-width:100%;min-width:0;flex-wrap:wrap; }
+ .company-workspace table.bw-mobile-records .bw-badge { white-space:normal; }
+ .company-workspace .bw-reading-record .bw-record-expanded { box-shadow:none; }
+}

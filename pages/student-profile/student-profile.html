@@ -2,6 +2,7 @@
 <html lang="en" data-page="student-profile">
 <head>
   <meta charset="UTF-8">
+  <script src="../../shared/js/portal-theme-init.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bridgeway — Student Academic Profile</title>
   <meta name="description" content="View and manage student academic record, SIS details, and assigned faculty supervisor.">
@@ -12,14 +13,17 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <link rel="stylesheet" href="../../shared/css/base.css">
-  <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/base.css?v=night-2">
+  <link rel="stylesheet" href="../../shared/css/portal.css?v=night-2">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=12">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
 
-  <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="student-profile.css?v=6">
+  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
+  <link rel="stylesheet" href="student-profile.css?v=persistent-profile-7">
+<link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
+<link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-hinge-23"><script src="../../shared/js/bridgeway-kinetic.js?v=decision-dialogs-59"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=support-headset-64">
+<link rel="stylesheet" href="../../shared/css/student-chrome.css?v=my-tickets-7">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="student" id="page-student-profile">
 
@@ -107,7 +111,7 @@
             <textarea id="profileBio" class="bw-textarea" aria-describedby="profileBioHelp">Software engineering student with expertise in modern full-stack development, C# .NET Core, TypeScript, and database engineering. Passionate about cloud architectures and scalable web platforms.</textarea>
           </div>
           <footer class="profile-form-footer">
-            <small>Preview only · Changes are not saved.</small>
+            <small>Check your details before continuing.</small>
             <div><a href="../student-dashboard/student-dashboard.html" class="profile-cancel">Cancel</a><button type="submit" class="company-primary">Save profile changes</button></div>
           </footer>
         </form>
@@ -115,7 +119,7 @@
 
       <div class="profile-records">
         <section class="profile-panel student-cv" id="student-cv" aria-labelledby="studentCvTitle">
-          <header class="profile-panel-heading student-cv-heading"><div><h2 id="studentCvTitle">Your CV</h2><p>The starting point for internship matching.</p></div><span class="profile-preview-label">AI preview</span></header>
+          <header class="profile-panel-heading student-cv-heading"><div><h2 id="studentCvTitle">Your CV</h2><p>The starting point for internship matching.</p></div><span class="profile-preview-label">CV document</span></header>
           <div class="cv-upload-area">
             <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
             <label class="bw-form-label" for="studentCvFile">Upload your CV</label>
@@ -123,7 +127,7 @@
             <input type="file" id="studentCvFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-describedby="studentCvHelp studentCvStatus">
           </div>
           <div class="student-cv-file"><p id="studentCvStatus" role="status">No CV selected.</p><button type="button" class="bw-tag-btn" id="removeStudentCv" hidden>Remove CV</button></div>
-          <p id="studentCvHelp" class="cv-preview-note">Preview only: no file is uploaded or analyzed. Only its name and size are kept in this browser session. CV match measures role fit, not acceptance probability.</p>
+          <p id="studentCvHelp" class="cv-preview-note">No file is uploaded or analyzed. Only its name and size are kept in this browser session. CV match measures role fit, not acceptance probability.</p>
           <a class="profile-text-link" href="../student-dashboard/student-dashboard.html#tab-opportunities">Explore internships <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
         </section>
 
@@ -143,12 +147,15 @@
 
   </main></div>
 
-  <script src="../../shared/js/portal.js?v=20"></script>
+  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
 
   <script src="../../shared/js/navigation.js"></script>
-  <script src="student-profile.js?v=6"></script>
-  <script src="../../shared/js/enhancements.js?v=9"></script>
+  <script src="../../shared/js/student-chrome.js?v=my-tickets-6"></script>
+  <script src="student-profile.js?v=interface-9"></script>
+  <script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
 
-  <script src="../../shared/js/interactions.js"></script>
+  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
+<script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
 </body>
 </html>

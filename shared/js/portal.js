@@ -16,9 +16,9 @@ window.BridgewayCV = {
     } catch { return false; }
   }
 };
-// Meeting fixtures reset on every page load. No scheduling or cross-portal delivery.
+// Room validation shared by application-linked interviews.
 window.BridgewayMeetings = {
-  records: [{ student: 'ghaith', company: 'company-1', title: 'Training check-in', date: '2026-10-15T14:00', url: `https://meet.jit.si/Bridgeway-preview-${crypto.randomUUID()}`, sample: true }],
+  records: [],
   validUrl(value) {
     try {
       const url = new URL(value);
@@ -107,6 +107,42 @@ window.BridgewayPartners = {
   }
 };
 
+// Restore administrator-managed details without passwords or automatic placements.
+try {
+  const accounts=JSON.parse(sessionStorage.getItem('bridgeway:managed-accounts:v1')||'[]');
+  if(Array.isArray(accounts))accounts.forEach(a=>{
+    if(a.type==='student'){
+      let s=window.BridgewayPartners.students.find(s=>s.id===a.id);
+      if(!s){s={id:a.id,company:null,role:null,stage:'Not applied',weeks:0,hours:0,supervisor:null};window.BridgewayPartners.students.push(s);}
+      for(const key of ['name','studentId','email','phone','department','faculty','year','gpa','status','college'])if(a[key]!=null)s[key]=a[key];
+    }else if(['company','college'].includes(a.type)){
+      let org=window.BridgewayPartners.organizations.find(o=>o.id===a.id);
+      if(!org){org={id:a.id,students:0,listings:0,placements:0};window.BridgewayPartners.organizations.push(org);}
+      Object.assign(org,a);
+    }
+  });
+}catch{}
+
+// Academic assignment is independent of application and placement status.
+(() => {
+  const key='bridgeway:academic-supervisor-assignments:v1',model=window.BridgewayPartners;
+  let assignments={};try{const value=JSON.parse(sessionStorage.getItem(key)||'{}');if(value&&typeof value==='object'&&!Array.isArray(value))assignments=value;}catch{}
+  const recordKey=(college,name)=>`${college}:${name}`;
+  function get(name,college){const s=model.students.find(s=>s.name===name&&s.college===college),id=recordKey(college,name);return Object.prototype.hasOwnProperty.call(assignments,id)?assignments[id]:s?.supervisor||null;}
+  function set(name,college,supervisor){
+    const s=model.students.find(s=>s.name===name);if(s&&s.college!==college)return false;
+    assignments[recordKey(college,name)]=supervisor||null;
+    try{sessionStorage.setItem(key,JSON.stringify(assignments));}catch{}
+    if(s)s.supervisor=supervisor||null;
+    const C=window.BridgewayCycle;
+    if(C){if(s)C.state.applications.filter(a=>a.student===s.id&&['Accepted','Placed'].includes(a.status)).forEach(a=>{a.supervisor=supervisor||null;});C.commit(`Academic supervisor ${supervisor?'assigned to':'unassigned from'} ${name}`);}
+    else window.showPortalToast?.(`Academic supervisor ${supervisor?'assigned':'unassigned'}.`);
+    return true;
+  }
+  model.students.forEach(s=>{s.supervisor=get(s.name,s.college);});
+  window.BridgewayAcademicAssignments={get,set};
+})();
+
 // URL context selects a sample persona, not a real account or authorization.
 window.BridgewayStudent = {
   current() {
@@ -139,7 +175,7 @@ window.confirmPartnershipPause = (message,heading='Pause partnership?',action='P
   const actions=document.createElement('div');actions.className='partner-controls';
   const cancel=document.createElement('button');cancel.type='button';cancel.className='bw-tag-btn';cancel.textContent='Cancel';cancel.autofocus=true;cancel.addEventListener('click',()=>dialog.close());
   const pause=document.createElement('button');pause.type='button';pause.className='bw-tag-btn text-danger';pause.textContent=action;pause.addEventListener('click',()=>dialog.close('pause'));
-  actions.append(cancel,pause);dialog.append(title,description,actions);dialog.addEventListener('close',()=>{const confirmed=dialog.returnValue==='pause';dialog.remove();resolve(confirmed);},{once:true});document.body.append(dialog);dialog.showModal();
+  actions.append(cancel,pause);dialog.append(title,description,actions);dialog.addEventListener('close',()=>{const confirmed=dialog.returnValue==='pause';dialog.remove();resolve(confirmed);},{once:true});window.BridgewayUX?.decorateConfirmation(dialog,heading);document.body.append(dialog);dialog.showModal();
 });
 /* portal-cycle */
 document.addEventListener('DOMContentLoaded', () => {
@@ -180,9 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
           actions.append(report);
         }else if(applied){
           const accept=el('button','Accept applicant','bw-tag-btn');accept.type='button';
-          accept.addEventListener('click',()=>{student.stage='Awaiting placement';renderActions();window.showPortalToast('Accepted in this preview. Waiting for college placement; nothing was sent.');document.querySelector('[data-filter].is-active')?.click();});actions.append(accept);
+          accept.addEventListener('click',()=>{student.stage='Awaiting placement';renderActions();window.showPortalToast('Applicant marked accepted. College placement administration is next.');document.querySelector('[data-filter].is-active')?.click();});actions.append(accept);
           const reject=el('button','Reject applicant','bw-tag-btn text-danger');reject.type='button';
-          reject.addEventListener('click',()=>{student.stage='Rejected';renderActions();window.showPortalToast('Rejected by the company in this preview only. Nothing was sent.');document.querySelector('[data-filter].is-active')?.click();});actions.append(reject);
+          reject.addEventListener('click',()=>{student.stage='Rejected';renderActions();window.showPortalToast('Applicant marked rejected by the company.');document.querySelector('[data-filter].is-active')?.click();});actions.append(reject);
         }else actions.append(el('span',rejected?'Application closed':'Placement administration pending','portal-muted'));
         if(meeting)actions.append(meeting);
         window.syncCompanyStudents?.();
@@ -204,9 +240,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentsBody=document.getElementById('adminStudentsTableBody');
     const usersBody=document.querySelector('#tab-users tbody');
     function appendCells(body,values){const row=el('tr');values.forEach(value=>{const cell=el('td');if(value instanceof Node)cell.append(value);else cell.textContent=value;row.append(cell);});body.append(row);return row;}
-    const supervisorSelect=()=>{const select=el('select',null,'bw-select');select.setAttribute('aria-label','Assigned supervisor');['Unassigned','Dr. Ahmad S.'].forEach(name=>select.append(el('option',name)));select.addEventListener('change',()=>window.showPortalToast('Supervisor assignment updated in this preview.'));return select;};
-    appendCells(studentsBody,['Omar Majed','Cybersecurity','3.42','Faculty of IT','After company acceptance','Application pending']);
-    appendCells(studentsBody,['Lina Haddad','Software Engineering','3.60','Faculty of IT','After company acceptance','Not applied']);
+    const supervisorSelect=name=>{
+      const select=el('select',null,'bw-select');select.setAttribute('aria-label',`Assigned supervisor for ${name}`);
+      const assigned=window.BridgewayAcademicAssignments.get(name,college);
+      const names=[...new Set(['Dr. Ahmad S.',...document.querySelectorAll('#tab-supervisors tbody tr')].map(item=>typeof item==='string'?item:(item.cells[0]?.querySelector('strong,[data-style="s16"]')?.textContent||item.cells[0]?.firstElementChild?.textContent||item.cells[0]?.textContent)?.trim()).filter(Boolean))];
+      const empty=el('option','Unassigned');empty.value='';select.append(empty);
+      names.forEach(name=>{const option=el('option',name);option.value=name;select.append(option);});
+      if(assigned&&!names.includes(assigned)){const option=el('option',assigned);option.value=assigned;select.append(option);}select.value=assigned||'';
+      select.addEventListener('change',()=>{window.BridgewayAcademicAssignments.set(name,college,select.value);counts();});return select;
+    };
+    [...studentsBody.rows].forEach(row=>{const s=model.students.find(s=>row.cells[0].textContent.includes(s.name)&&s.college===college);if(s){row.dataset.studentName=s.name;row.cells[4].replaceChildren(supervisorSelect(s.name));}});
+    function appendManagedStudent(name,department,gpa){
+      const actions=el('div',null,'cycle-actions');
+      const remove=el('button',null,'bw-tag-btn text-danger');remove.type='button';
+      const icon=el('i',null,'bi bi-trash');icon.setAttribute('aria-hidden','true');remove.append(icon,document.createTextNode(' Delete'));
+      remove.setAttribute('aria-label',`Delete student ${name}`);
+      remove.addEventListener('click',()=>{const s=model.students.find(s=>s.name===name);window.openDeleteModal('Student',s?.studentId||'New',name);});actions.append(remove);
+      const row=appendCells(studentsBody,[name,department,gpa,'Faculty of IT',supervisorSelect(name),actions]);row.dataset.studentName=name;return row;
+    }
+    appendManagedStudent('Omar Majed','Cybersecurity','3.42');
+    appendManagedStudent('Lina Haddad','Software Engineering','3.60');
+    // Removing a college directory entry is independent of hiring and retained training history.
+    const removedKey=`bridgeway:college-student-directory:${college}`;
+    let removed=[];try{const stored=JSON.parse(sessionStorage.getItem(removedKey)||'[]');if(Array.isArray(stored))removed=stored;}catch{}
+    const studentKey=row=>model.students.find(s=>row.cells[0].textContent.includes(s.name))?.id||row.dataset.directoryKey||(row.dataset.directoryKey=crypto.randomUUID());
+    const saveRemoved=()=>{try{sessionStorage.setItem(removedKey,JSON.stringify(removed));}catch{}};
+    [...studentsBody.rows].forEach(row=>{if(removed.includes(studentKey(row)))row.remove();});
+    window.removeCollegeStudentRecord=row=>{
+      if(!row||row.parentElement!==studentsBody)return;
+      const key=studentKey(row),next=row.nextSibling;removed.push(key);saveRemoved();row.remove();counts();
+      const undo=()=>{removed=removed.filter(id=>id!==key);saveRemoved();studentsBody.insertBefore(row,next?.parentElement===studentsBody?next:null);counts();};
+      if(window.BridgewayKinetic?.undoToast)window.BridgewayKinetic.undoToast('Student removed from the college directory.',undo);
+      else{const notice=el('div',null,'bw-undo-toast'),restore=el('button','Undo','bw-tag-btn');restore.type='button';notice.setAttribute('role','status');notice.append(el('span','Student removed from the college directory.'),restore);restore.addEventListener('click',()=>{undo();notice.remove();});document.body.append(notice);}
+    };
     appendCells(usersBody,['#8','omar@bau.edu.jo','Student','Faculty of IT','College managed']);
     appendCells(usersBody,['#9','lina@bau.edu.jo','Student','Faculty of IT','College managed']);
     appendCells(document.querySelector('#tab-approved tbody'),['#103','Sarah Ahmad','Nexus Cloud Systems','Full-Stack .NET Developer Intern','Dr. Ahmad S.','Approved','Active placement']);
@@ -216,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const terminate=el('button','Terminate','bw-tag-btn text-danger');terminate.type='button';terminate.setAttribute('aria-label',`Terminate placement for ${student.name}`);terminate.addEventListener('click',()=>window.openTerminateModal(row.cells[0].textContent.replace('#',''),student.name,student.role));row.cells[6].replaceChildren(terminate);
     });
     function counts(){
+      document.querySelectorAll('#tab-supervisors tbody tr').forEach(row=>{const name=(row.cells[0]?.querySelector('strong,[data-style="s16"]')?.textContent||row.cells[0]?.firstElementChild?.textContent||row.cells[0]?.textContent)?.trim();if(!name||!row.cells[3])return;const count=[...studentsBody.rows].filter(studentRow=>studentRow.cells[4]?.querySelector('select')?.value===name).length;row.cells[3].textContent=`${count} student${count===1?'':'s'}`;});
       const ids=['tab-users','tab-students','tab-companies','tab-supervisors','tab-posts','tab-approved'];
       const values=[usersBody.rows.length,studentsBody.rows.length,model.links.filter(l=>l.college===college).length,document.querySelectorAll('#tab-supervisors tbody tr').length,document.querySelectorAll('#tab-posts tbody tr').length,document.querySelectorAll('#tab-approved tbody tr:not([data-terminated])').length];
       ids.forEach((id,i)=>{const badge=document.querySelector(`[data-tab="${id}"] .bw-tab-badge`);if(badge)badge.textContent=values[i];const nav=document.querySelector(`[data-tab="${id}"]`);if(nav)nav.title=nav.textContent.trim();const kpi=document.querySelectorAll('.bw-kpi-value')[i];if(kpi)kpi.textContent=values[i];});
@@ -224,15 +291,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('registerStudentForm')?.addEventListener('submit',event=>{
       if(!event.target.checkValidity())return;
       const name=document.getElementById('studentFullName').value.trim(),email=document.getElementById('studentEmail').value.trim(),dept=document.getElementById('studentDept').value,gpa=document.getElementById('studentGpa').value;
-      if(!name)return;appendCells(studentsBody,[name,dept,gpa,'Faculty of IT','After company acceptance','Not applied']);appendCells(usersBody,['Preview',email,'Student','Faculty of IT','College managed']);queueMicrotask(counts);
+      if(!name)return;appendManagedStudent(name,dept,gpa);appendCells(usersBody,[name,email,'Student','Faculty of IT','College managed']);queueMicrotask(counts);
     });
     document.getElementById('addSupervisorForm')?.addEventListener('submit',event=>{
       if(!event.target.checkValidity())return;
       const name=document.getElementById('supFullName').value.trim(),email=document.getElementById('supEmail').value.trim(),dept=document.getElementById('supDept').value;
-      if(!name)return;appendCells(document.querySelector('#tab-supervisors tbody'),[name,dept,'Faculty of IT','0 students','College managed']);appendCells(usersBody,['Preview',email,'Supervisor','Faculty of IT','College managed']);studentsBody.querySelectorAll('select').forEach(select=>select.append(el('option',name)));queueMicrotask(counts);
+      if(!name)return;appendCells(document.querySelector('#tab-supervisors tbody'),[name,dept,'Faculty of IT','0 students','College managed']);appendCells(usersBody,[name,email,'Supervisor','Faculty of IT','College managed']);studentsBody.querySelectorAll('select').forEach(select=>select.append(el('option',name)));queueMicrotask(counts);
     });
     counts();
     window.refreshCollegeCounts=counts;
+    window.BridgewayCollegeDirectory={appendStudent:appendManagedStudent,supervisorSelect,appendCells,refresh:counts};
   }
   const dashboard=location.pathname.endsWith('-dashboard.html');
   if((role==='company'||role==='admin')&&dashboard) {
@@ -247,9 +315,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const refresh=()=>{status.textContent=model.effective(link)?'Active':link.status==='Active'?'Account suspended':'Paused';status.className=`bw-badge ${model.effective(link)?'bw-badge-blue':'bw-badge-danger'}`;toggle.textContent=link.status==='Active'?'Pause':'Resume';toggle.setAttribute('aria-label',`${toggle.textContent} partnership with ${org.name}`);};
         toggle.addEventListener('click',async()=>{
           if(link.college!==college)return;
-          if(link.status==='Active'&&!await window.confirmPartnershipPause(`Are you sure you want to pause the partnership with ${org.name}? New applications and placements will stop; existing training continues. This change is preview-only.`))return;
+          if(link.status==='Active'&&!await window.confirmPartnershipPause(`Are you sure you want to pause the partnership with ${org.name}? New applications and placements will stop; existing training continues. `))return;
           if(link.status!=='Active'&&!model.organizations.filter(o=>[link.college,link.company].includes(o.id)).every(o=>o.status==='Active')) {window.showPortalToast('Both organization accounts must be active before resuming this partnership.');return;}
-          link.status=link.status==='Active'?'Inactive':'Active';refresh();window.showPortalToast(link.status==='Active'?'Partnership resumed in this preview only.':'Partnership paused in this preview only. Existing training is unchanged.');
+          link.status=link.status==='Active'?'Inactive':'Active';refresh();window.showPortalToast(link.status==='Active'?'Partnership resumed in this workspace.':'Partnership paused in this workspace. Existing training is unchanged.');
         });refresh();controls.append(toggle);
       }
       row.append(info,controls);card.append(row);
@@ -259,14 +327,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   if(role==='student') {
-    const activeCompanies=model.links.filter(l=>l.college===college&&model.effective(l)).map(l=>model.organizations.find(o=>o.id===l.company).name);
+    const activeCompanies=model.organizations.filter(o=>o.type==='company'&&o.status==='Active').map(o=>o.name);
     document.querySelectorAll('.bw-opp-card').forEach(card=>{if(!activeCompanies.some(name=>card.textContent.includes(name)))card.remove();});
     const total=document.querySelector('.bw-kpi-value');if(total)total.textContent=document.querySelectorAll('.bw-opp-card').length;
-    const area=document.querySelector('#tab-opportunities');if(area && !area.querySelector('.applications-lead'))area.prepend(el('p','Opportunities from your college\u2019s active partners. Your profile is shared only with companies you apply to.','partner-scope'));
+    const area=document.querySelector('#tab-opportunities');if(area && !area.querySelector('.applications-lead'))area.prepend(el('p','Explore platform-approved opportunities across all active colleges. The host company reviews applications.','partner-scope'));
   }
   if(location.pathname.endsWith('company-post-role.html')) {
-    const audience=model.links.filter(link=>link.company===company&&model.effective(link)).map(link=>model.organizations.find(org=>org.id===link.college).name);
-    document.querySelector('.bw-page-header')?.after(el('p',`Listing audience: students from ${audience.join(' and ')}. Only these active partner colleges can receive new listings.`,'partner-scope'));
+    document.querySelector('.bw-page-header')?.after(el('p','Publication cycle: submit for Platform Admin review, then reach students across all active colleges. Company hiring decisions happen after students apply.','partner-scope'));
   }
   if(role==='company'&&!dashboard) {const nav=document.querySelector('.bw-masar-nav');if(nav){const a=el('a',null,'bw-masar-item');a.href='../company-dashboard/company-dashboard.html#tab-partners';a.innerHTML='<i class="bi bi-link-45deg" aria-hidden="true"></i><span>Partner colleges</span>';nav.append(a);}}
   window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(document.getElementById(id)?.classList.contains('bw-tab-panel'))window.switchTab(id);});
@@ -282,21 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (actualRole === 'student' && window.BridgewayStudent.current().id === 'lina') notices.student = [];
   const account=document.querySelector('.company-account-wrap');if(!account)return;
   const actions=el('div',null,'portal-header-actions');account.before(actions);actions.append(account);
-  if(actualRole==='company'||actualRole==='admin') {
-    const report=el('button','Report an issue','bw-tag-btn portal-report-issue');report.type='button';actions.prepend(report);
-    report.addEventListener('click',()=>{
-      const dialog=el('dialog',null,'partner-confirm portal-issue-dialog');dialog.setAttribute('aria-labelledby','portalIssueTitle');dialog.setAttribute('aria-describedby','portalIssueNotice');
-      const title=el('h2','Report an issue');title.id='portalIssueTitle';
-      const notice=el('p','Preview only: this form does not send a report to Platform Admin. Nothing is saved or shared.');notice.id='portalIssueNotice';
-      const form=el('form'),subjectLabel=el('label','Subject'),subject=el('input'),descriptionLabel=el('label','Description'),description=el('textarea');
-      subject.id='portalIssueSubject';subject.type='text';subject.required=true;subject.maxLength=120;subject.autofocus=true;subjectLabel.htmlFor=subject.id;
-      description.id='portalIssueDescription';description.required=true;description.maxLength=3000;description.rows=5;descriptionLabel.htmlFor=description.id;
-      const feedback=el('p',null,'portal-issue-feedback');feedback.setAttribute('role','status');feedback.hidden=true;
-      const controls=el('div',null,'partner-controls'),cancel=el('button','Cancel','bw-tag-btn'),submit=el('button','Preview report','bw-tag-btn portal-issue-submit');cancel.type='button';submit.type='submit';cancel.addEventListener('click',()=>dialog.close());
-      form.addEventListener('submit',event=>{event.preventDefault();subject.value=subject.value.trim();description.value=description.value.trim();if(!form.reportValidity())return;feedback.textContent='Report preview complete. Nothing was sent to Platform Admin. Close this dialog to discard it.';feedback.hidden=false;submit.disabled=true;subject.readOnly=true;description.readOnly=true;cancel.textContent='Close';cancel.focus();});
-      controls.append(cancel,submit);form.append(subjectLabel,subject,descriptionLabel,description,feedback,controls);dialog.append(title,notice,form);dialog.addEventListener('close',()=>{dialog.remove();report.focus();},{once:true});document.body.append(dialog);dialog.showModal();
-    });
-  }
   const wrap=el('div',null,'portal-notifications'),toggle=el('button',null,'notification-toggle'),count=el('span',String((notices[actualRole]||[]).length),'notification-count');toggle.type='button';toggle.setAttribute('aria-label','Notifications');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','portalNotifications');toggle.innerHTML='<i class="bi bi-bell" aria-hidden="true"></i>';toggle.append(count);
   const panel=el('section',null,'notification-panel');panel.id='portalNotifications';panel.hidden=true;panel.setAttribute('aria-label','Notifications');panel.append(el('h2','Notifications'));
   (notices[actualRole]||[]).forEach(([text,href])=>{const a=el('a',text);a.href=href;panel.append(a);});
@@ -328,6 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
+      if (themeToggleBtn) {
+        const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+        themeToggleBtn.setAttribute('aria-label', label);themeToggleBtn.title = label;
+      }
       if (themeIcon) {
         themeIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
       }
@@ -337,14 +393,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const savedTheme =
-      'light';
+    let savedTheme = 'light';
+    try { savedTheme = localStorage.getItem('bridgeway:portal-theme') === 'dark' ? 'dark' : 'light'; } catch {}
     applyTheme(savedTheme);
 
     if (themeToggleBtn) {
       themeToggleBtn.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        try { localStorage.setItem('bridgeway:portal-theme', nextTheme); } catch {}
       });
     }
   }
@@ -355,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
       toast = document.createElement('div');
       toast.id = 'bwPortalToast';
       toast.className = 'bw-toast';
+      toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');toast.setAttribute('aria-atomic','true');
       document.body.appendChild(toast);
     }
     toast.replaceChildren();
@@ -607,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         closeModal('applyModal');
-        showPortalToast(`Application added to this preview for ${company}. Nothing was sent.`);
+        showPortalToast(`Pending application added for ${company}.`);
         pendingApplyBtn = null;
       });
     }
@@ -806,7 +865,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pendingPill.className = 'bw-badge bw-badge-success';
         }
 
-        showPortalToast('Report marked verified in this preview only.');
+        showPortalToast('Report marked verified in this workspace.');
         document.dispatchEvent(new CustomEvent('bridgeway:report-reviewed',{detail:{name,status:'verified'}}));
       });
     }
@@ -827,7 +886,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pill.textContent = report.pendingText; pill.className = 'bw-badge bw-badge-amber';
         closeModal('requestRevisionModal');
         document.dispatchEvent(new CustomEvent('bridgeway:report-reviewed',{detail:{name,status:'revision'}}));
-        showPortalToast('Revision preview only. No notes were sent.', 'bi-info-circle-fill text-warning');
+        showPortalToast('Revision on this page. No notes were sent.', 'bi-info-circle-fill text-warning');
       });
     }
 
@@ -875,7 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (rubricCounter) rubricCounter.textContent = `${rated} of 8 rated`;
       if (rubricPercent) rubricPercent.style.width = `${pct}%`;
-      if (rubricCounterText) rubricCounterText.textContent = `${rated} of 8 Dimensions Evaluated (${pct}%)`;
+      if (rubricCounterText) rubricCounterText.textContent = `${rated} of 8 criteria rated`;
       if (scoreVal) scoreVal.textContent = totalScore;
       if (footerScore) footerScore.textContent = `${totalScore} / 40`;
 
@@ -905,12 +964,12 @@ document.addEventListener('DOMContentLoaded', () => {
           rubricSubmitBtn.disabled = false;
           rubricSubmitBtn.classList.remove('bw-btn-outline');
           rubricSubmitBtn.classList.add('bw-btn-primary');
-          rubricSubmitBtn.innerHTML = `✓ Submit Official Evaluation (Score: ${totalScore}/40)`;
+          rubricSubmitBtn.textContent = 'Submit final evaluation';
         } else {
           rubricSubmitBtn.disabled = true;
           rubricSubmitBtn.classList.add('bw-btn-outline');
           rubricSubmitBtn.classList.remove('bw-btn-primary');
-          rubricSubmitBtn.innerHTML = `Complete All 8 Dimensions (${rated}/8)`;
+          rubricSubmitBtn.textContent = `Complete all 8 criteria (${rated}/8)`;
         }
       }
     };
@@ -928,7 +987,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (rubricSubmitBtn) {
       rubricSubmitBtn.addEventListener('click', () => {
-        showPortalToast('Evaluation validated in this preview. Nothing was submitted.');
+        showPortalToast('Evaluation details checked.');
       });
     }
 
@@ -941,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetBtn) targetBtn.classList.add('is-active');
       });
       window.updateRubricHUD();
-      showPortalToast('Exemplary evaluation ratings (4–5) populated for demonstration preview!');
+      showPortalToast('Exemplary evaluation ratings (4–5) populated as suggested values.');
     };
 
     // Reset Ratings
@@ -1044,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const val = parseInt(activeKpi.textContent, 10) || 0;
           if (val > 0) activeKpi.textContent = val - 1;
         }
-        showPortalToast(`Post "${pendingDeletePostTitle}" removed from this preview.`, 'bi-trash text-danger');
+        showPortalToast(`Post "${pendingDeletePostTitle}" removed from this workspace.`, 'bi-trash text-danger');
       });
     }
   }
@@ -1084,7 +1143,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let pendingUnassign = null;
 
   window.openDeleteModal = function (type, id, name) {
-    pendingDelete = { type, id, name };
+    const row=type==='Student'?[...document.querySelectorAll('#adminStudentsTableBody tr')].find(row=>row.cells[0].textContent.includes(name)):null;
+    pendingDelete = { type, id, name, row };
     const label = document.getElementById('deleteEntityLabel');
     if (label) label.textContent = `${type} "${name}" (ID #${id})`;
     window.openModal('deleteModal');
@@ -1115,7 +1175,8 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmDeleteBtn.addEventListener('click', () => {
         window.closeModal('deleteModal');
         if (pendingDelete) {
-          showPortalToast(`${pendingDelete.type} "${pendingDelete.name}" removed from this preview.`);
+          if(pendingDelete.type==='Student'&&pendingDelete.row&&window.removeCollegeStudentRecord)window.removeCollegeStudentRecord(pendingDelete.row);
+          else showPortalToast(`Deletion checked for ${pendingDelete.name}. No records were deleted.`);
           pendingDelete = null;
         }
       });
@@ -1129,7 +1190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pendingTerminate) {
           const row=[...document.querySelectorAll('#tab-approved tbody tr')].find(row=>row.cells[0].textContent.replace('#','')===String(pendingTerminate.appId));
           if(row){row.dataset.terminated='true';const status=document.createElement('span');status.className='bw-badge bw-badge-danger';status.textContent='Terminated';row.cells[5].replaceChildren(status);const ended=document.createElement('span');ended.className='portal-muted';ended.textContent='Placement ended';row.cells[6].replaceChildren(ended);const student=window.BridgewayPartners.students.find(s=>s.id===row.dataset.studentId);if(student)student.stage='Terminated';window.refreshCollegeCounts?.();}
-          showPortalToast(`Internship placement #${pendingTerminate.appId} for ${pendingTerminate.studentName} marked terminated in this preview.`, 'bi-x-octagon-fill text-danger');
+          showPortalToast(`Internship placement #${pendingTerminate.appId} for ${pendingTerminate.studentName} marked terminated in this workspace.`, 'bi-x-octagon-fill text-danger');
           pendingTerminate = null;
         }
       });
@@ -1159,7 +1220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('studentEmail')?.value || 'student@bau.edu.jo';
 
         closeModal('registerStudentModal');
-        showPortalToast(`Student ${name} (${dept}) added to this preview. No credentials were sent.`);
+        showPortalToast(`Student ${name} (${dept}) added to this workspace. No credentials were sent.`);
         registerStudentForm.reset();
 
         const totalStudentsKpi = document.getElementById('kpiTotalStudents');
@@ -1177,7 +1238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const name = document.getElementById('supFullName')?.value || 'Supervisor';
         closeModal('addSupervisorModal');
-        showPortalToast(`Supervisor ${name} added to this preview.`);
+        showPortalToast(`Supervisor ${name} added to this workspace.`);
         addSupervisorForm.reset();
       });
     }
@@ -1206,7 +1267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (table) {
           const rows = table.querySelectorAll('tr');
           rows.forEach(tr => {
-            if (tr.cells[1]?.textContent.trim() === pendingWithdrawRole && tr.cells[0]?.textContent.trim() === pendingWithdrawCompany) {
+            if (tr.cells[1]?.textContent.trim() === pendingWithdrawRole && (tr.cells[0]?.firstElementChild?.textContent.trim() || tr.cells[0]?.textContent.trim()) === pendingWithdrawCompany) {
               if (tr.dataset.applicationStatus !== 'pending') return;
               tr.dataset.applicationStatus = 'withdrawn';
               withdrawn++;
@@ -1222,7 +1283,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const current = parseInt(appKpi.textContent, 10) || 0;
           appKpi.textContent = Math.max(0,current - withdrawn);
         }
-        showPortalToast(`Application for "${pendingWithdrawRole}" withdrawn in this preview.`, 'bi-exclamation-triangle-fill text-warning');
+        showPortalToast(`Application for "${pendingWithdrawRole}" withdrawn in this workspace.`, 'bi-exclamation-triangle-fill text-warning');
       });
     }
 
@@ -1272,14 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Masar Sidebar Collapsible Rail Toggle (Hamburger Button)
-    const sidebarToggleBtn = document.getElementById('bwSidebarToggle');
-    const masarSidebar = document.querySelector('.bw-masar-sidebar');
-    if (sidebarToggleBtn && masarSidebar) {
-      sidebarToggleBtn.addEventListener('click', () => {
-        masarSidebar.classList.toggle('is-collapsed');
-      });
-    }
+    // Hover, pinning, and mobile navigation are owned by enhancements.js.
   }
   // INITIALIZATION ON DOM READY
   document.addEventListener('DOMContentLoaded', () => {

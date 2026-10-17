@@ -7,10 +7,77 @@ document.addEventListener('DOMContentLoaded',()=>{
  const sidebar=document.querySelector('.bw-masar-sidebar'),toggle=document.getElementById('bwSidebarToggle');
  if(sidebar&&toggle){
    sidebar.id='portalNavigation';toggle.setAttribute('aria-controls',sidebar.id);
-   const small=matchMedia('(max-width:1080px)');if(small.matches)sidebar.classList.add('is-collapsed');
-   function navState(){const open=!sidebar.classList.contains('is-collapsed');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',small.matches?(open?'Close navigation':'Open navigation'):(open?'Collapse sidebar':'Expand sidebar'));}
-   navState();new MutationObserver(navState).observe(sidebar,{attributes:true,attributeFilter:['class']});
-   small.addEventListener('change',event=>{sidebar.classList.toggle('is-collapsed',event.matches);navState();});
+   const small=matchMedia('(max-width:1080px)');
+   const rail=document.createElement('div');rail.className='bw-sidebar-rail';sidebar.before(rail);rail.append(sidebar);
+   const pinKey='bridgeway:sidebar:pinned',holdKey='bridgeway:sidebar:hold-until';
+   const sidebarDelay=1200;
+   const readPreference=key=>{try{return sessionStorage.getItem(key);}catch{return null;}};
+   const writePreference=(key,value)=>{try{sessionStorage.setItem(key,String(value));}catch{/* UI still works without storage. */}};
+   let pinned=readPreference(pinKey)==='true',holdUntil=Math.min(Number(readPreference(holdKey))||0,Date.now()+sidebarDelay);
+   const pin=document.createElement('button');pin.type='button';pin.className='bw-sidebar-pin';pin.setAttribute('role','switch');
+   const pinLabel=document.createElement('span');pinLabel.textContent='Keep sidebar open';
+   const pinSwitch=document.createElement('span');pinSwitch.className='bw-sidebar-pin-track';pinSwitch.setAttribute('aria-hidden','true');
+   pin.append(pinLabel,pinSwitch);sidebar.querySelector('.bw-masar-bottom-group').prepend(pin);
+   let hovering=false,keyboardFocus=false,keyboardInput=false,mobileOpen=false,holdTimer=0;
+   function renderNavigation(){
+     const open=small.matches?mobileOpen:pinned||hovering||keyboardFocus||Date.now()<holdUntil;
+     sidebar.classList.toggle('is-collapsed',!open);rail.classList.toggle('is-open',open&&!small.matches);rail.classList.toggle('is-pinned',pinned&&!small.matches);
+     toggle.setAttribute('aria-expanded',String(open));
+     const label=small.matches?(open?'Close navigation':'Open navigation'):(open?'Collapse navigation':'Expand navigation');
+     toggle.setAttribute('aria-label',label);toggle.title=label;
+     toggle.removeAttribute('aria-pressed');pin.setAttribute('aria-checked',String(pinned));
+     const icon=toggle.querySelector('i');if(icon)icon.className=small.matches?'bi bi-list':open?'bi bi-chevron-left':'bi bi-chevron-right';
+   }
+   function scheduleCollapse(){
+     clearTimeout(holdTimer);
+     const remaining=holdUntil-Date.now();
+     if(remaining>0)holdTimer=setTimeout(()=>{
+       holdUntil=0;writePreference(holdKey,0);renderNavigation();
+     },remaining);
+   }
+   sidebar.querySelectorAll('.bw-masar-item,.bw-masar-link').forEach(item=>{
+     const label=item.querySelector('span')?.textContent.trim()||item.textContent.trim();
+     if(!item.hasAttribute('aria-label'))item.setAttribute('aria-label',label);
+     if(!item.title)item.title=label;
+   });
+   sidebar.addEventListener('pointerenter',event=>{if(small.matches||event.pointerType==='touch')return;hovering=true;renderNavigation();});
+   sidebar.addEventListener('pointerleave',()=>{
+     const wasHovering=hovering;hovering=false;
+     if(wasHovering&&!small.matches&&!pinned){holdUntil=Date.now()+sidebarDelay;writePreference(holdKey,holdUntil);scheduleCollapse();}
+     renderNavigation();
+   });
+   document.addEventListener('keydown',event=>{if(event.key==='Tab')keyboardInput=true;});
+   sidebar.addEventListener('pointerdown',()=>{keyboardInput=false;keyboardFocus=false;});
+   sidebar.addEventListener('focusin',()=>{if(keyboardInput){keyboardFocus=true;renderNavigation();}});
+   sidebar.addEventListener('focusout',event=>{if(!sidebar.contains(event.relatedTarget)){keyboardFocus=false;renderNavigation();}});
+   toggle.addEventListener('click',()=>{
+     if(small.matches)mobileOpen=!mobileOpen;
+     else if(!sidebar.classList.contains('is-collapsed')){
+       pinned=false;hovering=false;keyboardFocus=false;holdUntil=0;clearTimeout(holdTimer);writePreference(pinKey,false);writePreference(holdKey,0);
+     }else{holdUntil=Date.now()+sidebarDelay;writePreference(holdKey,holdUntil);scheduleCollapse();}
+     renderNavigation();
+   });
+   pin.addEventListener('click',()=>{
+     pinned=!pinned;hovering=false;holdUntil=pinned?0:Date.now()+sidebarDelay;
+     writePreference(pinKey,pinned);writePreference(holdKey,holdUntil);scheduleCollapse();renderNavigation();
+   });
+   sidebar.addEventListener('click',event=>{
+     if(event.target.closest('#bwSidebarToggle,.bw-sidebar-pin')||!event.target.closest('a,button'))return;
+     if(small.matches){
+       if(event.target.closest('.bw-masar-nav [data-tab]')){mobileOpen=false;renderNavigation();toggle.focus();}
+       return;
+     }
+     holdUntil=Date.now()+sidebarDelay;writePreference(holdKey,holdUntil);renderNavigation();scheduleCollapse();
+   },true);
+   sidebar.addEventListener('keydown',event=>{
+     if(event.key==='Escape'&&small.matches&&mobileOpen){mobileOpen=false;renderNavigation();toggle.focus();event.preventDefault();return;}
+     if(event.key==='Escape'&&!small.matches&&!pinned){
+       holdUntil=0;hovering=false;keyboardFocus=false;clearTimeout(holdTimer);writePreference(holdKey,0);
+       keyboardInput=false;sidebar.querySelector('.bw-masar-item')?.focus();renderNavigation();event.preventDefault();
+     }
+   });
+   small.addEventListener('change',()=>{hovering=false;keyboardFocus=false;mobileOpen=false;renderNavigation();});
+   renderNavigation();scheduleCollapse();
  }
  const role=document.body.dataset.portalRole;
  // Dashboard headers share the approved compact supervisor layout.
@@ -37,9 +104,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(back){const oldWrapper=back.parentElement;tools.append(back);if(oldWrapper!==heading && !oldWrapper.textContent.trim())oldWrapper.remove();}
     heading.replaceChildren(title,tools);
    }
-   const grid=main.querySelector('.bw-kpi-grid,.platform-metrics');if(grid)grid.dataset.arrangeToolbar=`#${tools.id}`;
-   const sync=()=>{const toggle=tools.querySelector('.bw-arrange-toggle');if(!toggle)return;const editing=toggle.getAttribute('aria-pressed')==='true';toggle.setAttribute('aria-label',editing?'Finish arranging cards':'Arrange cards');toggle.title=editing?'Finish arranging cards':'Arrange cards';};
-   new MutationObserver(sync).observe(tools,{childList:true,subtree:true});sync();
   }
  }
  const copy={
@@ -66,6 +130,36 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('button,a').forEach(control=>{
   control.querySelectorAll('i.bi').forEach(icon=>icon.setAttribute('aria-hidden','true'));
   if(!control.textContent.trim()&&!control.getAttribute('aria-label')&&control.title)control.setAttribute('aria-label',control.title);
+ });
+ // Shared presentation hooks keep role-specific selection and filtering intact.
+ document.querySelectorAll('.company-student-directory,.evaluation-student-picker,.evaluation-directory').forEach(picker=>picker.classList.add('bw-student-picker'));
+ // The same header position for every student detail, independent of its content.
+ for(const [buttonId,label] of [['clearCompanyWeekly','Weekly report'],['clearCompanyEvaluation','End-of-term evaluation'],['clearSupervisorReport','Weekly reports'],['clearSupervisorEvaluation','Company evaluation']]){
+   const button=document.getElementById(buttonId);if(!button)continue;
+   const root=button.closest('#companyWeeklyDetail,#companyEvaluationDetail,#supervisorReportDetail,.evaluation-detail');if(!root)continue;
+   const toolbar=document.createElement('header');toolbar.className='bw-detail-toolbar';
+   const title=document.createElement('h2');title.textContent=label;
+   button.textContent='Change student';toolbar.append(title,button);root.prepend(toolbar);
+   if(buttonId==='clearCompanyEvaluation')root.querySelector('.assessment-header')?.remove();
+ }
+ document.querySelectorAll('.company-workspace table.bw-table,.company-workspace table.listing-table').forEach(table=>{
+   if(table.classList.contains('evaluation-score-table'))return;
+   table.classList.add('bw-mobile-records');table.setAttribute('role','table');
+   table.parentElement.classList.add('bw-records-container');
+   table.querySelectorAll('thead,tbody').forEach(group=>group.setAttribute('role','rowgroup'));
+   const labels=[...table.querySelectorAll('thead th')].map(th=>th.textContent.trim());
+   function labelRows(){
+     table.querySelectorAll('tbody tr').forEach(row=>{
+       row.setAttribute('role','row');
+       [...row.cells].forEach((cell,index)=>{
+         cell.setAttribute('role',cell.tagName==='TH'?'rowheader':'cell');
+         cell.dataset.mobileLabel=cell.colSpan>1?'':labels[index]||'';
+       });
+     });
+   }
+   labelRows();
+   const body=table.querySelector('tbody');
+   if(body)new MutationObserver(labelRows).observe(body,{childList:true,subtree:true});
  });
  document.querySelectorAll('table th').forEach(th=>{if(!th.hasAttribute('scope'))th.scope='col';});
  document.querySelectorAll('.bw-table-container,.bw-table-responsive,.listing-table-scroll').forEach(area=>{
@@ -119,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     set('[data-tab="tab-opportunities"] .bw-tab-badge', $('#tab-opportunities').querySelectorAll('.bw-opp-card').length);
     if(opportunityNav) opportunityNav.title=opportunityNav.textContent.trim().replace(/\s+/g,' ');
     // Empty search feedback for the existing opportunity search.
-    const empty = make('p','No matching internships. Try another search or category.','portal-muted');
+    const empty = make('p','No internships match these filters. Clear the search or choose another category.','portal-muted');empty.id='opportunitiesEmpty';
     empty.hidden = true; $('#tab-opportunities').append(empty);
     const sync = () => { empty.hidden = [...$('#tab-opportunities').querySelectorAll('.bw-opp-card')].some(card => card.style.display !== 'none'); };
     $('#oppSearchInput')?.addEventListener('input',sync);
@@ -127,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (role === 'supervisor') {
-    const assigned = model.students.filter(s=>s.supervisor==='Dr. Ahmad S.' && s.stage==='Placed');
+    const assigned = model.students.filter(s=>s.supervisor==='Dr. Ahmad S.');
     set('[data-tab="tab-roster"] .bw-tab-badge',assigned.length);
     set('#kpiPendingReports','1'); set('#tabBadgeMissingReports','1');
   }
@@ -141,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const input=make('input','', 'bw-input'); input.type='search'; input.id=`${id}-search`; label.htmlFor=input.id; input.placeholder='Search by name or details';
       const count=make('span','','portal-muted'); count.setAttribute('role','status'); toolbar.append(label,input,count);
       const wrapper=table.parentElement; wrapper.before(toolbar);
-      const empty=make('p',`No matching ${title}. Try a different search.`,'portal-muted'); empty.hidden=true; wrapper.after(empty);
+      const empty=make('p',`No matching ${title}. Clear the search to return to the directory.`,'portal-muted');empty.id=`${id}-empty`;empty.hidden=true;wrapper.after(empty);
       const filter=()=>{let n=0; [...table.tBodies[0].rows].forEach(row=>{row.hidden=!row.textContent.toLowerCase().includes(input.value.trim().toLowerCase());if(!row.hidden)n++;});count.textContent=`${n} of ${table.tBodies[0].rows.length}`;empty.hidden=n>0;};
       input.addEventListener('input',filter); new MutationObserver(filter).observe(table.tBodies[0],{childList:true}); filter();
     }
@@ -158,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(applicants) {
     let status='all', listing='';
     const context=make('div','','portal-listing-context'); const title=make('span','All listings'); const clear=make('button','Show all listings','bw-tag-btn'); clear.type='button'; clear.hidden=true; context.append(title,clear); applicants.closest('.company-applications-panel, #tab-candidates').prepend(context);
-    const empty=make('p','No matching applicants. Try another search or filter.','portal-muted'); applicants.closest('table').parentElement.after(empty);
+    const empty=make('p','No applications match these filters. Clear the filters to see the company’s applicants.','portal-muted');empty.id='companyApplicantsEmpty';applicants.closest('table').parentElement.after(empty);
     function filter(){let n=0;const q=$('#candidateSearchInput').value.trim().toLowerCase();[...applicants.rows].forEach(row=>{const s=model.students.find(s=>s.id===row.dataset.studentId);const state=s?.stage==='Placed'?'accepted':s?.stage==='Applied'?'review':s?.stage==='Rejected'?'rejected':'awaiting';row.dataset.status=state;row.style.display=(!listing||s?.role===listing)&&(status==='all'||status===state)&&row.textContent.toLowerCase().includes(q)?'':'none';if(row.style.display!=='none')n++;});empty.hidden=n>0;}
     window.searchCandidates=filter;
     window.filterCandidates=(next,button)=>{status=next;button?.parentElement.querySelectorAll('.bw-tag-btn').forEach(b=>b.classList.toggle('is-active',b===button));filter();};
@@ -178,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(location.pathname.endsWith('company-post-role.html')) {
     const id=new URLSearchParams(location.search).get('listing');
     if(['frontend','software'].includes(id)){
-      set('h1','Edit internship'); set('#standalonePostForm button[type="submit"]','Preview changes');
+      set('h1','Edit internship'); set('#standalonePostForm button[type="submit"]','Review changes');
       if(id==='frontend'){
         $('#formRoleTitle').value='Frontend React Developer Intern';$('#formRoleReqs').value='React, TypeScript, Tailwind, Min GPA 3.0';$('#formCapacity').value='5';$('#formDeadline').value='2026-12-10';$('#formRoleDesc').value='Build accessible React interfaces with guidance from the frontend team during an eight-week internship.';
       }else $('#formWorkMode').selectedIndex=1;
@@ -195,13 +289,13 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.bw-masar-sidebar').setAttribute('aria-label',`${$('#portalRoleLabel').textContent} navigation`);
     const variants={
       company:[['Weekly report reviews','Updates on reports reviewed by assigned supervisors.'],['Application updates','Updates for applicants to your company listings.'],['College partnership updates','Updates to your connected colleges.']],
-      supervisor:[['Weekly reports','Reports submitted by your assigned students’ companies.'],['Company evaluations','Evaluations for your assigned students.'],['Student assignments','Updates to your supervision roster.']],
+      supervisor:[['Weekly reports','Reports submitted by your assigned students’ companies.'],['Company evaluations','Evaluations for your assigned students.'],['Ticket updates','New tickets, replies, and status changes.']],
       admin:[['Placement updates','Updates to placements belonging to your college.'],['Supervisor assignments','Changes to your college supervision roster.'],['Partner updates','Updates to your college’s company connections.']],
       platform_admin:[['Account updates','Updates to company and college accounts.'],['Partnership updates','Changes to college–company connections.'],['Escalated issues','Issues requiring platform attention.']]
     };
     const labels=[...document.querySelectorAll('label')].filter(l=>l.querySelector('input[type="checkbox"]'));
     (variants[role]||[]).forEach(([title,description],i)=>{const parts=labels[i]?.querySelectorAll('div > div');if(parts?.length>=2){parts[0].textContent=title;parts[1].textContent=description;}});
-    const card=labels[0]?.closest('.bw-card-panel'); if(card)card.querySelector('.bw-card-panel-header > div > div').textContent='Preview your notification preferences. Changes are not saved.';
+    const card=labels[0]?.closest('.bw-card-panel'); if(card)card.querySelector('.bw-card-panel-header > div > div').textContent='Review your notification preferences.';
   }
 });
 
@@ -219,6 +313,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   search.addEventListener('input',render);select.addEventListener('change',render);const previous=window.selectInternForRubric;window.selectInternForRubric=(...args)=>{previous(...args);render();};render();
  }
  document.querySelectorAll('.bw-table-container,.bw-table-responsive,.listing-table-scroll').forEach(area=>{
-  if(!area.querySelector('table'))return;const hint=document.createElement('p');hint.className='portal-table-hint';hint.textContent='Scroll horizontally to see all columns and actions.';area.before(hint);const update=()=>{hint.hidden=area.clientWidth===0||area.scrollWidth<=area.clientWidth+1;};new ResizeObserver(update).observe(area);update();
+  const table=area.querySelector('table');if(!table)return;
+  const hint=document.createElement('p');hint.className='portal-table-hint';hint.textContent='Scroll horizontally to see all columns and actions.';area.before(hint);
+  const update=()=>{const scrolling=area.clientWidth>0&&area.scrollWidth>area.clientWidth+1;hint.hidden=!scrolling;area.setAttribute('aria-label',scrolling?'Scrollable data table':'Data table');if(scrolling)area.tabIndex=0;else area.removeAttribute('tabindex');};
+  const observer=new ResizeObserver(update);observer.observe(area);observer.observe(table);update();
  });
 });

@@ -1,4 +1,31 @@
 /* Compact dashboard headers, matching the supervisor example. */
+/* Expansion reserves its width so navigation never covers the workspace. */
+.bw-sidebar-rail { flex:0 0 auto;min-width:0; }
+.bw-sidebar-pin { display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-width:0;height:44px;padding:8px 10px;border:0;border-radius:8px;background:transparent;color:var(--bw-text-secondary);font:500 12px/1.4 var(--bw-font-body);cursor:pointer; }
+.bw-sidebar-pin > span:first-child { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.bw-sidebar-pin:hover { background:var(--bw-bg-alt);color:var(--bw-text); }
+.bw-sidebar-pin-track { width:32px;height:20px;flex-shrink:0;padding:3px;border:1px solid var(--bw-border);border-radius:20px;background:var(--bw-bg-alt); }
+.bw-sidebar-pin-track::before { content:'';display:block;width:12px;height:12px;border-radius:50%;background:var(--bw-text-muted);transition:transform .18s; }
+.bw-sidebar-pin[aria-checked="true"] .bw-sidebar-pin-track { background:var(--bw-action,var(--bw-primary));border-color:var(--bw-action,var(--bw-primary)); }
+.bw-sidebar-pin[aria-checked="true"] .bw-sidebar-pin-track::before { background:white;transform:translateX(12px); }
+.bw-sidebar-pin:focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
+@media(min-width:1081px) {
+ .company-workspace .bw-sidebar-rail { width:80px;position:sticky;top:28px;align-self:start;z-index:70;transition:width .2s ease; }
+ .company-workspace .bw-sidebar-rail.is-open { width:284px; }
+ .company-workspace .bw-sidebar-rail .bw-masar-sidebar,.company-workspace .bw-sidebar-rail .bw-masar-sidebar.is-collapsed { position:relative;top:0;width:100%;min-width:0; }
+ .company-workspace .bw-masar-sidebar.is-collapsed .bw-sidebar-pin { visibility:hidden;pointer-events:none;overflow:hidden;padding-inline:0;gap:0; }
+ .company-workspace .bw-sidebar-rail .bw-masar-sidebar .bw-masar-header { display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:0;min-height:76px;padding-bottom:16px; }
+ .company-workspace .bw-sidebar-rail .bw-masar-toggle { display:none; }
+ .company-workspace .bw-sidebar-rail .bw-masar-sidebar .bw-masar-brand { height:50px;align-items:center; }
+ .company-workspace .bw-sidebar-rail .bw-masar-item,.company-workspace .bw-sidebar-rail .bw-masar-link { height:44px;min-height:44px;justify-content:flex-start;padding:11px 13px;gap:11px; }
+ .company-workspace .bw-sidebar-rail .bw-masar-item > span:first-of-type { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+ .company-workspace .bw-sidebar-rail .portal-role-label { display:none; }
+ .company-workspace .bw-masar-sidebar.is-collapsed .bw-masar-brand { display:flex; }
+ .company-workspace .bw-masar-sidebar.is-collapsed .bw-masar-brand .logo--nav { height:32px!important;max-width:52px; }
+ .company-workspace .bw-masar-sidebar.is-collapsed .portal-role-label { display:none; }
+}
+@media(max-width:1080px) { .company-workspace .bw-sidebar-rail { width:100%; } .bw-sidebar-pin { display:none; } }
+@media(prefers-reduced-motion:reduce) { .company-workspace .bw-sidebar-rail,.bw-sidebar-pin-track::before { transition:none; } }
 .portal-compact .bw-company-content { gap:22px!important; }
 .portal-compact .company-topbar { position:static!important;width:auto;min-height:54px;padding:0 0 16px!important; }
 .portal-compact .company-breadcrumb { display:none; }
@@ -10,20 +37,15 @@
 .portal-compact .portal-compact-heading h1 { margin:0!important;font-size:26px!important;line-height:1.3!important;letter-spacing:-.035em; }
 .portal-compact .portal-compact-heading > [data-style="s1"] { display:contents; }
 .portal-heading-tools { display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-left:auto;flex-wrap:wrap; }
-.portal-compact .portal-heading-tools .bw-arrange-bar { margin:0; }
-.portal-compact .portal-heading-tools .bw-arrange-hint { display:none; }
-.portal-compact .bw-arrange-toggle[aria-pressed="false"] { width:44px;padding:0;font-size:0;border-radius:10px; }
-.portal-compact .bw-arrange-toggle[aria-pressed="false"]::before { content:'⠿';font-size:24px;line-height:1; }
 @media(max-width:600px) {
  .portal-compact .portal-compact-heading h1 { font-size:23px!important; }
  .portal-workspace-identity { max-width:58%; }
- .portal-compact .portal-heading-tools .bw-arrange-actions { width:auto; }
  .portal-compact .portal-heading-tools > [data-style="s2"] { flex-wrap:wrap; }
 }
 /* portal-cycle */ .portal-header-actions { display:flex;align-items:center;gap:12px;margin-left:auto; }
 .portal-notifications { position:relative; }
 .notification-toggle { position:relative;width:40px;height:40px;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-surface);color:var(--bw-text);cursor:pointer; }
-.notification-count { position:absolute;right:-5px;top:-5px;min-width:17px;padding:2px;border-radius:12px;background:var(--bw-primary);color:white;font:10px/1.3 Inter,sans-serif; }
+.notification-count { position:absolute;right:-5px;top:-5px;min-width:17px;padding:2px;border-radius:12px;background:var(--bw-action,var(--bw-primary));color:white;font:10px/1.3 Inter,sans-serif; }
 .notification-panel { position:absolute;right:0;top:48px;z-index:100;width:330px;max-width:calc(100vw - 32px);background:var(--bw-surface);border:1px solid var(--bw-border);border-radius:10px;box-shadow:0 12px 32px #0002;padding:16px; }
 .notification-panel[hidden] { display:none; }
 .notification-panel h2 { font-size:15px;margin:0 0 12px; }
@@ -31,7 +53,7 @@
 .notification-panel button { margin-top:12px; }
 .portal-unified [data-open-modal="addSupervisorModal"],.portal-unified [data-open-modal="registerStudentModal"] { min-height:46px!important;padding:12px 20px!important;font-size:14px!important;font-weight:600!important;border:1px solid var(--bw-primary)!important;border-radius:8px!important; }
 .portal-unified [data-open-modal="addSupervisorModal"] { background:var(--bw-primary-light,#eaf1ff)!important;color:var(--bw-primary)!important; }
-.portal-unified [data-open-modal="registerStudentModal"] { background:var(--bw-primary)!important;color:white!important;box-shadow:0 3px 8px #2563eb26!important; }
+.portal-unified [data-open-modal="registerStudentModal"] { background:var(--bw-action,var(--bw-primary))!important;color:white!important;box-shadow:0 3px 8px #2563eb26!important; }
 .partner-panel { border:1px solid var(--bw-border);border-radius:10px;background:var(--bw-surface);padding:24px;margin:20px 0; }
 .partner-panel h2 { font-size:17px;margin:0 0 8px; }
 .partner-panel p,.partner-panel li { font-size:13px;color:var(--bw-text-muted);line-height:1.7; }
@@ -57,7 +79,7 @@
 .portal-issue-dialog :is(input,textarea) { width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-bg-alt);color:var(--bw-text);font:inherit;font-size:14px; }
 .portal-issue-dialog textarea { resize:vertical;min-height:120px;max-height:240px; }
 .portal-issue-dialog label:not(:first-child) { margin-top:8px; }
-.portal-issue-dialog .portal-issue-submit { background:var(--bw-primary);color:white;border-color:var(--bw-primary); }
+.portal-issue-dialog .portal-issue-submit { background:var(--bw-action,var(--bw-primary));color:white;border-color:var(--bw-action,var(--bw-primary)); }
 .portal-issue-dialog .portal-issue-feedback { margin:8px 0;font-size:13px; }
 .portal-issue-dialog { max-height:calc(100dvh - 32px);overflow-y:auto; }
 .portal-issue-dialog :is(input,textarea,button):focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
@@ -84,16 +106,16 @@
   .partner-panel { padding:18px }
 }
 /* portal-refinement */ .company-workspace { --bw-font-head:'Inter',system-ui,sans-serif; --bw-font-body:'Inter',system-ui,sans-serif; --bw-bg:#f5f7fb; --bw-bg-alt:#edf2f8; --bw-surface:#fff; --bw-text:#17243b; --bw-text-secondary:#43536b; --bw-text-muted:#596b82; --bw-border:#dce4ef; --bw-primary:#245bdb; --bw-primary-light:#eaf0ff; font:14px/1.6 var(--bw-font-body); background:var(--bw-bg); color:var(--bw-text); }
-[data-theme="dark"] .company-workspace { --bw-bg:#101722;--bw-bg-alt:#1d293a;--bw-surface:#172232;--bw-text:#edf3fc;--bw-text-secondary:#c0cde0;--bw-text-muted:#a4b4ca;--bw-border:#34445b;--bw-primary:#8cb3ff;--bw-primary-light:#263c60; }
+[data-theme="dark"] .company-workspace { --bw-bg:var(--bw-night-bg);--bw-bg-alt:var(--bw-night-alt);--bw-surface:var(--bw-night-surface);--bw-text:var(--bw-night-text);--bw-text-secondary:var(--bw-night-secondary);--bw-text-muted:var(--bw-night-muted);--bw-border:var(--bw-night-border);--bw-primary:var(--bw-night-primary);--bw-primary-light:#203b60; }
 .company-workspace .bw-company-layout { max-width:1600px;gap:32px;padding:28px 32px 48px; }
 .company-workspace .bw-company-content { --bw-text-muted:#596b82;gap:28px;min-width:0; }
-[data-theme="dark"] .company-workspace .bw-company-content { --bw-text-muted:#a4b4ca; }
-.company-workspace .bw-masar-sidebar { width:250px;height:auto;min-height:620px;max-height:calc(100vh - 56px);overflow-y:auto;border-radius:20px;border-width:1px;border-bottom:3px solid var(--bw-primary);padding:20px 14px;box-shadow:0 6px 24px #17243b06;background:var(--bw-surface); }
+[data-theme="dark"] .company-workspace .bw-company-content { --bw-text-muted:var(--bw-night-muted); }
+.company-workspace .bw-masar-sidebar { width:284px;height:calc(100dvh - 56px);min-height:0;max-height:calc(100dvh - 56px);overflow:hidden;border-radius:20px;border-width:1px;border-bottom:3px solid var(--bw-primary);padding:16px 12px;box-shadow:0 6px 24px #17243b06;background:var(--bw-surface); }
 .company-workspace .bw-masar-sidebar.is-collapsed { width:80px;min-width:80px; }
 .company-workspace .bw-masar-nav { gap:5px; }
 .company-workspace .bw-masar-item { min-height:44px;padding:11px 13px;gap:11px;border-radius:9px;font:500 13px/1.5 var(--bw-font-body);text-align:left;justify-content:flex-start; }
 .company-workspace .bw-masar-item.is-active { background:var(--bw-primary);color:#fff;box-shadow:0 3px 8px #245bdb20; }
-[data-theme="dark"] .company-workspace .bw-masar-item.is-active { color:#101722; }
+[data-theme="dark"] .company-workspace .bw-masar-item.is-active { background:var(--bw-primary-light);color:var(--bw-text);box-shadow:inset 3px 0 var(--bw-primary); }
 .company-workspace .bw-masar-item:not(.is-active):hover,.company-workspace .bw-masar-link:hover { background:var(--bw-bg-alt);color:var(--bw-text); }
 .company-workspace .bw-masar-link { min-height:44px;font-size:13px;border-radius:8px; }
 .company-workspace .bw-masar-item[href$="#tab-partners"] { margin-top:14px;border-top:1px solid var(--bw-border);border-radius:0 0 8px 8px;color:var(--bw-primary); }
@@ -256,3 +278,27 @@ html[data-theme="light"]:has(body.company-workspace) { color-scheme:light; }
   .company-workspace :is(.bw-table,.listing-table) tr>:first-child :is(div,span,small) { overflow-wrap:break-word; }
   .company-workspace .bw-scale-btn { min-height:40px; }
 }
+
+/* One student directory pattern for company and supervisor tasks. */
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker { position:sticky;top:24px;align-self:start;padding:24px;background:var(--bw-surface);border:1px solid var(--bw-border);border-radius:12px;box-shadow:none;min-width:0; }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker h2 { margin:0 0 8px;font-size:18px;font-weight:600;line-height:1.4; }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker > p { font-size:13px;line-height:1.6;color:var(--bw-text-secondary); }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker :is(.company-student-list,.evaluation-student-list) { display:flex;flex-direction:column;gap:8px;padding:0;margin-top:18px;max-height:460px;overflow:auto; }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker :is(.company-student-button,.evaluation-student-button) { display:block;width:100%;text-align:left;min-height:86px;padding:14px 16px;border:1px solid var(--bw-border);border-radius:10px;background:var(--bw-surface);color:var(--bw-text);font:inherit;cursor:pointer;box-shadow:none;transform:none;overflow-wrap:anywhere; }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker :is(.company-student-button,.evaluation-student-button):hover { background:var(--bw-bg-alt);border-color:var(--bw-border); }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker [aria-pressed="true"],:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker [aria-pressed="true"]:hover { background:var(--bw-primary-light);border-color:var(--bw-primary);box-shadow:inset 3px 0 var(--bw-primary); }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker :is(strong,small,.company-student-button span,.evaluation-student-button span) { display:block; }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker strong { font-size:14px;font-weight:600;line-height:1.5; }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker :is(small,.company-student-button span,.evaluation-student-button span) { margin-top:5px;font-size:13px;line-height:1.6;color:var(--bw-text-secondary); }
+:is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker input { width:100%;min-height:44px;font-size:14px; }
+.bw-student-picker :is(input,button):focus-visible { outline:2px solid var(--bw-primary);outline-offset:2px; }
+@media(max-width:1300px) {
+ :is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker { position:static; }
+ :is(#page-company-dashboard,#page-supervisor-dashboard) .bw-student-picker :is(.company-student-list,.evaluation-student-list) { max-height:260px; }
+}
+/* Shared action and status rhythm; color is paired with a written status. */
+.company-workspace :is(.bw-tag-btn,.bw-btn-mini,.company-change-student,.supervisor-change-student) { min-height:44px;font-size:13px;border-radius:8px; }
+.company-workspace .bw-badge { font-size:12px;font-weight:500;line-height:1.5;border-radius:6px;padding:4px 8px; }
+[data-theme="dark"] .company-workspace :is(.bw-badge-success,.bw-badge-green) { color:#86efac;background:#163b30;border-color:#35765c; }
+[data-theme="dark"] .company-workspace .bw-badge-amber { color:#fde68a;background:#40331d;border-color:#806632; }
+[data-theme="dark"] .company-workspace .bw-badge-danger { color:#fca5a5;background:#40252f;border-color:#83404e; }

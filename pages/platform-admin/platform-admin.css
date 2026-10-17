@@ -80,7 +80,8 @@
 .platform-admin .platform-panel .bw-table-container { border:0; border-radius:0; margin:0; }
 .platform-overview-grid { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:20px; margin-bottom:24px; }
 .platform-account-actions { display:grid; grid-template-columns:1fr 1fr; }
-.platform-account-actions > div { padding:24px; }
+.platform-account-actions > div { display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:24px; }
+.platform-account-actions > div > .company-text-button { margin-top:auto; }
 .platform-account-actions > div + div { border-left:1px solid var(--bw-border); }
 .platform-account-actions h3 { font-size:14px; font-weight:600; margin:15px 0 8px; }
 .platform-account-actions p { color:var(--bw-text-muted); font-size:11px; line-height:1.8; margin:0 0 16px; }
@@ -136,7 +137,6 @@
 #page-platform-admin .company-page-heading h1 { font-size:clamp(28px,2.7vw,36px);font-weight:600;letter-spacing:-.04em;line-height:1.25;margin:8px 0 12px; }
 #page-platform-admin .company-page-heading p { font-size:14px;line-height:1.7; }
 #page-platform-admin .bw-bridge-detail { display:none; }
-#platformOverviewTools .bw-arrange-hint { display:none; }
 #page-platform-admin .platform-metrics { gap:16px;border:0;background:transparent;overflow:visible;margin:0 0 24px; }
 #page-platform-admin .platform-metrics > button { padding:22px;border:1px solid var(--bw-border);border-radius:14px;background:var(--bw-surface);gap:20px;min-height:162px; }
 #page-platform-admin .platform-metrics > button:hover { border-color:var(--bw-primary);transform:none; }
@@ -159,8 +159,8 @@
 #page-platform-admin .platform-toolbar .company-search { width:min(420px,100%);border-radius:8px; }
 #page-platform-admin .company-search input { width:100%;font-size:13px; }
 #page-platform-admin .platform-toolbar [data-result-count] { margin-left:auto;font-size:12px; }
-#page-platform-admin .bw-table { min-width:840px; }
-#page-platform-admin #platform-partnerships .bw-table { min-width:980px; }
+#page-platform-admin .bw-table { min-width:0;width:100%; }
+#page-platform-admin #platform-partnerships .bw-table { min-width:0; }
 #page-platform-admin .bw-table th { padding:14px 24px;font-size:12px;background:var(--bw-bg-alt); }
 #page-platform-admin .bw-table td { padding:22px 24px;font-size:13px; }
 #page-platform-admin .bw-table tr > :last-child { width:1%;white-space:nowrap; }

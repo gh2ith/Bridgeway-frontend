@@ -2,6 +2,7 @@
 <html lang="en" data-page="admin-dashboard">
 <head>
   <meta charset="UTF-8">
+  <script src="../../shared/js/portal-theme-init.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bridgeway — College Admin Portal</title>
   <meta name="description" content="Bridgeway Executive Administration — Centralized academic internship governance across Orange Coding Academy, Al-Balqa Applied University, and Crown Prince Foundation.">
@@ -12,16 +13,17 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <link rel="stylesheet" href="../../shared/css/base.css">
-  <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/base.css?v=night-2">
+  <link rel="stylesheet" href="../../shared/css/portal.css?v=night-2">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css?v=3">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=11">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
 
-  <link rel="stylesheet" href="../../shared/css/interactions.css">
-  <link rel="stylesheet" href="admin-dashboard.css?v=3">
-  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=2">
-</head>
+  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
+  <link rel="stylesheet" href="admin-dashboard.css?v=walkthrough-5">
+  <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=portal-clean-2">
+<link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
+<link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-hinge-23"><script src="../../shared/js/bridgeway-kinetic.js?v=decision-dialogs-59"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=support-headset-64"></head>
 <body class="company-workspace portal-unified" data-portal-role="admin" id="page-admin-dashboard">
 
   <div class="bw-company-layout"><aside class="bw-masar-sidebar" aria-label="College Admin navigation"><div class="bw-masar-top"><div class="bw-masar-header">
@@ -286,7 +288,7 @@
                   <div data-style="s17">student1@uni.edu</div>
                 </td>
                 <td>Software Engineering</td>
-                <td><span class="bw-badge bw-badge-blue">3.50</span></td>
+                <td>3.50</td>
                 <td>College of IT</td>
                 <td>
                   <div data-style="s18">
@@ -312,7 +314,7 @@
                   <div data-style="s17">student@bau.edu.jo</div>
                 </td>
                 <td>Software Engineering</td>
-                <td><span class="bw-badge bw-badge-blue">3.75</span></td>
+                <td>3.75</td>
                 <td>Faculty of IT</td>
                 <td>
                   <div data-style="s18">
@@ -338,7 +340,7 @@
                   <div data-style="s17">sarah.ahmad@bau.edu.jo</div>
                 </td>
                 <td>Software Engineering</td>
-                <td><span class="bw-badge bw-badge-blue">3.88</span></td>
+                <td>3.88</td>
                 <td>Faculty of IT</td>
                 <td>
                   <div data-style="s18">
@@ -480,7 +482,7 @@
           </div>
           <span class="bw-badge bw-badge-blue">College availability</span>
         </div>
-        <p class="portal-muted">Listing details are read-only. Pause a listing for your college’s students only; other colleges and existing training are unaffected. Changes reset on reload.</p>
+        <p class="portal-muted">Listing details are read-only. Pause a listing for your college’s students only; other colleges and existing training are unaffected.</p>
         <div class="bw-table-responsive">
           <table class="bw-table">
             <thead>
@@ -582,128 +584,30 @@
     </div>
   </main></div>
 
-  <div class="bw-modal-backdrop" id="registerStudentModal">
-    <div class="bw-modal-dialog">
-      <div class="bw-modal-header">
-        <div class="bw-modal-title">
-          <i class="bi bi-mortarboard-fill text-primary"></i>
-          <span>Register New Undergraduate Student</span>
-        </div>
-        <button type="button" class="bw-modal-close" data-close-modal="registerStudentModal">&times;</button>
-      </div>
-      <form id="registerStudentForm">
-        <div class="bw-modal-body">
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="studentFullName">Full Name *</label>
-            <input type="text" id="studentFullName" class="bw-input" placeholder="e.g. Ahmad Al-Saeed" required>
-          </div>
-
-          <div data-style="s20" data-presentation="grid grid-template-columns">
-            <div class="bw-form-group">
-              <label class="bw-form-label" for="studentDept">Department / Major *</label>
-              <input type="text" id="studentDept" class="bw-input" placeholder="e.g. Computer Science" required>
-            </div>
-            <div class="bw-form-group">
-              <label class="bw-form-label" for="studentGpa">Cumulative GPA (Out of 4.0) *</label>
-              <input type="number" id="studentGpa" class="bw-input" step="0.01" min="1.0" max="4.0" value="3.75" required>
-            </div>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="studentFacultySelect">Faculty / College *</label>
-            <select id="studentFacultySelect" class="bw-select" required>
-              <option value="Faculty of IT">Faculty of Information Technology</option>
-              <option value="Faculty of Engineering">Faculty of Engineering</option>
-              <option value="Orange Coding Academy">Orange Coding Academy Program</option>
-            </select>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="studentEmail">Institutional Email Address *</label>
-            <input type="email" id="studentEmail" class="bw-input" placeholder="e.g. student@bau.edu.jo" required>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="studentPass">
-              <span>Temporary Access Password *</span>
-              <small>Minimum 6 characters</small>
-            </label>
-            <input type="password" id="studentPass" class="bw-input" value="password123" minlength="6" required>
-          </div>
-        </div>
-        <div class="bw-modal-footer">
-          <button type="button" class="bw-btn-block bw-btn-outline" data-style="s3" data-close-modal="registerStudentModal">Cancel</button>
-          <button type="submit" class="bw-btn-block bw-btn-primary" data-style="s3">
-            Create Student Account
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="bw-modal-backdrop" id="addSupervisorModal">
-    <div class="bw-modal-dialog">
-      <div class="bw-modal-header">
-        <div class="bw-modal-title">
-          <i class="bi bi-person-plus-fill text-primary"></i>
-          <span>Enroll Academic Faculty Supervisor</span>
-        </div>
-        <button type="button" class="bw-modal-close" data-close-modal="addSupervisorModal">&times;</button>
-      </div>
-      <form id="addSupervisorForm">
-        <div class="bw-modal-body">
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="supFullName">Faculty Name & Title *</label>
-            <input type="text" id="supFullName" class="bw-input" placeholder="e.g. Dr. Tareq Al-Husseini" required>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="supDept">Academic Department *</label>
-            <select id="supDept" class="bw-select" required>
-              <option value="Software Engineering">Software Engineering</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Cybersecurity">Cybersecurity</option>
-              <option value="Data Science & AI">Data Science & AI</option>
-            </select>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="supEmail">Faculty Institutional Email *</label>
-            <input type="email" id="supEmail" class="bw-input" placeholder="e.g. supervisor@bau.edu.jo" required>
-          </div>
-        </div>
-        <div class="bw-modal-footer">
-          <button type="button" class="bw-btn-block bw-btn-outline" data-style="s3" data-close-modal="addSupervisorModal">Cancel</button>
-          <button type="submit" class="bw-btn-block bw-btn-primary" data-style="s3">
-            Enroll Faculty Supervisor
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <!-- Account creation/editing uses the shared administrator-managed editor. -->
 
   <div class="bw-modal-backdrop" id="deleteModal">
     <div class="bw-modal-dialog">
       <div class="bw-modal-header">
         <div class="bw-modal-title">
           <i class="bi bi-exclamation-triangle-fill text-danger"></i>
-          <span>Confirm Permanent Deletion</span>
+          <span>Delete record</span>
         </div>
         <button type="button" class="bw-modal-close" data-close-modal="deleteModal">&times;</button>
       </div>
       <div class="bw-modal-body">
         <p data-style="s21">
-          Are you sure you want to permanently delete <strong id="deleteEntityLabel">this record</strong>?
+          Delete <strong id="deleteEntityLabel">this record</strong>?
         </p>
         <div data-style="s22">
           <i class="bi bi-info-circle-fill me-1"></i>
-          This action cascades through the database and cannot be reversed.
+          Existing placements and training history remain intact.
         </div>
       </div>
       <div class="bw-modal-footer">
         <button type="button" class="bw-btn-block bw-btn-outline" data-style="s3" data-close-modal="deleteModal">Cancel</button>
         <button type="button" id="confirmDeleteBtn" class="bw-btn-block" data-style="s23">
-          <i class="bi bi-trash me-1"></i> Delete Record
+          <i class="bi bi-trash me-1"></i> Delete
         </button>
       </div>
     </div>
@@ -724,7 +628,7 @@
         </p>
         <div data-style="s24">
           <i class="bi bi-exclamation-circle-fill me-1"></i>
-          This ends the placement in this preview only. Existing reports and evaluations are retained; nothing is sent or saved.
+          This ends the placement in this workspace. Reports and evaluations remain available.
         </div>
       </div>
       <div class="bw-modal-footer">
@@ -762,13 +666,15 @@
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=19"></script>
+  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
 
   <script src="../../shared/js/navigation.js"></script>
-  <script src="admin-dashboard.js?v=3"></script>
-  <script src="../../shared/js/enhancements.js?v=8"></script>
+  <script src="admin-dashboard.js?v=interface-9"></script>
+  <script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
 
-  <script src="../../shared/js/interactions.js"></script>
-  <script src="../../shared/js/portal-motion.js?v=2"></script>
+  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-motion.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
+<script src="../../shared/js/report-visibility.js?v=1"></script><script src="../../shared/js/workbook-download.js?v=workbook-clean-44"></script><script src="../../shared/js/workspace-cycle.js?v=support-headset-64"></script><script src="../../shared/js/partnership-review.js?v=ticket-lifecycle-54"></script><link rel="stylesheet" href="../../shared/css/managed-account-editor.css?v=4"><script src="../../shared/js/managed-account-editor.js?v=4"></script><script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
 </body>
 </html>

@@ -29,13 +29,13 @@
 #page-admin-dashboard #tab-supervisors .bw-card-panel-header { padding:24px;margin:0;align-items:center;border-bottom:1px solid var(--bw-border); }
 #page-admin-dashboard #tab-supervisors .bw-card-panel-title { font-size:18px;font-weight:600; }
 .college-directory-description { margin:6px 0 0;font-size:13px;line-height:1.6;color:var(--bw-text-muted); }
-#page-admin-dashboard #tab-supervisors [data-open-modal="addSupervisorModal"] { background:var(--bw-primary)!important;color:white!important;min-height:42px!important;padding:10px 16px!important;font-size:13px!important; }
+#page-admin-dashboard #tab-supervisors [data-open-modal="addSupervisorModal"] { background:var(--bw-action,var(--bw-primary))!important;color:white!important;min-height:42px!important;padding:10px 16px!important;font-size:13px!important; }
 #page-admin-dashboard #tab-supervisors .portal-directory-search { padding:20px 24px;margin:0;display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:8px 16px; }
 #page-admin-dashboard #tab-supervisors .portal-directory-search label { grid-column:1;font-size:12px;font-weight:500;color:var(--bw-text-secondary); }
 #page-admin-dashboard #tab-supervisors .portal-directory-search input { grid-column:1;width:100%;min-width:0;max-width:none;min-height:44px;border-radius:8px; }
 #page-admin-dashboard #tab-supervisors .portal-directory-search > span { grid-column:2;grid-row:2;align-self:center;justify-self:end;font-size:12px; }
 #page-admin-dashboard #tab-supervisors .bw-table-responsive { margin:0;border:0; }
-#page-admin-dashboard #tab-supervisors .bw-table { min-width:800px; }
+#page-admin-dashboard #tab-supervisors .bw-table { min-width:0;width:100%; }
 #page-admin-dashboard #tab-supervisors .bw-table th { padding:14px 24px;font-size:12px;background:var(--bw-bg-alt); }
 #page-admin-dashboard #tab-supervisors .bw-table td { padding:24px;font-size:13px; }
 #page-admin-dashboard #tab-supervisors .bw-table td:first-child { width:30%;min-width:240px; }
@@ -44,9 +44,9 @@
 #page-admin-dashboard #tab-supervisors :is(.bw-badge,.bw-tag-btn) { white-space:nowrap; }
 #page-admin-dashboard #tab-supervisors .bw-table .bw-tag-btn { min-height:36px;padding:7px 12px;background:transparent;border-color:var(--bw-border); }
 #page-admin-dashboard #tab-supervisors .bw-table-responsive + .portal-muted { margin:0;padding:20px 24px; }
-#page-admin-dashboard #tab-posts .bw-table { min-width:1100px; }
+#page-admin-dashboard #tab-posts .bw-table { min-width:0;width:100%; }
 #page-admin-dashboard #tab-posts :is(.bw-badge,[data-college-listing-toggle]) { white-space:nowrap; }
-#page-admin-dashboard #tab-approved .bw-table { min-width:1100px; }
+#page-admin-dashboard #tab-approved .bw-table { min-width:0;width:100%; }
 #page-admin-dashboard #tab-approved :is(.bw-badge,.bw-tag-btn) { white-space:nowrap; }
 #page-admin-dashboard #tab-approved .bw-badge-danger { color:#b91c1c;background:#fef2f2;border-color:#fecaca; }
 [data-theme="dark"] #page-admin-dashboard #tab-approved .bw-badge-danger { color:#fca5a5;background:#451c26;border-color:#7f3343; }

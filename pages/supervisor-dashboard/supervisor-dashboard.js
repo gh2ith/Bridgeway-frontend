@@ -1,3 +1,37 @@
+// Compact, read-only student details without replacing or expanding the dashboard.
+document.addEventListener('DOMContentLoaded',()=>{
+  const table=document.getElementById('supervisedStudentsTable');if(!table)return;
+  const make=(tag,text,cls)=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;if(cls)n.className=cls;return n;};
+  table.addEventListener('click',event=>{
+    const opener=event.target.closest('.bw-record-open');if(!opener)return;
+    const C=window.BridgewayCycle,row=opener.closest('tr');
+    const s=window.BridgewayPartners.students.find(s=>s.supervisor==='Dr. Ahmad S.'&&row.cells[0].textContent.includes(s.studentId));
+    if(!C||!s)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    const history=C.state.histories.filter(h=>h.student===s.id),current=history[0],plan=C.state.plans[s.id]||[];
+    const body=make('div',null,'supervisor-student-details'),header=make('header');
+    const identity=make('div');identity.append(make('h3',s.name),make('p',`Student ID ${s.studentId}`));header.append(identity,C.status(current?.status||s.stage));body.append(header);
+    const facts=make('dl');
+    const department=row.cells[1]?.querySelector('[data-style="s12"]')?.textContent.trim();
+    const mentor=row.cells[2]?.querySelector('[data-style="s13"]')?.textContent.replace(/^Mentor:\s*/,'').trim();
+    [
+      ['University',C.org(s.college)],['Department',s.department||department],
+      ['Cumulative GPA',`${s.gpa} / 4.00`],['Academic supervisor',s.supervisor],
+      ['Host company',C.org(s.company)],['Company mentor',mentor],
+      ['Internship role',current?.role||s.role],
+      ['Training dates',current?`${current.start||'Not recorded'} — ${current.end||'Ongoing'}`:null]
+    ].forEach(([label,value])=>{const pair=make('div');pair.append(make('dt',label),make('dd',value||'Not provided'));facts.append(pair);});body.append(facts);
+    const summary=make('section',null,'supervisor-details-progress');
+    summary.append(make('strong',`${C.hours(s.id)} / 320 h verified`),make('span',`${plan.filter(w=>w.status==='verified').length} of 8 weeks verified`));
+    const bar=make('progress');bar.max=320;bar.value=C.hours(s.id);bar.setAttribute('aria-label',`${C.hours(s.id)} of 320 hours verified`);summary.append(bar);
+    const pending=plan.filter(w=>w.status==='submitted').length;
+    summary.append(make('p',`${pending?pending+' '+(pending===1?'report awaiting':'reports awaiting')+' review':'No reports awaiting review'} · Company evaluation ${C.state.evaluations[s.id]?'submitted':'not submitted'}`));body.append(summary);
+    const actions=make('div',null,'cycle-actions'),reports=make('button','Weekly reports','cycle-button is-primary');reports.type='button';actions.append(reports);body.append(actions);
+    const modal=C.dialog('Student details',body);modal.classList.add('supervisor-student-dialog');
+    reports.addEventListener('click',()=>{modal.close();window.switchTab('tab-reports');window.reviewStudentReport(s.name);});
+  },true);
+});
+
 // Compact header example, scoped to this portal.
 document.addEventListener('DOMContentLoaded',()=>{
   const breadcrumb=document.querySelector('.company-breadcrumb');
@@ -5,14 +39,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   const college=document.createElement('strong');college.textContent='Al-Balqa Applied University';
   const department=document.createElement('span');department.textContent='Software Engineering · Supervisor workspace';
   identity.append(college,department);breadcrumb.replaceWith(identity);
-  const tools=document.getElementById('supervisorHeadingTools');
-  const sync=()=>{
-    const toggle=tools.querySelector('.bw-arrange-toggle');if(!toggle)return;
-    const editing=toggle.getAttribute('aria-pressed')==='true';
-    toggle.setAttribute('aria-label',editing?'Finish arranging cards':'Arrange cards');
-    toggle.title=editing?'Finish arranging cards':'Arrange cards';
-  };
-  new MutationObserver(sync).observe(tools,{childList:true,subtree:true});sync();
 });
 /* Fixed examples for this supervisor; no backend, persistence, or editing. */
 document.addEventListener('DOMContentLoaded',()=>{
@@ -28,7 +54,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  function renderList(){
   const query=$('supervisorEvaluationSearch').value.trim().toLowerCase();
   const matches=records.filter(record=>`${record.name} ${record.studentId} ${record.company}`.toLowerCase().includes(query));
-  if (!matches.some(record=>record.id===selected)) selected='';
   const list=$('supervisorEvaluationStudents');list.replaceChildren();
   matches.forEach(record=>{const button=make('button',null,'evaluation-student-button');button.type='button';button.setAttribute('aria-pressed',String(record.id===selected));button.setAttribute('aria-controls','supervisorEvaluationSubmitted supervisorEvaluationPending');button.append(make('strong',record.name),make('span',`${record.studentId} / ${record.company}`),make('small',record.scores?'Submitted':'Not submitted'));button.addEventListener('click',()=>{selected=record.id;list.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));renderDetail();});list.append(button);});
   $('supervisorEvaluationCount').textContent=`${matches.length} of ${records.length} assigned students`;
@@ -41,7 +66,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('supervisorEvaluationPrompt').hidden=Boolean(record);
   if(!record)return;
   $('supervisorEvaluationName').textContent=record.name;
-  $('supervisorEvaluationIdentity').textContent=`${record.studentId} / ${record.company} / ${record.role}`;
+  $('supervisorEvaluationIdentity').textContent=`ID ${record.studentId} · ${record.role}`;
   $('supervisorEvaluationStatus').textContent=record.scores?'Submitted':'Not submitted';
   $('supervisorEvaluationStatus').className=`bw-badge ${record.scores?'bw-badge-success':'bw-badge-amber'}`;
   $('supervisorEvaluationPending').hidden=Boolean(record.scores);
@@ -63,7 +88,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 // Weekly reports use the same selection-first workspace as company evaluations.
 document.addEventListener('DOMContentLoaded', () => {
   const model = window.BridgewayPartners;
-  const students = model.students.filter(student => student.supervisor === 'Dr. Ahmad S.' && student.stage === 'Placed');
+  const students = model.students.filter(student => student.supervisor === 'Dr. Ahmad S.' && ['Placed','Completed','Left'].includes(student.stage));
   const search = document.getElementById('supervisorReportSearch');
   const list = document.getElementById('supervisorReportStudents');
   const detail = document.getElementById('supervisorReportDetail');
@@ -95,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const company = model.organizations.find(company => company.id === student.company).name;
       return `${student.name} ${student.studentId} ${company}`.toLowerCase().includes(query);
     });
-    if (!matches.some(student => student.id === selected)) selected = '';
     list.replaceChildren();
     matches.forEach(student => {
       const button = document.createElement('button');
@@ -121,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const student = students.find(student => student.name === args[0]);
     if (!student) return;
     selected = student.id;
-    search.value = '';
     review(...args);
     renderTimeline(student);
     render();

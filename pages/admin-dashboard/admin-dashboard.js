@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-college-listing-toggle]').forEach(button=>{
     button.addEventListener('click',async()=>{
       const row=button.closest('tr'),name=row.cells[1].textContent.trim(),paused=row.dataset.collegeListingState==='paused';
-      if(!paused&&!await window.confirmPartnershipPause(`Pause “${name}” for your college’s students only? The company’s listing and other colleges are unaffected. Existing applications and training stay intact. This is a temporary preview.`, 'Pause listing for your college?', 'Pause for my college'))return;
+      if(!paused&&!await window.confirmPartnershipPause(`Pause “${name}” for your college’s students only? The company’s listing and other colleges are unaffected. Existing applications and training stay intact. `, 'Pause listing for your college?', 'Pause for my college'))return;
       row.dataset.collegeListingState=paused?'active':'paused';
       const status=row.querySelector('[data-college-listing-status]');status.textContent=paused?'Available':'Paused for your college';status.className=`bw-badge ${paused?'bw-badge-success':'bw-badge-danger'}`;
       button.textContent=paused?'Pause':'Resume';button.setAttribute('aria-label',`${paused?'Pause':'Resume'} ${name} for your college`);
-      window.showPortalToast(paused?'Listing resumed for your college in this preview only.':'Listing paused for your college in this preview only. Other colleges are unaffected.');
+      window.showPortalToast(paused?'Listing resumed for your college in this workspace.':'Listing paused for your college in this workspace. Other colleges are unaffected.');
     });
   });
 });
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     element.onclick = function(event) { window.switchTab('tab-approved') };
   });
   document.querySelectorAll('[data-onchange="showPortalToast--10"]').forEach(element => {
-    element.onchange = function(event) { showPortalToast('Supervisor assignment changed in this preview only.') };
+    element.onchange = function(event) { showPortalToast('Supervisor assignment changed in this workspace.') };
   });
   document.querySelectorAll('[data-onclick="openUnassignModal--11"]').forEach(element => {
     element.onclick = function(event) { openUnassignModal(1, 'Alice Johnson', 'Dr. John Smith') };

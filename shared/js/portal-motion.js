@@ -24,7 +24,7 @@
     const make=(tag,text,cls)=>{const node=document.createElement(tag);if(text)node.textContent=text;if(cls)node.className=cls;return node;};
     // One expanded opportunity, with the actual apply control and its original listener.
     const grid=document.querySelector('#tab-opportunities .bw-opportunities-grid');
-    if(grid) {
+    if(grid && grid.dataset.discovery !== 'true') {
       let selected=null,origin=null,returnFocus=null;
       const back=make('button','Back to opportunities','bw-reading-back');back.type='button';
       function close(restoreFocus=true) {
@@ -128,7 +128,7 @@
     let filterFrame=0;
     function filterMotion(event) {
       const control=event.target.closest('input[type="search"],input[type="text"],select,.bw-tag-btn,[data-filter],[data-training-filter],[data-accepted-filter],[data-listing-filter]');
-      if(!control || control.closest('.bw-modal-backdrop,dialog,.bw-arrange-bar'))return;
+      if(!control || control.closest('.bw-modal-backdrop,dialog'))return;
       const panel=control.closest('.bw-tab-panel');if(!panel)return;
       const items=[...panel.querySelectorAll('.bw-opp-card,tbody tr,.training-report,.company-meeting-row')];
       const before=new Map(items.filter(node=>node.getClientRects().length).map(node=>[node,node.getBoundingClientRect()]));
@@ -145,8 +145,7 @@
     }
     document.addEventListener('click',filterMotion,true);document.addEventListener('input',filterMotion,true);document.addEventListener('change',filterMotion,true);
     // Keep real values untouched: a brief vertical reveal signals updated metrics.
-    document.querySelectorAll('.bw-kpi-value,.platform-metrics strong,.platform-totals dd').forEach((value,index)=>{
-      animate(value,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],400,Math.min(index*45,180));
+    document.querySelectorAll('.bw-kpi-value,.platform-metrics strong,.platform-totals dd').forEach(value=>{
       let previous=value.textContent;
       new MutationObserver(()=>{
         if(value.textContent===previous)return;

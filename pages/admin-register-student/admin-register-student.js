@@ -1,4 +1,2 @@
-document.getElementById('adminRegisterStudentForm')?.addEventListener('submit', function(e) {
-      e.preventDefault();
-      showPortalToast('Form validated. Account creation will be available when the backend is connected.');
-    });
+// Keep the old administrator-only URL pointing to the complete shared account editor.
+location.replace('../admin-dashboard/admin-dashboard.html?create=student#tab-students');

@@ -6,6 +6,6 @@ document.getElementById('passwordChangeForm')?.addEventListener('submit', functi
         showPortalToast('Passwords do not match. Please verify.', 'bi-exclamation-triangle-fill text-danger');
         return;
       }
-      showPortalToast('Password form validated. No password was changed in this preview.');
+      showPortalToast('Password requirements checked. No password was changed.');
       this.reset();
     });

@@ -7,34 +7,21 @@
 #page-supervisor-dashboard .supervisor-page-heading { display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap; }
 #page-supervisor-dashboard .supervisor-page-heading .bw-title { margin:0;font-size:26px;line-height:1.3;letter-spacing:-.035em; }
 .supervisor-heading-tools { margin-left:auto; }
-#page-supervisor-dashboard .supervisor-heading-tools .bw-arrange-bar { margin:0; }
-#page-supervisor-dashboard .supervisor-heading-tools .bw-arrange-hint { display:none; }
-#page-supervisor-dashboard .bw-arrange-toggle[aria-pressed="false"] { width:44px;padding:0;font-size:0;border-radius:10px; }
-#page-supervisor-dashboard .bw-arrange-toggle[aria-pressed="false"]::before { content:'⠿';font-size:24px;line-height:1; }
 @media(max-width:600px) {
   #page-supervisor-dashboard .supervisor-page-heading .bw-title { font-size:23px; }
   .supervisor-workspace-identity { max-width:58%; }
-  #page-supervisor-dashboard .supervisor-heading-tools .bw-arrange-actions { width:auto; }
 }
-.supervisor-evaluations { display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,2fr);gap:24px;align-items:start; }
+.supervisor-evaluations { display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,2fr);gap:24px;align-items:start; }
 .supervisor-selection-prompt { display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:340px;padding:32px;border:1px dashed var(--bw-border);border-radius:12px;text-align:center;color:var(--bw-text-secondary); }
 .supervisor-selection-prompt > i { font-size:28px;color:var(--bw-text-muted);margin-bottom:18px; }
 .supervisor-selection-prompt h2 { font-size:19px;font-weight:600;color:var(--bw-text); }
 .supervisor-selection-prompt p { max-width:390px;font-size:13px;line-height:1.7;margin:4px 0; }
 .supervisor-change-student { margin:0 0 16px;padding:10px 12px;min-height:44px;border:1px solid var(--bw-border);border-radius:6px;background:var(--bw-surface);color:var(--bw-text-secondary);font:inherit;font-size:12px;cursor:pointer; }
 .supervisor-evaluations button:focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
-#supervisorReportDetail { min-width:0; }
+#supervisorReportDetail { min-width:0;container-type:inline-size; }
 .company-workspace main:has(#tab-endorsement.is-active) > .bw-kpi-grid { display:none; }
 .supervisor-evaluations h2 { font-size:18px;line-height:1.4;margin:0 0 8px; }
 .supervisor-evaluations h3 { font-size:15px;margin:24px 0 8px; }
-.evaluation-directory { position:sticky;top:24px; }
-.evaluation-directory input { width:100%;box-sizing:border-box; }
-.evaluation-student-list { display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto;padding:4px; }
-.evaluation-student-button { padding:15px;text-align:left;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-surface);color:var(--bw-text);cursor:pointer; }
-.evaluation-student-button strong,.evaluation-student-button span,.evaluation-student-button small { display:block; }
-.evaluation-student-button strong { font-size:14px; }
-.evaluation-student-button span { font-size:12px;color:var(--bw-text-muted);margin:5px 0; }
-.evaluation-student-button small { font-size:12px;color:var(--bw-text-secondary); }
 .evaluation-student-button[aria-pressed="true"] { border-color:var(--bw-primary);background:var(--bw-primary-light);box-shadow:inset 3px 0 var(--bw-primary); }
 .evaluation-detail { min-width:0; }
 .evaluation-detail-heading { display:flex;justify-content:space-between;align-items:start;gap:16px; }
@@ -52,7 +39,7 @@
 .evaluation-pending p { max-width:440px;margin:12px auto;color:var(--bw-text-muted);font-size:14px;line-height:1.7; }
 .evaluation-demo-note { margin:24px 0 0;padding-top:16px;border-top:1px solid var(--bw-border); }
 .supervisor-evaluations [hidden] { display:none!important; }
-@media(max-width:1250px) {
+@media(max-width:1300px) {
   .supervisor-evaluations { grid-template-columns:1fr; }
   .evaluation-directory { position:static; }
   .evaluation-student-list { max-height:220px; }
@@ -74,10 +61,10 @@
 #curriculumTimelineGrid .report-week { padding:8px 4px;text-align:center;position:relative;background:transparent;border:0; }
 #curriculumTimelineGrid .report-week:not(:last-child)::before { content:'';position:absolute;left:50%;top:25px;width:100%;height:2px;background:var(--bw-border); }
 #curriculumTimelineGrid .report-week strong { position:relative;display:grid;place-items:center;width:34px;height:34px;margin:0 auto 10px;font-size:13px;font-weight:600;color:var(--bw-text-secondary);border:1px solid var(--bw-border);border-radius:50%;background:var(--bw-surface); }
-#curriculumTimelineGrid .report-week span { display:block;font-size:11px;line-height:1.5;color:var(--bw-text-secondary); }
-#curriculumTimelineGrid .report-week small { display:block;margin-top:3px;font-size:11px;color:var(--bw-text-secondary); }
+#curriculumTimelineGrid .report-week span { display:block;font-size:12px;line-height:1.5;color:var(--bw-text-secondary); }
+#curriculumTimelineGrid .report-week small { display:block;margin-top:3px;font-size:12px;color:var(--bw-text-secondary); }
 #curriculumTimelineGrid .is-verified strong { background:var(--bw-success-light);border-color:var(--bw-success);color:var(--bw-text); }
-#curriculumTimelineGrid .is-review strong { background:var(--bw-primary);border-color:var(--bw-primary);color:white;box-shadow:0 0 0 4px var(--bw-primary-light); }
+#curriculumTimelineGrid .is-review strong { background:var(--bw-action,var(--bw-primary));border-color:var(--bw-action,var(--bw-primary));color:white;box-shadow:0 0 0 4px var(--bw-primary-light); }
 #curriculumTimelineGrid .is-review span { color:var(--bw-primary);font-weight:600; }
 #page-supervisor-dashboard #supervisorReportDetail > .report-student-summary { background:transparent;border:0;border-top:1px solid var(--bw-border);border-bottom:1px solid var(--bw-border);border-radius:0;padding:20px 0;margin:0; }
 #page-supervisor-dashboard .report-student-summary [data-style="s27"] { gap:18px; }
@@ -96,6 +83,13 @@
 #page-supervisor-dashboard #supervisorFeedback { min-height:105px;font-size:14px;line-height:1.7;border-radius:8px;padding:14px; }
 #page-supervisor-dashboard .report-document [data-style="s53"] { border-top:1px solid var(--bw-border);padding-top:20px;gap:12px; }
 #page-supervisor-dashboard .report-document [data-style="s53"] button { min-height:44px;padding:12px 18px;border-radius:8px;font-size:13px; }
+@container(max-width:620px) {
+  #page-supervisor-dashboard #curriculumTimelineGrid { grid-template-columns:repeat(4,minmax(0,1fr));row-gap:16px; }
+  #curriculumTimelineGrid .report-week:nth-child(4)::before { display:none; }
+  #page-supervisor-dashboard .report-student-summary [data-style="s27"] { flex-wrap:wrap;gap:18px; }
+  #page-supervisor-dashboard .report-document .bw-card-panel-header { flex-wrap:wrap; }
+  #page-supervisor-dashboard .report-document [data-style="s53"] { flex-wrap:wrap; }
+}
 @media(max-width:600px) {
   #supervisorReportDetail { padding:18px; }
   #page-supervisor-dashboard #curriculumTimelineGrid { grid-template-columns:repeat(4,minmax(0,1fr));row-gap:16px; }
@@ -177,16 +171,34 @@
 #page-supervisor-dashboard [data-style="s68"] { font-size: 0.85rem; color: var(--bw-text); margin-bottom: 0.75rem; }
 #page-supervisor-dashboard [data-style="s69"] { width: auto; background: var(--bw-amber); color: #000; font-weight: 700; }
 
+/* Compact student details keep the roster visible behind a focused dialog. */
+.supervisor-student-dialog.cycle-dialog { width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:24px; }
+.supervisor-student-details { color:var(--bw-text);min-width:0; }
+.supervisor-student-details > header { display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 20px; }
+.supervisor-student-details h3 { margin:0 0 4px;font-size:21px;line-height:1.4;letter-spacing:-.025em; }
+.supervisor-student-details p { margin:0;color:var(--bw-text-secondary);font-size:13px;line-height:1.6; }
+.supervisor-student-details dl { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 24px;margin:0;padding:20px 0;border-top:1px solid var(--bw-border); }
+.supervisor-student-details dt { color:var(--bw-text-secondary);font-size:12px;line-height:1.6;font-weight:400;margin-bottom:3px; }
+.supervisor-student-details dd { margin:0;font-size:14px;line-height:1.5;overflow-wrap:anywhere; }
+.supervisor-details-progress { display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;padding:16px;background:var(--bw-bg-alt);border-radius:10px; }
+.supervisor-details-progress strong { font-size:15px;color:var(--bw-primary); }.supervisor-details-progress > span { font-size:12px;color:var(--bw-text-secondary); }
+.supervisor-details-progress progress { width:100%;height:6px;accent-color:var(--bw-primary); }
+.supervisor-details-progress p { flex-basis:100%; }
+.supervisor-student-details > .cycle-actions { justify-content:flex-end;margin-top:18px; }
+@media(max-width:480px) { .supervisor-student-dialog.cycle-dialog { padding:20px; }.supervisor-student-details dl { gap:14px; }.supervisor-student-details dd { font-size:13px; } }
+
 /* A scannable roster: identity opens the record, one action opens reports. */
 #supervisedStudentsTable { table-layout:fixed;width:100%;min-width:0; }
-#supervisedStudentsTable th:nth-child(1) { width:22%; }
-#supervisedStudentsTable th:nth-child(2) { width:16%; }
-#supervisedStudentsTable th:nth-child(3) { width:23%; }
-#supervisedStudentsTable th:nth-child(4) { width:18%; }
-#supervisedStudentsTable th:nth-child(5) { width:10%; }
-#supervisedStudentsTable th:nth-child(6) { width:11%; }
+#supervisedStudentsTable th:nth-child(1) { width:21%; }
+#supervisedStudentsTable th:nth-child(2) { width:17%; }
+#supervisedStudentsTable th:nth-child(3) { width:auto; }
+#supervisedStudentsTable th:nth-child(4) { width:200px; }
+#supervisedStudentsTable th:nth-child(5) { width:144px; }
+#supervisedStudentsTable th:nth-child(6) { width:160px; }
 #supervisedStudentsTable :is(th,td) { white-space:normal;overflow-wrap:normal;padding:20px 14px;vertical-align:middle; }
 #page-supervisor-dashboard #supervisedStudentsTable [data-style="s16"] { min-width:0; }
+#supervisedStudentsTable th:nth-child(4),#supervisedStudentsTable :is([data-style="s17"],[data-style="s20"],.roster-hours) { white-space:nowrap; }
+#supervisedStudentsTable td:nth-child(3) > div { white-space:normal;overflow-wrap:anywhere; }
 #supervisedStudentsTable [data-style="s8"] { gap:12px;align-items:center; }
 #supervisedStudentsTable [data-style="s8"] > div:last-child { min-width:0; }
 #supervisedStudentsTable .bw-user-avatar { width:40px;height:40px;flex:0 0 40px;margin:0;box-shadow:none; }
@@ -195,15 +207,17 @@
 #page-supervisor-dashboard #supervisedStudentsTable [data-style="s11"] { font:12px/1.6 var(--bw-font-body);white-space:nowrap; }
 #supervisedStudentsTable .roster-hours { font-size:12px;line-height:1.6;color:var(--bw-text-secondary);margin-top:8px; }
 #supervisedStudentsTable .bw-btn-mini { display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;border:1px solid var(--bw-border);border-radius:8px;background:var(--bw-surface);color:var(--bw-primary);font:500 12px/1.4 var(--bw-font-body);cursor:pointer; }
-#supervisedStudentsTable .bw-badge { font-size:11px;line-height:1.5;white-space:normal;padding:5px 8px; }
+#supervisedStudentsTable .bw-badge { font-size:11px;line-height:1.5;padding:5px 8px; }
+/* Short status/action labels stay intact in both table and stacked records. */
+#page-supervisor-dashboard #portalMain #supervisedStudentsTable :is(.bw-badge,.bw-btn-mini) { white-space:nowrap;overflow-wrap:normal;flex-shrink:0; }
 #supervisedStudentsTable :is(.bw-btn-mini,.bw-record-name):focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
-@media(max-width:1200px) {
-  #supervisedStudentsTable:not(.bw-reading-record) thead { display:none; }
-  #supervisedStudentsTable:not(.bw-reading-record) tbody { display:block; }
-  #supervisedStudentsTable:not(.bw-reading-record) tbody tr { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:22px 0;border-bottom:1px solid var(--bw-border); }
-  #supervisedStudentsTable:not(.bw-reading-record) td { display:block;width:auto;min-width:0;padding:0;border:0; }
-  #supervisedStudentsTable:not(.bw-reading-record) td:first-child { grid-column:1/-1; }
-  #supervisedStudentsTable:not(.bw-reading-record) td:not(:first-child)::before { content:attr(data-record-label);display:block;font-size:11px;color:var(--bw-text-secondary);margin-bottom:8px; }
+@media(max-width:1300px) {
+  #supervisedStudentsTable thead { display:none; }
+  #supervisedStudentsTable tbody { display:block; }
+  #supervisedStudentsTable tbody tr { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:22px 0;border-bottom:1px solid var(--bw-border); }
+  #supervisedStudentsTable td { display:block;width:auto;min-width:0;padding:0;border:0; }
+  #supervisedStudentsTable td:first-child { grid-column:1/-1; }
+  #supervisedStudentsTable td:not(:first-child)::before { content:attr(data-record-label);display:block;font-size:11px;color:var(--bw-text-secondary);margin-bottom:8px; }
 }
 @media(max-width:550px) {
   #supervisedStudentsTable.bw-reading-record .bw-record-expanded { grid-template-columns:minmax(0,1fr); }

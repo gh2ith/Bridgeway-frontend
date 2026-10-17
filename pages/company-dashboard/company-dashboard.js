@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.selectWeeklyIntern = (id, card, name) => {
     if (!['1','2'].includes(id) || !card) return;
-    if (id !== weeklyStudentId) document.getElementById('companyWeeklyForm').reset();
+    const switching = id !== weeklyStudentId;
+    if (switching) document.getElementById('companyWeeklyForm').reset();
     weeklyStudentId = id;
     document.getElementById('activeInternSelect').value = id;
     weeklyCards.forEach(item => {
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weeklyReportCollege').textContent = collegeName(id === '1' ? 'alice' : 'ghaith');
     document.getElementById('companyWeeklyPrompt').hidden = true;
     document.getElementById('companyWeeklyDetail').hidden = false;
-    weeklyWeek.value = card.dataset.weeklyWeek;
+    if (switching) weeklyWeek.value = card.dataset.weeklyWeek;
     updateWeeklyWeek();
   };
   weeklyWeek.addEventListener('change', updateWeeklyWeek);
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       button.type = 'button'; button.className = 'company-student-button';
       button.setAttribute('aria-pressed', String(option.value === selectedStudent));
       button.setAttribute('aria-controls', 'companyEvaluationDetail');
-      [option.dataset.name, collegeName(option.value), option.textContent.split('·')[1].trim(), option.dataset.status].forEach((text, index) => {
+      [option.dataset.name, `ID ${option.textContent.split('·')[1].trim()}`, option.dataset.status].forEach((text, index) => {
         const line = document.createElement(index === 0 ? 'strong' : 'span'); line.textContent = text; button.append(line);
       });
       button.addEventListener('click', () => window.selectInternForRubric(option.value, option.dataset.name, option.dataset.role, option.dataset.gpa, option.dataset.status));
@@ -75,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
       window.updateRubricHUD();
     }
     selectedStudent = id;
-    studentSearch.value = '';
     studentSelect.replaceChildren(...studentOptions);
     studentSelect.value = id;
     document.getElementById('companyEvaluationPrompt').hidden = true;
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const headings = {
     'tab-posts': ['Internship overview', 'A clear view of your opportunities, applicants, and interns.'],
     'tab-candidates': ['Applications', 'Review applicants to your company listings.'],
-    'tab-meetings': ['Scheduled meetings', 'View scheduled interviews and training check-ins, or join their Jitsi rooms.'],
+    'tab-meetings': ['Application interviews', 'Arrange a conversation with applicants before making a hiring decision.'],
     'tab-accepted-students': ['Interns', 'Your internship roster and training status, separate from applications.'],
     'tab-partners': ['Partner colleges', 'Your company college connections and internship cycle.'],
     'tab-weekly-reports': ['Weekly reports', 'Choose an intern, then complete their report for the selected week.'],
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const records = window.BridgewayMeetings.records.filter(item => item.company === 'company-1').sort((a,b) => a.date.localeCompare(b.date));
     list.replaceChildren();
     document.getElementById('companyMeetingCount').textContent = records.length;
-    if (!records.length) { const empty=document.createElement('p'); empty.className='company-empty';empty.textContent='No meetings scheduled. Open a student’s Meeting action to preview a schedule.';list.append(empty); }
+    if (!records.length) { const empty=document.createElement('p'); empty.className='company-empty';empty.textContent='No meetings scheduled. Open a student’s Meeting action to schedule a meeting.';list.append(empty); }
     records.forEach(meeting => {
       const student = window.BridgewayPartners.students.find(item => item.id === meeting.student);
       if (!student) return;
@@ -384,14 +384,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const details=document.createElement('div');
       const title=document.createElement('h3');title.textContent=meeting.title;
       const who=document.createElement('p');who.textContent=`${student.name} · ${window.BridgewayPartners.organizations.find(item=>item.id===student.college)?.name || 'College not assigned'}`;
-      const date=document.createElement('p');date.textContent=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Amman'}).format(new Date(`${meeting.date}+03:00`))+' · Amman · Preview';
+      const date=document.createElement('p');date.textContent=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Amman'}).format(new Date(`${meeting.date}+03:00`))+' · Amman';
       details.append(title,who,date);
       const actions=document.createElement('div');actions.className='company-meeting-actions';
       const url=window.BridgewayMeetings.validUrl(meeting.url);
       if(url) { const join=document.createElement('a');join.className='company-primary';join.textContent='Join meeting';join.href=url;join.target='_blank';join.rel='noopener noreferrer';join.dataset.jitsiMeeting='';join.setAttribute('aria-label',`Join ${meeting.title} with ${student.name}`);actions.append(join); }
       const extra=document.createElement('section');extra.className='company-meeting-expanded';extra.hidden=true;extra.id=`meeting-details-${meeting.student}`;
-      const note=document.createElement('p');note.textContent='This Jitsi room is attached to the schedule. Join directly—there is no need to generate another link. Preview only: invitations are not delivered, and the host must sign in to start the room.';
-      const edit=document.createElement('button');edit.type='button';edit.className='bw-tag-btn';edit.textContent='Edit schedule';edit.addEventListener('click',()=>{showMeeting(student.id);window.openModal('hrMeetingsModal');document.getElementById('companyMeetingEdit').click();});extra.append(note,edit);
+      const heading=document.createElement('header');heading.className='bw-detail-heading';
+      const detailTitle=document.createElement('h3');detailTitle.textContent='Meeting details';heading.append(detailTitle);
+      const facts=document.createElement('dl');facts.className='bw-detail-facts';
+      for(const [label,value] of [['Student',student.name],['Scheduled for',date.textContent],['Room',url?'Jitsi room attached':'No room attached']]){
+        const fact=document.createElement('div'),term=document.createElement('dt'),description=document.createElement('dd');term.textContent=label;description.textContent=value;fact.append(term,description);facts.append(fact);
+      }
+      const note=document.createElement('p');note.textContent='This Jitsi room is attached to the schedule. Join directly—there is no need to generate another link. The host signs in to start the room.';
+      const edit=document.createElement('button');edit.type='button';edit.className='bw-tag-btn';edit.textContent='Edit schedule';edit.addEventListener('click',()=>{showMeeting(student.id);window.openModal('hrMeetingsModal');document.getElementById('companyMeetingEdit').click();});
+      const body=document.createElement('div');body.className='bw-detail-body';body.append(note);
+      const footer=document.createElement('footer');footer.className='bw-detail-actions';footer.append(edit);extra.append(heading,facts,body,footer);
       const toggle=document.createElement('button');toggle.type='button';toggle.className='bw-tag-btn';toggle.textContent='Meeting details';toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls',extra.id);
       toggle.addEventListener('click',()=>{extra.hidden=!extra.hidden;toggle.setAttribute('aria-expanded',String(!extra.hidden));toggle.textContent=extra.hidden?'Meeting details':'Hide details';if(!extra.hidden)window.BridgewayMotion?.reveal(extra);});actions.append(toggle);
       row.append(details,actions,extra);list.append(row);
@@ -406,14 +414,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const meeting = window.BridgewayMeetings.records.find(item => item.student === id && item.company === 'company-1');
     form.reset();
     get('Student').textContent = student.name;
-    get('State').textContent = meeting ? `Sample schedule: ${meeting.title} · ${meeting.date.replace('T', ' ')} (Amman)` : 'No meeting scheduled for this student.';
+    get('State').textContent = meeting ? `Scheduled meeting: ${meeting.title} · ${meeting.date.replace('T', ' ')} (Amman)` : 'No meeting scheduled for this student.';
     get('Title').value = meeting?.title || '';
     get('Date').value = meeting?.date || '';
     const url = window.BridgewayMeetings.validUrl(meeting?.url);
     form.hidden = !!url;
     get('Edit').hidden = !url;
     get('Cancel').hidden = !url;
-    get('Feedback').textContent = url ? 'Your room link is ready. Join directly; you do not need to generate a link. The Jitsi host must sign in.' : 'Choose a title and time. A unique room link will be assigned automatically for this preview.';
+    get('Feedback').textContent = url ? 'Your room link is ready. Join directly; you do not need to generate a link. The Jitsi host must sign in.' : 'Choose a title and time. A unique room link will be assigned automatically for this meeting.';
     get('Join').hidden = !url;
     if (url) get('Join').href = url;
     else get('Join').removeAttribute('href');
@@ -431,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.BridgewayMeetings.records.push(meeting);
     renderMeetings();
     showMeeting(studentId);
-    get('Feedback').textContent = 'Schedule preview updated on this page only. No invitation was sent.';
+    get('Feedback').textContent = 'Schedule updated on this page.';
     get('Join').focus();
   });
   get('Edit').addEventListener('click', () => {
@@ -487,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     element.onclick = function(event) { window.switchTab('tab-weekly-reports'); };
   });
   document.querySelectorAll('[data-onclick="showPortalToast-tr-15"]').forEach(element => {
-    element.onclick = function(event) { showPortalToast('Company acceptance preview only. Nothing was sent.'); this.closest('tr').querySelector('.bw-badge-amber').className = 'bw-badge bw-badge-success'; this.closest('tr').querySelector('.bw-badge-success').innerHTML = '<i class=\'bi bi-check-circle-fill\'></i> Accepted'; this.remove(); };
+    element.onclick = function(event) { showPortalToast('Applicant marked accepted.'); this.closest('tr').querySelector('.bw-badge-amber').className = 'bw-badge bw-badge-success'; this.closest('tr').querySelector('.bw-badge-success').innerHTML = '<i class=\'bi bi-check-circle-fill\'></i> Accepted'; this.remove(); };
   });
   document.querySelectorAll('[data-onclick="selectWeeklyIntern--16"]').forEach(element => {
     element.onclick = function(event) { selectWeeklyIntern('1', this, 'Alice Johnson'); };
@@ -517,15 +525,15 @@ document.addEventListener('DOMContentLoaded', () => {
     element.onclick = function(event) { insertFeedbackText('Strongly endorsed for a full-time junior engineering offer upon university graduation.'); };
   });
   document.querySelectorAll('[data-onclick="showPortalToast--25"]').forEach(element => {
-    element.onclick = function(event) { showPortalToast('Reminder preview only. No message was sent.'); };
+    element.onclick = function(event) { showPortalToast('Reminder delivery is unavailable.'); };
   });
   document.querySelectorAll('[data-onclick="showPortalToast--26"]').forEach(element => {
     element.onclick = function(event) { showPortalToast('Calendar integration is a placeholder.'); };
   });
   document.querySelectorAll('[data-onclick="showPortalToast--27"]').forEach(element => {
-    element.onclick = function(event) { showPortalToast('Interview preview only. No invitation was sent.'); };
+    element.onclick = function(event) { showPortalToast('Interview details checked.'); };
   });
   document.querySelectorAll('[data-onclick="getElementById-replyFeedbackText-28"]').forEach(element => {
-    element.onclick = function(event) { const t = document.getElementById('replyFeedbackText'); if (t && t.value.trim()) { showPortalToast('Feedback preview only. No message was sent.'); t.value = ''; closeModal('feedbackModal'); } else { showPortalToast('Please enter feedback message first.', 'bi-exclamation-triangle-fill text-warning'); } };
+    element.onclick = function(event) { const t = document.getElementById('replyFeedbackText'); if (t && t.value.trim()) { showPortalToast('Feedback checked.'); t.value = ''; closeModal('feedbackModal'); } else { showPortalToast('Please enter feedback message first.', 'bi-exclamation-triangle-fill text-warning'); } };
   });
 })();

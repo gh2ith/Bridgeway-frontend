@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+// Exercise the real count renderer with a minimal DOM, including changes after load.
+const source=fs.readFileSync(new URL('../shared/js/workspace-cycle.js',import.meta.url),'utf8');
+const update=source.match(/function updateCounts\(\)\{[\s\S]*?\n    \}/)?.[0];
+assert(update,'Shared portal count renderer must exist');
+const nodes=new Map(),node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:''});return nodes.get(id);};
+const operations=['listings','tickets','students'].map(key=>({dataset:{cycleCount:key},textContent:''}));
+const values=Array.from({length:4},()=>({textContent:''}));
+const model={students:[{id:'one',supervisor:'Dr. Ahmad S.',company:'company-1',stage:'Placed'},{id:'two',supervisor:'Dr. Ahmad S.',company:'company-2',stage:'Completed'},{id:'three',supervisor:null}]};
+const state={listings:[{status:'Published',company:'company-1'},{status:'Published',company:'company-2'},{status:'Pending review',company:'company-1'},{status:'Deleted',company:'company-1'}],histories:[{status:'Active'},{status:'Completed'}],tickets:[{owner:'company:company-1',status:'Open'},{owner:'admin:college-1',status:'Resolved'},{owner:'student:one',status:'Open'}],plans:{one:[{status:'submitted'}],two:[{status:'verified'}]}};
+const ticketVisible=(t,viewer)=>viewer==='platform'&&/^(company|admin):/.test(t.owner);
+const context={ticketVisible,role:'platform_admin',state,model,published:()=>state.listings.filter(l=>l.status==='Published'),main:{querySelectorAll:()=>values},document:{getElementById:node,querySelector:node,querySelectorAll:()=>operations}};
+const run=()=>vm.runInNewContext(`(${update})()`,context);
+run();
+assert.equal(node('platformListingCount').textContent,3,'Pending listings are part of the total; deleted listings are not');
+assert.equal(node('platformPlacementCount').textContent,1);
+assert.equal(operations[0].textContent,'1 listing awaiting review');
+assert.equal(operations[1].textContent,'1 active ticket');
+state.listings[2].status='Published';state.tickets[0].status='Resolved';run();
+assert.equal(node('platformListingCount').textContent,3);
+assert.equal(operations[0].textContent,'0 listings awaiting review');
+assert.equal(operations[1].textContent,'0 active tickets');
+context.role='supervisor';run();
+assert.equal(node('[data-tab="tab-roster"] .bw-tab-badge').textContent,2,'Assigned completed students stay in the roster count');
+assert.equal(values[3].textContent,1);
+state.plans.one[0].status='verified';run();assert.equal(values[3].textContent,0);
+console.log('PASS: Live total/pending listing counts, ticket counts, singular labels, assigned-student counts and report updates.');

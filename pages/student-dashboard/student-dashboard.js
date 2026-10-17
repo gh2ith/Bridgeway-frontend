@@ -1,6 +1,6 @@
 // Explicit handlers keep HTML presentation-only and preserve native event semantics.
 const previewStudent = window.BridgewayStudent.current();
-if (previewStudent.stage === 'Not applied') {
+if (previewStudent.stage === 'Not applied' || previewStudent.id === 'lina') {
   document.getElementById('studentApplicationsTable').replaceChildren();
   const cards = document.querySelectorAll('.bw-kpi-card');
   cards[1].querySelector('.bw-kpi-value').textContent = '0';
@@ -14,7 +14,7 @@ if (previewStudent.stage === 'Not applied') {
 const applicationRows = document.getElementById('studentApplicationsTable');
 const applicationEmpty = document.createElement('section');
 applicationEmpty.className = 'student-preview-empty';
-applicationEmpty.innerHTML = '<i class="bi bi-send" aria-hidden="true"></i><h2>No applications yet</h2><p>Find an opportunity and select your CV to try your first application. Nothing is sent in this preview.</p><a href="#tab-opportunities" class="bw-tag-btn">Explore internships</a>';
+applicationEmpty.innerHTML = '<i class="bi bi-send" aria-hidden="true"></i><h2>No applications yet</h2><p>Find an opportunity and select your CV to try your first application. </p><a href="#tab-opportunities" class="bw-tag-btn">Explore internships</a>';
 applicationRows.closest('table').parentElement.after(applicationEmpty);
 function refreshApplicationEmpty() {
   const empty = applicationRows.rows.length === 0;
@@ -26,10 +26,11 @@ new MutationObserver(refreshApplicationEmpty).observe(applicationRows, {childLis
 function updateCvMatches() {
   const hasCv = !!window.BridgewayCV.read();
   document.querySelectorAll('[data-cv-score]').forEach(score => {
-    score.hidden = !hasCv;
-    score.parentElement.querySelector('.cv-upload-link').hidden = hasCv;
+    score.hidden = true;
+    score.parentElement.querySelector('.cv-upload-link').hidden = false;
   });
-  document.getElementById('cvMatchPreviewNote').hidden = !hasCv;
+  const note=document.getElementById('cvMatchPreviewNote');
+  if(note)note.hidden = true;
 }
 updateCvMatches();
 window.addEventListener('pageshow', updateCvMatches);
@@ -38,7 +39,7 @@ const applicationCv = document.getElementById('applicationCvFile');
 const applicationCvStatus = document.getElementById('applicationCvStatus');
 function showApplicationCv() {
   const file = applicationCv.files[0] || window.BridgewayCV.read();
-  applicationCvStatus.textContent = file ? `${file.name} · ${Math.ceil(file.size / 1024)} KB · Selected for preview only.` : 'No CV selected. Choose a CV to continue.';
+  applicationCvStatus.textContent = file ? `${file.name} · ${Math.ceil(file.size / 1024)} KB · Selected locally.` : 'No CV selected. Choose a CV to continue.';
 }
 showApplicationCv();
 window.addEventListener('pageshow', showApplicationCv);
@@ -64,8 +65,9 @@ applicationRows.addEventListener('click', event => {
     const button = event.target.closest('[data-withdraw-application]');
     if (!button) return;
     const cells = button.closest('tr').cells;
-    window.openWithdrawModal(cells[1].textContent.trim(), cells[0].textContent.trim());
+    window.openWithdrawModal(cells[1].textContent.trim(), cells[0].firstElementChild?.textContent.trim() || cells[0].textContent.trim());
 });
+
 // No placeholder meeting or manual-link entry: show only a record with a valid room link.
 const meeting = window.BridgewayMeetings.records.find(item => item.student === previewStudent.id && item.company === previewStudent.company);
 const meetingUrl = window.BridgewayMeetings.validUrl(meeting?.url);

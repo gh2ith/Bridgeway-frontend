@@ -2,6 +2,7 @@
 <html lang="en" data-page="admin-register-student">
 <head>
   <meta charset="UTF-8">
+  <script src="../../shared/js/portal-theme-init.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bridgeway — Register New Student (Admin)</title>
   <meta name="description" content="Register and enroll undergraduate students into the Bridgeway academic internship governance system.">
@@ -12,14 +13,15 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <link rel="stylesheet" href="../../shared/css/base.css">
-  <link rel="stylesheet" href="../../shared/css/portal.css?v=3">
+  <link rel="stylesheet" href="../../shared/css/base.css?v=night-2">
+  <link rel="stylesheet" href="../../shared/css/portal.css?v=night-2">
 
   <link rel="stylesheet" href="../../shared/css/navigation.css?v=3">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=9">
+  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
 
-  <link rel="stylesheet" href="../../shared/css/interactions.css">
+  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
   <link rel="stylesheet" href="admin-register-student.css">
+<link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
 </head>
 <body class="company-workspace portal-unified" data-portal-role="admin" id="page-admin-register-student">
 
@@ -86,74 +88,20 @@
       </section>
 
       <section class="bw-card-panel">
-        <form id="adminRegisterStudentForm">
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="regFullName">Full Legal Name *</label>
-            <input type="text" id="regFullName" class="bw-input" placeholder="e.g. Ahmad Al-Saeed" required>
-          </div>
-
-          <div data-style="s6" data-presentation="grid grid-template-columns">
-            <div class="bw-form-group">
-              <label class="bw-form-label" for="regDept">Department / Major *</label>
-              <input type="text" id="regDept" class="bw-input" placeholder="e.g. Software Engineering" required>
-            </div>
-            <div class="bw-form-group">
-              <label class="bw-form-label" for="regGpa">Cumulative GPA (Out of 4.0) *</label>
-              <input type="number" id="regGpa" class="bw-input" step="0.01" min="1.0" max="4.0" value="3.75" required>
-            </div>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="regCollegeSelect">University Faculty / College *</label>
-            <select id="regCollegeSelect" class="bw-select" required>
-              <option value="Faculty of Information Technology" selected>Faculty of Information Technology (BAU)</option>
-              <option value="Faculty of Engineering">Faculty of Engineering</option>
-              <option value="Orange Coding Academy">Orange Coding Academy Program</option>
-              <option value="Faculty of Artificial Intelligence">Faculty of Artificial Intelligence &amp; Data</option>
-            </select>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="regEmail">Institutional Email Address *</label>
-            <input type="email" id="regEmail" class="bw-input" placeholder="e.g. ahmad.saeed@bau.edu.jo" required>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="regSupervisorSelect">Assign Academic Supervisor *</label>
-            <select id="regSupervisorSelect" class="bw-select" required>
-              <option value="Dr. Ahmad S." selected>Dr. Ahmad S. • Software Engineering (2 assigned)</option>
-              <option value="Dr. Tareq Al-Husseini">Dr. Tareq Al-Husseini • Computer Science (11 assigned)</option>
-              <option value="Dr. Rania K.">Dr. Rania K. • Cybersecurity (8 assigned)</option>
-            </select>
-          </div>
-
-          <div class="bw-form-group">
-            <label class="bw-form-label" for="regPassword">
-              <span>Temporary Initial Password *</span>
-              <small>Minimum 6 characters &bull; Preview only; account creation requires the backend</small>
-            </label>
-            <input type="password" id="regPassword" class="bw-input" value="password123" minlength="6" required>
-          </div>
-
-          <div data-style="s7">
-            <a href="../admin-dashboard/admin-dashboard.html" class="bw-btn-block bw-btn-outline" data-style="s8">
-              Cancel
-            </a>
-            <button type="submit" class="bw-btn-block bw-btn-primary" data-style="s9">
-              <i class="bi bi-person-check-fill me-1"></i> Provision Student Account
-            </button>
-          </div>
-        </form>
+        <p>Student accounts are created and managed by your college administrator.</p>
+        <a class="bw-btn-block bw-btn-primary" href="../admin-dashboard/admin-dashboard.html?create=student#tab-students">Open student account form</a>
       </section>
     </div>
   </main></div>
 
-  <script src="../../shared/js/portal.js?v=12"></script>
+  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
 
   <script src="../../shared/js/navigation.js"></script>
   <script src="admin-register-student.js"></script>
-  <script src="../../shared/js/enhancements.js"></script>
+  <script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
 
-  <script src="../../shared/js/interactions.js"></script>
+  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
+  <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
+<script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
 </body>
 </html>

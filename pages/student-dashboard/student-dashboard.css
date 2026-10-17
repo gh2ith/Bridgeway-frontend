@@ -60,7 +60,7 @@
 .training-completion progress::-moz-progress-bar { background:var(--bw-primary); }
 .training-week-strip { grid-column:1 / -1; display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:8px; margin-top:16px; }
 .training-week { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:46px; padding:10px 12px; border:1px solid var(--bw-border); border-radius:5px; background:var(--bw-bg); color:var(--bw-text-secondary); cursor:pointer; transition:border-color .18s, background .18s; font:inherit; font-weight:500; }
-.training-week span { font-size:10px; letter-spacing:.025em; white-space:nowrap; }
+.training-week span { font-size:12px; letter-spacing:0; white-space:nowrap; }
 .training-week i { font-size:16px; }
 .training-week--verified { background:var(--training-green-bg); color:var(--training-green); border-color:transparent; }
 .training-week--submitted { background:var(--training-amber-bg); color:var(--training-amber); border-color:var(--training-amber); }
@@ -140,8 +140,6 @@
 #page-student-dashboard .bw-company-content { gap:18px; }
 #page-student-dashboard .bw-page-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:0; }
 #page-student-dashboard .bw-title { margin-bottom:0; }
-#page-student-dashboard .bw-arrange-bar { margin:0; justify-content:flex-end; }
-#page-student-dashboard .bw-arrange-hint { display:none; }
 #page-student-dashboard .bw-company-content .bw-kpi-card { flex-direction:row; align-items:center; gap:12px; padding:16px 18px; }
 #page-student-dashboard .bw-kpi-card .bw-kpi-icon { flex-shrink:0; }
 #page-student-dashboard .bw-kpi-value { font-size:26px; }
@@ -154,7 +152,7 @@
 .student-meeting { padding:24px;margin-bottom:22px;border:1px solid var(--bw-border);border-radius:14px;background:var(--bw-surface); }
 .student-meeting-heading { display:flex;gap:14px;align-items:center; }
 .student-meeting-heading > i { display:grid;place-items:center;width:44px;height:44px;border-radius:12px;color:var(--bw-primary);background:var(--bw-primary-light);font-size:20px; }
-.student-meeting-heading span { font-size:10px;letter-spacing:.08em;color:var(--bw-primary); }
+.student-meeting-heading span { font-size:12px;letter-spacing:0;color:var(--bw-primary); }
 .student-meeting-heading h2 { margin:5px 0!important; }
 .student-meeting p { font-size:12px;line-height:1.8;color:var(--bw-text-muted); }
 .student-meeting label { display:block;font-size:13px;font-weight:500;color:var(--bw-text);margin:16px 0 8px; }
@@ -164,7 +162,7 @@
 .student-meeting button,.student-meeting a { min-height:44px; }
 .student-meeting [hidden] { display:none!important; }
 .student-meeting-top { display:flex;align-items:center;justify-content:space-between;gap:20px; }
-.student-meeting-top #studentMeetingJoin { flex-shrink:0;background:var(--bw-primary);color:#fff;border-color:var(--bw-primary);padding:12px 18px; }
+.student-meeting-top #studentMeetingJoin { flex-shrink:0;background:var(--bw-action,var(--bw-primary));color:#fff;border-color:var(--bw-action,var(--bw-primary));padding:12px 18px; }
 .student-meeting-heading > i { flex-shrink:0; }
 .student-meeting .student-meeting-heading p { margin:0;color:var(--bw-text-secondary);font-size:14px; }
 .student-meeting .student-meeting-note { margin:18px 0 0;padding-top:14px;border-top:1px solid var(--bw-border);font-size:13px;color:var(--bw-text-secondary); }
@@ -174,3 +172,21 @@
 
 #page-student-dashboard .profile-applications :is(a,button,input):focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
 
+/* Opportunities lead the page; summary counts stay compact and supporting. */
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) > .bw-kpi-grid { border:0;background:transparent;border-radius:0;gap:20px; }
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) > .bw-kpi-grid .bw-kpi-card { padding:4px 20px 4px 0;min-height:0;border:0;border-right:1px solid var(--bw-border); }
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) > .bw-kpi-grid .bw-kpi-card:nth-child(2) { border-right:0; }
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) .bw-kpi-value { font-size:23px;line-height:1.3; }
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) .bw-kpi-desc { font-size:12px;margin-top:3px; }
+#tab-opportunities .internship-intro:not(:has(#acceptedInternshipNotice:not([hidden]))) { display:none; }
+#tab-opportunities > .partner-scope { display:none; }
+#tab-opportunities .internship-intro { margin:0 0 12px; }
+#tab-opportunities .bw-filter-row { margin:0 0 12px;padding:12px 0 0;border-top:1px solid var(--bw-border); }
+#tab-opportunities .bw-filter-tags { padding:0;margin-bottom:24px; }
+#tab-opportunities .bw-opportunities-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:20px;align-items:stretch; }
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) { gap:14px!important; }
+#page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) > .bw-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr));max-width:720px; }
+@media(max-width:600px) {
+ #page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) > .bw-kpi-grid { gap:12px; }
+ #page-student-dashboard .bw-company-content:has(#tab-opportunities.is-active) > .bw-kpi-grid .bw-kpi-card { padding-inline-end:10px; }
+}

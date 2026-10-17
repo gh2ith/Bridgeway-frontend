@@ -33,6 +33,6 @@
     element.onclick = function(event) { showPortalToast('Student profile verified via BAU SIS.'); };
   });
   document.querySelectorAll('[data-onclick="closest-tr-2"]').forEach(element => {
-    element.onclick = function(event) { this.closest('tr').querySelector('.bw-badge-amber').className='bw-badge bw-badge-success'; this.closest('tr').querySelector('.bw-badge-success').innerHTML='<i class=\'bi bi-check-circle-fill\'></i> Accepted'; this.remove(); showPortalToast('Company acceptance preview only. Nothing was sent.'); };
+    element.onclick = function(event) { this.closest('tr').querySelector('.bw-badge-amber').className='bw-badge bw-badge-success'; this.closest('tr').querySelector('.bw-badge-success').innerHTML='<i class=\'bi bi-check-circle-fill\'></i> Accepted'; this.remove(); showPortalToast('Company acceptance on this page. Nothing was sent.'); };
   });
 })();

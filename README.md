@@ -42,7 +42,7 @@ The homepage uses `pages/home/index.html`, `home.css`, and `home.js`. Every actu
 
 ## Validate
 
-Run `node tools/check-site.mjs`, `node tools/check-workflow.mjs`, and `node tools/check-cv-preview.mjs`. These validate page structure and links, workflow boundaries, and metadata-only CV preview behavior. Also test changed interactions in the browser.
+Run `node tools/check-site.mjs`, `node tools/check-workflow.mjs`, `node tools/check-cv-preview.mjs`, and `node tools/check-ux.mjs`. These validate page structure and links, workflow boundaries, metadata-only CV preview behavior, and in-memory edit tracking. Also test changed interactions in the browser. Unfinished form protection is page-local only: it does not save drafts or send records.
 
 Edit the actual pages inside `pages/`. Use these folder-based URLs for links and bookmarks; the old root-level portal redirects have been removed. Root `index.html` still opens the homepage and preserves query parameters and section hashes.
 

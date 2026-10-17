@@ -82,7 +82,7 @@
 .hero-preview:is(:hover,:focus-within,.is-paused) .hero-opportunity,.ms--hero:not(.is-active) .hero-opportunity { animation-play-state:paused; }
 @keyframes opportunityFront { 0%,35%,100% { transform:translate(0,38px) rotate(-3deg); z-index:2; opacity:1; } 50%,85% { transform:translate(48px,0) rotate(5deg) scale(.94); z-index:1; opacity:.85; } }
 @keyframes opportunityBack { 0%,35%,100% { transform:translate(48px,0) rotate(5deg) scale(.94); z-index:1; opacity:.85; } 50%,85% { transform:translate(0,38px) rotate(-3deg); z-index:2; opacity:1; } }
-[data-theme="dark"] .hero-preview { --preview-bg:#13243b; --preview-ink:#edf5ff; --preview-muted:#b7c9df; --preview-border:#314862; }
+[data-theme="dark"] .hero-preview { --preview-bg:#162840; --preview-ink:#edf4ff; --preview-muted:#bac9dd; --preview-border:#405775; }
 [data-theme="dark"] .hero-preview__heading>span:first-child,[data-theme="dark"] .hero-preview__controls a,[data-theme="dark"] .hero-opportunity__footer svg { color:#93c5fd; }
 [data-theme="dark"] .hero-opportunity { box-shadow:0 22px 60px #0005,0 0 35px #38bdf80b; }
 [data-theme="dark"] .hero-opportunity__mark { background:#203b62; color:#bfdbfe; }
