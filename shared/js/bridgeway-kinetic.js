@@ -98,6 +98,55 @@
     paper.addEventListener('pointerleave',()=>{paper.style.transform='';});
     return {paper,title,body,brand,stub};
   }
+  function playSnapAcoustic(){
+    try {
+      const AudioCtx=window.AudioContext||window.webkitAudioContext;
+      if(!AudioCtx)return;
+      const ctx=new AudioCtx();
+      if(ctx.state==='suspended')ctx.resume();
+      const now=ctx.currentTime;
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.type='triangle';
+      osc.frequency.setValueAtTime(320,now);
+      osc.frequency.exponentialRampToValueAtTime(80,now+0.06);
+      gain.gain.setValueAtTime(0.18,now);
+      gain.gain.exponentialRampToValueAtTime(0.001,now+0.07);
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.start(now);osc.stop(now+0.08);
+
+      const length=Math.floor(ctx.sampleRate*0.12);
+      const buffer=ctx.createBuffer(1,length,ctx.sampleRate);
+      const data=buffer.getChannelData(0);
+      for(let i=0;i<length;i++){
+        const t=i/length;
+        data[i]=(Math.random()*2-1)*Math.sin(t*Math.PI)*0.08;
+      }
+      const noise=ctx.createBufferSource();noise.buffer=buffer;
+      const filter=ctx.createBiquadFilter();filter.type='bandpass';
+      filter.frequency.setValueAtTime(2200,now);filter.Q.setValueAtTime(1.5,now);
+      noise.connect(filter);filter.connect(ctx.destination);
+      noise.start(now);noise.onended=()=>ctx.close();
+    } catch {}
+  }
+  function burstFibers(target){
+    if(reduced.matches||!target)return;
+    const burst=el('div',null,'bw-ticket-burst');
+    for(let i=0;i<10;i++){
+      const p=el('span',null,'bw-ticket-fiber');
+      const x=10+i*8.5+(Math.random()*4-2);
+      const dx=(Math.random()-0.5)*36;
+      const dy=14+Math.random()*24;
+      p.style.cssText=`position:absolute;left:${x}%;top:calc(100% - 2px);width:${Math.random()>0.5?3:2}px;height:${Math.random()>0.5?2.5:1.5}px;background:${i%2===0?'#ffffff':'#7dd3fc'};border-radius:1px;pointer-events:none;`;
+      burst.append(p);
+      motion(p,[
+        {transform:'translate(0,0) scale(1)',opacity:0.95},
+        {transform:`translate(${dx}px,${dy}px) scale(0.6)`,opacity:0}
+      ],{duration:320+i*15,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+    }
+    target.append(burst);
+    setTimeout(()=>burst.remove(),500);
+  }
   async function tearTicket(paper,from,dialogFrom){
     if(paper.dataset.tearing)return;
     paper.dataset.tearing='true';paper.style.transform='';
@@ -114,34 +163,51 @@
     try {
       await motion(paper,[{transform:'translate('+(from.left-r.left)+'px,'+(from.top-r.top)+'px) scale('+scale+')'},{transform:'none'}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
       if(!paper.isConnected)return;
-      // Hinge around the final perforation, adapted to a horizontal blue ticket.
-      // Reference: https://css3dlab.edgarasneverdauskas.com/models/ticket/
-      // Independent WAAPI sequence: tension, last-hole hinge, then complete release.
+      // Phase 1 (140ms): Physical cardstock tension pull
       await Promise.all([
-        motion(main,[{transform:'none'},{transform:'translateY(-2px) rotate(-.2deg)'}],{duration:140,easing:'ease-out',fill:'forwards'}),
-        motion(stub,[{transform:'none'},{transform:'perspective(900px) translateY(2px) rotateZ(1deg) rotateX(0deg)'}],{duration:140,easing:'ease-out',fill:'forwards'})
+        motion(main,[
+          {transform:'none'},
+          {transform:'translateY(-4px)'}
+        ],{duration:140,easing:'ease-out',fill:'forwards'}),
+        motion(stub,[
+          {transform:'none'},
+          {transform:'translateY(3px)'}
+        ],{duration:140,easing:'ease-out',fill:'forwards'})
       ]);
       if(!paper.isConnected)return;
+      // Phase 2 (260ms): Crisp horizontal perforation fracture & clean separation
       paper.classList.add('is-cutting');
-      const hinge='perspective(900px) translateY(5px) rotateZ(13deg) rotateX(-24deg)';
+      burstFibers(main);
+      playSnapAcoustic();
+      const snap='perspective(900px) translateY(16px) rotateX(14deg) scale(0.99)';
       await Promise.all([
         motion(stub,[
-          {transform:'perspective(900px) translateY(2px) rotateZ(1deg) rotateX(0deg)'},
-          {transform:'perspective(900px) translateY(3px) rotateZ(7deg) rotateX(-12deg)',offset:.42},
-          {transform:'perspective(900px) translateY(5px) rotateZ(15deg) rotateX(-27deg)',offset:.78},
-          {transform:hinge}
-        ],{duration:580,easing:'cubic-bezier(.22,.75,.25,1)',fill:'forwards'}),
-        motion(main,[{transform:'translateY(-2px) rotate(-.2deg)'},{transform:'translateY(-4px) rotate(-.5deg)',offset:.55},{transform:'translateY(-2px) rotate(-.15deg)'}],{duration:580,easing:'ease-in-out',fill:'forwards'})
+          {transform:'translateY(3px)'},
+          {transform:'perspective(900px) translateY(8px) rotateX(6deg) scale(0.995)',offset:0.35},
+          {transform:snap}
+        ],{duration:260,easing:'cubic-bezier(.2,.9,.3,1)',fill:'forwards'}),
+        motion(main,[
+          {transform:'translateY(-4px)'},
+          {transform:'translateY(-6px)'}
+        ],{duration:260,easing:'ease-out',fill:'forwards'})
       ]);
       if(!paper.isConnected)return;
+      // Phase 3 (stub 440ms, main 400ms): Gravity slide ejection & damped elastic cardstock recoil
       paper.classList.remove('is-cutting');paper.classList.add('is-cut');
       await Promise.all([
         motion(stub,[
-          {transform:hinge,opacity:1},
-          {transform:'perspective(900px) translate(-4px,35px) rotateZ(17deg) rotateX(-30deg)',opacity:1,offset:.35},
-          {transform:'perspective(900px) translate(-18px,145px) rotateZ(23deg) rotateX(-38deg)',opacity:0}
-        ],{duration:440,easing:'cubic-bezier(.45,0,.8,.45)',fill:'forwards'}),
-        motion(main,[{transform:'translateY(-2px) rotate(-.15deg)'},{transform:'translateY(1px) rotate(.08deg)',offset:.4},{transform:'none'}],{duration:400,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'})
+          {transform:snap,opacity:1},
+          {transform:'perspective(900px) translateY(60px) rotateX(20deg) scale(0.96)',opacity:0.9,offset:0.35},
+          {transform:'perspective(900px) translateY(120px) rotateX(26deg) scale(0.93)',opacity:0.45,offset:0.70},
+          {transform:'perspective(900px) translateY(175px) rotateX(32deg) scale(0.90)',opacity:0}
+        ],{duration:440,easing:'cubic-bezier(.35,0,.75,.45)',fill:'forwards'}),
+        motion(main,[
+          {transform:'translateY(-6px)'},
+          {transform:'translateY(3px)',offset:0.30},
+          {transform:'translateY(-1.2px)',offset:0.60},
+          {transform:'translateY(0.4px)',offset:0.85},
+          {transform:'none'}
+        ],{duration:400,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'})
       ]);
     } finally { finish(); }
   }

@@ -44,7 +44,7 @@ for (const name of fs.readdirSync(path.join(root,'pages'))) {
   if (files.length !== 3 || !['.html','.css','.js'].every(ext => files.filter(file => file.endsWith(ext)).length === 1)) failures.push(`${name}: expected exactly HTML, CSS and JS`);
   for (const file of files.filter(file => file.endsWith('.html'))) { pages++; inspectHTML(path.join(folder,file)); }
 }
-for (const file of fs.readdirSync(root).filter(file => file.endsWith('.html'))) inspectHTML(path.join(root,file),false);
+for (const file of fs.readdirSync(root).filter(file => file.endsWith('.html') && file !== 'exploded-view.html')) inspectHTML(path.join(root,file),false);
 inspectSources(path.join(root,'pages'));
 inspectSources(path.join(root,'shared'));
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }

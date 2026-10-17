@@ -80,9 +80,9 @@ const paper=env.kit.ticketPaper();paper.title.textContent='A real preview subjec
 await env.kit.tearTicket(paper.paper,{left:10,top:20,width:240});
 assert(paper.paper.className.includes('is-cut'));assert.equal(paper.stub.hidden,true);
 assert.equal(paper.stub.animation.options.duration,440,'Detached stub should have a distinct falling phase');
-assert.deepEqual(paper.stub.animations.map(a=>a.options.duration),[140,580,440],'Tension, last-hole hinge, and release must run in sequence');
-assert.deepEqual(paper.paper.querySelector('.bw-ticket-main').animations.map(a=>a.options.duration),[140,580,400],'Kept half should respond to tension and then settle');
-assert(paper.stub.animations[1].frames.some(f=>f.transform.includes('rotateZ(15deg)')),'The hinge should visibly overshoot before releasing');
+assert.deepEqual(paper.stub.animations.map(a=>a.options.duration),[140,260,440],'Tension, clean snap fracture, and gravity slide must run in sequence');
+assert.deepEqual(paper.paper.querySelector('.bw-ticket-main').animations.map(a=>a.options.duration),[140,260,400],'Kept half should respond to tension and settle with damped recoil');
+assert(paper.stub.animations[1].frames.some(f=>f.transform.includes('rotateX(14deg)')),'The clean snap should fracture cleanly with 3D depth before sliding');
 const tearCount=paper.stub.animations.length;
 await env.kit.tearTicket(paper.paper,{left:10,top:20,width:240});
 assert.equal(paper.stub.animations.length,tearCount,'Repeated calls must not replay or duplicate the tear');

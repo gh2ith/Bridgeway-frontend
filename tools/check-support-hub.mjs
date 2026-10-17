@@ -22,9 +22,10 @@ class Element {
   remove(){this.isConnected=false;}
   setCustomValidity(message){this.validationMessage=message;}
   reportValidity(){return false;}
+  getBoundingClientRect(){return {left:0,top:0,width:400,height:300};}
   scrollIntoView(){}
 }
-function setup(role,saved){
+function setup(role,saved,animate=false){
   const events={},data=new Map(saved?[['bridgeway:workspace-cycle:v1',saved]]:[]);
   const doc={createElement:tag=>new Element(tag,doc),addEventListener:(type,fn)=>(events[type]||=[]).push(fn),dispatchEvent:event=>{for(const fn of events[event.type]||[])fn(event);},getElementById(){return null;}};
   doc.body=new Element('body',doc);doc.body.dataset.portalRole=role;doc.activeElement=doc.body;
@@ -35,13 +36,19 @@ function setup(role,saved){
   vm.runInContext(read('shared/js/report-visibility.js'),env);vm.runInContext(read('shared/js/workspace-cycle.js'),env);
   const ticketNav=new Element('button',doc);doc.querySelector=selector=>selector.startsWith('[data-tab=')?ticketNav:null;
   const downloads=[];env.window.BridgewayWorkbook={download:(sheets,filename)=>downloads.push({sheets,filename})};
+  let finishAnimation,tearCalls=0;
+  if(animate)env.window.BridgewayKinetic={ticketPaper(){
+    const paper=new Element('article',doc),title=new Element('h3',doc),body=new Element('p',doc),brand=new Element('div',doc),stub=new Element('div',doc);
+    brand.append(new Element('small',doc));stub.append(new Element('strong',doc));paper.append(brand,title,body,stub);return {paper,title,body,brand,stub};
+  },tearTicket(){tearCalls++;return new Promise(resolve=>finishAnimation=resolve);}};
   const root=new Element('section',doc);env.window.BridgewayCycle.mountTickets(root,role==='platform_admin');
-  return {root,doc,C:env.window.BridgewayCycle,data,downloads,ticketNav};
+  return {root,doc,C:env.window.BridgewayCycle,data,downloads,ticketNav,get tearCalls(){return tearCalls;},finishAnimation:()=>finishAnimation()};
 }
 const student=setup('student');
 assert.equal(student.ticketNav.querySelector('.bw-tab-badge'),null,'Ticket navigation has no numeric total');
 assert.equal(student.root.querySelector('.support-masthead').querySelector('h1').textContent,'My Tickets');
-assert(student.root.querySelector('.support-submit').querySelector('img').src.includes('bridgeway-support-cap.svg'));
+assert(student.root.querySelector('.support-submit').querySelector('.mascot'),'Submit button includes the cap-with-headset mascot');
+assert(student.root.querySelector('.support-submit').querySelector('.ticket-perf'),'Submit button includes the perforated stub line');
 assert(!student.root.querySelector('.support-overview').hidden);
 assert(student.root.querySelector('.support-views').hidden,'Student needs no view switch');
 student.root.querySelector('.support-submit').fire('click');
@@ -138,3 +145,18 @@ assert.equal(receivingCollege.C.state.tickets[0].status,'Awaiting requester','Re
 receivingCollege.doc.body.children.at(-1).querySelector('.support-confirm-resolution').fire('click');
 assert.equal(receivingCollege.C.state.tickets[0].status,'Resolved');assert.equal(receivingCollege.C.state.tickets[0].messages.length,sentCount);assert.equal(receivingCollege.C.state.tickets[0].messages.at(-1).body,'Account issue addressed');
 console.log('PASS: Logo CTA, form validation and creation, text safety, conversation navigation, unfiltered ticket history, requester reply, supervisor resolution, session reload, and role-scoped inboxes.');
+
+const animated=setup('student',undefined,true);animated.root.querySelector('.support-submit').fire('click');
+const receiptDialog=animated.doc.body.children.at(-1),receiptForm=receiptDialog.querySelector('form');
+receiptForm.querySelector('input').value='Animation integration';receiptForm.querySelector('input').fire('input');receiptForm.querySelector('textarea').value='Keep my ticket animation.';receiptForm.querySelector('textarea').fire('input');
+assert.equal(receiptForm.querySelector('h3').textContent,'Animation integration','Live preview updates before submission');assert.equal(receiptForm.querySelector('p').textContent,'This conversation is kept in your browser session.');
+const draftPaper=receiptForm.querySelector('article');assert(draftPaper,'Paper is visible while drafting');
+const originalCount=animated.C.state.tickets.length;receiptForm.fire('submit');receiptForm.fire('submit');
+assert.equal(animated.C.state.tickets.length,originalCount+1,'Repeated submit during animation creates one ticket');
+assert.equal(receiptDialog.open,true,'Keep receipt open for the tear animation');assert.equal(receiptForm.querySelector('article'),draftPaper,'Tear the same ticket shown during drafting');
+const viewTicket=receiptForm.querySelector('button');assert.equal(viewTicket.disabled,true,'Wait for the tear before viewing');
+await Promise.resolve();assert.equal(animated.tearCalls,1,'Composer invokes the real animation entry point');
+animated.finishAnimation();await new Promise(resolve=>setImmediate(resolve));
+assert.equal(viewTicket.disabled,false);viewTicket.fire('click');assert.equal(receiptDialog.open,false);
+assert(!animated.root.querySelector('.support-conversation').hidden,'View ticket opens the created conversation');
+console.log('PASS: Ticket creation invokes its animation, preserves the receipt, blocks duplicate creation, and enables View ticket after completion.');

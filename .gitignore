@@ -19,7 +19,17 @@ node_modules/
 /docs/portal-redesign-progress.md
 /docs/website-walkthrough-report.md
 
-# Generated deployment output
+# Generated deployment output and test runs
 /_site/
+/.playwright-cli/
+/output/
+/outputs/
+/HANDOVER.md
+/portal.css
+/exploded-view.html
+/exploded-view/
+/demo-theatre/
+/docs/*audit*.md
+/docs/*walkthrough*.md
 .DS_Store
 Thumbs.db

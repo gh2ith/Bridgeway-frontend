@@ -131,10 +131,25 @@
     const shell=E('div',null,'support-hub');
     const overview=E('div',null,'support-overview'),intro=E('section',null,'support-intro'),introTitle=E('h2',platform?'Your support desk':'Need a hand?'),introCopy=E('p',description);
     const introContent=A(E('div',null,'support-intro-content'),introTitle,introCopy);intro.append(introContent);
+    function ensureMascotSprite(){
+      if(document.getElementById?.('mascot-art'))return;
+      const target=document.body||document.documentElement;
+      if(!target)return;
+      const sprite=document.createElementNS?document.createElementNS('http://www.w3.org/2000/svg','svg'):E('svg');
+      sprite.setAttribute('class','sprite');sprite.setAttribute('aria-hidden','true');sprite.setAttribute('focusable','false');
+      sprite.innerHTML='<defs><g id="mascot-art" stroke-linejoin="round" stroke-linecap="round"><path d="M20 62 C20 2 100 2 100 62" fill="none" stroke="#5b6b8c" stroke-width="6"/><path d="M20 62 C20 2 100 2 100 62" fill="none" stroke="#9aaccf" stroke-width="1.6" transform="translate(0 -1.4)"/><path d="M103 82 C103 96 88 98 78 96" fill="none" stroke="#4b5a78" stroke-width="3.4"/><rect x="67" y="92" width="13" height="8" rx="4" fill="#4b5a78" stroke="#16335d" stroke-width="2"/><rect x="9" y="54" width="17" height="30" rx="8" fill="#7587ab" stroke="#16335d" stroke-width="2.4"/><rect x="9" y="54" width="7" height="30" rx="3.5" fill="#4b5a78"/><rect x="94" y="54" width="17" height="30" rx="8" fill="#7587ab" stroke="#16335d" stroke-width="2.4"/><rect x="104" y="54" width="7" height="30" rx="3.5" fill="#4b5a78"/><path d="M31 50 L60 61 L89 50 V70 C89 84 31 84 31 70 Z" fill="#2f6be0" stroke="#16335d" stroke-width="2.4"/><path d="M60 62 L88 51.5 V70 C88 80 74 83 60 83 Z" fill="#1f4fb8"/><path d="M10 40 L60 58 L110 40 V45 L60 63 L10 45 Z" fill="#c4d1ea" stroke="#16335d" stroke-width="2.4"/><path d="M10 40 L60 22 L110 40 L60 58 Z" fill="#ffffff" stroke="#16335d" stroke-width="2.4"/><path d="M12 40 L60 23.5 L60 56.5 Z" fill="#e9eff9"/><path d="M60 40 Q76 46 92 41" fill="none" stroke="#f5a623" stroke-width="2.4"/><circle cx="60" cy="40" r="3.4" fill="#f5a623" stroke="#16335d" stroke-width="1.6"/><path d="M92 41 V57" fill="none" stroke="#f5a623" stroke-width="2.4"/><path d="M88.5 56 H95.5 L97 69 H87 Z" fill="#f5a623" stroke="#16335d" stroke-width="2"/></g></defs>';
+      if(target.prepend)target.prepend(sprite);else if(target.append)target.append(sprite);
+    }
     if(!platform){
-      const submit=B('',()=>compose());submit.className='support-submit';
-      const logo=E('img');logo.src='../../assets/bridgeway-support-cap.svg?v=headset-64';logo.alt='';logo.width=112;logo.height=95;
-      submit.append(E('span','Submit a ticket'),logo);introContent.append(submit);
+      ensureMascotSprite();
+      const submit=B('',()=>compose());submit.className='ticket-btn support-submit';
+      const perf=E('span',null,'ticket-perf');perf.setAttribute('aria-hidden','true');
+      const mascot=document.createElementNS?document.createElementNS('http://www.w3.org/2000/svg','svg'):E('svg');
+      mascot.setAttribute('class','mascot');mascot.classList?.add?.('mascot');mascot.setAttribute('viewBox','0 0 120 100');mascot.setAttribute('aria-hidden','true');mascot.setAttribute('focusable','false');
+      const use=document.createElementNS?document.createElementNS('http://www.w3.org/2000/svg','use'):E('use');
+      use.setAttribute('href','#mascot-art');mascot.append(use);
+      submit.append(perf,E('span','Submit a ticket'),mascot);
+      introContent.append(submit);
     }
     const historySection=E('section',null,'support-history'),historyHeading=E('h2',manager?'Ticket inbox':'My Tickets');
     const list=E('div',null,'support-ticket-list');list.id='support-list-'+crypto.randomUUID();
@@ -155,15 +170,36 @@
       body.input.required=true;body.input.maxLength=3000;body.input.placeholder='Describe what happened and what you need help with.';
       context.input.maxLength=180;context.input.placeholder='A week, report, or listing';
       const submit=E('button','Create ticket','cycle-button is-primary');submit.type='submit';
-      form.append(subject.wrap,category.wrap,context.wrap,body.wrap,E('p','This conversation is kept in your browser session.','support-session-note'),A(E('div',null,'support-compose-actions'),submit));
+      const fields=A(E('div',null,'support-compose-fields'),subject.wrap,category.wrap,context.wrap,body.wrap,E('p','This conversation is kept in your browser session.','support-session-note'),A(E('div',null,'support-compose-actions'),submit));
+      form.append(fields);
+      const kinetic=window.BridgewayKinetic,preview=kinetic?.ticketPaper?.();
+      if(preview){
+        const panel=E('aside',null,'support-compose-preview');panel.setAttribute('aria-hidden','true');panel.append(preview.paper);form.append(panel);
+        const updatePreview=()=>{preview.title.textContent=subject.input.value.trim()||'Your support ticket';preview.body.textContent=body.input.value.trim()||'Add the details here. Your ticket takes shape as you write.';preview.stub.querySelector('strong').textContent=category.input.value;};
+        subject.input.addEventListener('input',updatePreview);body.input.addEventListener('input',updatePreview);category.input.addEventListener('change',updatePreview);updatePreview();
+        form.classList.add('has-ticket-preview');
+      }
       const d=dialog('Submit a ticket',form);d.classList.add('support-composer');subject.input.focus();
+      if(preview)d.classList.add('support-preview-dialog');
       form.addEventListener('submit',ev=>{
         ev.preventDefault();if(form.dataset.committed==='true')return;
         if(!subject.input.value.trim()||!body.input.value.trim()){const input=!subject.input.value.trim()?subject.input:body.input;input.setCustomValidity('Enter '+(input===subject.input?'a subject.':'a description.'));input.reportValidity();input.setCustomValidity('');return;}
         const id='BW-'+crypto.randomUUID().slice(0,8).toUpperCase();
         state.tickets.unshift({id,subject:subject.input.value.trim(),owner:identity(),priority:'Normal',status:'In progress',context:context.input.value.trim(),reference,placement:reference.startsWith('report:')?state.histories.find(h=>h.student===reference.split(':')[1])?.id:null,category:category.input.value,created:now(),messages:[{author:author(),sender:identity(),body:body.input.value.trim(),at:now()}]});
         form.dataset.committed='true';chosen=id;ticketView='mine';
-        d.close();commit(`Ticket ${id} opened`);render();focusHeading();say('Ticket created in this workspace.');
+        commit(`Ticket ${id} opened`);render();
+        if(!kinetic?.ticketPaper||!kinetic?.tearTicket){d.close();focusHeading();say('Ticket created in this workspace.');return;}
+        const receipt=preview||kinetic.ticketPaper(),origin=receipt.paper.getBoundingClientRect();receipt.title.textContent=subject.input.value.trim();receipt.body.textContent=body.input.value.trim();
+        receipt.brand.querySelector('small').textContent='Created';receipt.stub.querySelector('strong').textContent=id;
+        const note=E('p','Your ticket has been created.','support-issued-note');note.setAttribute('role','status');
+        const view=B('View ticket',()=>{d.close();focusHeading();},true);view.disabled=true;
+        form.classList.add('support-issued');d.classList.add('support-issued-dialog');form.setAttribute('aria-busy','true');
+        form.replaceChildren(receipt.paper,A(E('div',null,'support-issued-actions'),note,view));
+        d.addEventListener('close',focusHeading,{once:true});
+        Promise.resolve().then(()=>kinetic.tearTicket(receipt.paper,origin)).catch(()=>{
+          // The ticket is already recorded; an animation failure must never submit it again.
+          note.textContent='Your ticket is ready to view.';
+        }).finally(()=>{form.setAttribute('aria-busy','false');view.disabled=false;if(d.open)view.focus();say('Ticket created in this workspace.');});
       });
     }
     function render(){
