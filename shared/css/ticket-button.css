@@ -3,47 +3,48 @@
    Needs the SVG sprite from ticket-button.html on the page (once). */
 
 .ticket-btn {
-  --btn: #16335d;        /* ticket face */
-  --btn-edge: #08172e;   /* thick bottom edge */
+  --btn: #1d3f6d;        /* ticket face */
+  --btn-edge: #10223d;   /* refined bottom edge */
   --amber: #f5a623;      /* focus ring */
-  --stub: 132px;         /* width of the tear-off stub */
-  --notch: 9px;          /* radius of the notches */
+  --stub: 98px;          /* width of the tear-off stub */
+  --notch: 6.5px;        /* radius of the notches */
   --cut: calc(100% - var(--stub));
-  --mascot-w: 112px;
+  --mascot-w: 80px;
 
   box-sizing: border-box;
   position: relative;
   isolation: isolate;
   display: inline-flex;
   align-items: center;
-  width: min(100%, 344px);
-  height: 68px;
-  margin: 28px 0 8px;    /* top margin leaves room for the cap sticking out */
-  padding: 0 var(--stub) 0 26px;
+  width: min(100%, 286px);
+  height: 52px;
+  margin: 18px 0 6px;    /* top margin leaves room for the cap sticking out */
+  padding: 0 var(--stub) 0 20px;
   border: 0;
-  border-radius: 16px;
+  border-radius: 13px;
   background: none;
   color: #ffffff;
   font: inherit;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
   text-align: left;
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s ease;
+  filter: drop-shadow(0 4px 12px rgba(15, 35, 65, 0.14));
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.18s ease;
 }
 
-/* ticket face + thick edge, both notched at the stub */
+/* ticket face + edge, both notched at the stub */
 .ticket-btn::before,
 .ticket-btn::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  border-radius: 16px;
+  border-radius: 13px;
   -webkit-mask:
     radial-gradient(circle var(--notch) at var(--cut) 0, #0000 97%, #000) top / 100% 51% no-repeat,
     radial-gradient(circle var(--notch) at var(--cut) 100%, #0000 97%, #000) bottom / 100% 51% no-repeat;
@@ -52,22 +53,23 @@
     radial-gradient(circle var(--notch) at var(--cut) 100%, #0000 97%, #000) bottom / 100% 51% no-repeat;
 }
 .ticket-btn::before {
-  background: var(--btn);
+  background: linear-gradient(135deg, #24487f 0%, #1a365f 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 .ticket-btn::after {
   z-index: -2;
   background: var(--btn-edge);
-  transform: translateY(6px);
-  transition: transform 0.15s ease;
+  transform: translateY(3px);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* dashed tear line */
 .ticket-perf {
   position: absolute;
-  top: 14px;
-  bottom: 14px;
+  top: 10px;
+  bottom: 10px;
   right: calc(var(--stub) - 1px);
-  border-left: 2px dashed rgba(255, 255, 255, 0.38);
+  border-left: 1.5px dashed rgba(255, 255, 255, 0.32);
 }
 
 /* cap + headset */
@@ -80,23 +82,25 @@
   pointer-events: none;
   transform: rotate(-3deg);
   transform-origin: 50% 85%;
-  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 
 /* hover: the ticket lifts, the cap tips */
 .ticket-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1.5px);
+  filter: drop-shadow(0 6px 16px rgba(15, 35, 65, 0.2));
 }
 .ticket-btn:hover::after {
-  transform: translateY(8px);
+  transform: translateY(4.5px);
 }
 .ticket-btn:hover .mascot {
-  transform: translateY(-4px) rotate(-9deg);
+  transform: translateY(-3px) rotate(-8deg);
 }
 
-/* pressed: sinks flat onto its edge */
+/* pressed: sinks gently onto its edge */
 .ticket-btn:active {
-  transform: translateY(5px);
+  transform: translateY(2px);
+  filter: drop-shadow(0 2px 6px rgba(15, 35, 65, 0.16));
 }
 .ticket-btn:active::after {
   transform: translateY(1px);
@@ -108,16 +112,16 @@
 /* keyboard focus */
 .ticket-btn:focus-visible {
   outline: 3px solid var(--amber);
-  outline-offset: 6px;
+  outline-offset: 4px;
 }
 
 /* small screens */
 @media (max-width: 380px) {
   .ticket-btn {
-    --stub: 112px;
-    --mascot-w: 96px;
-    font-size: 17px;
-    padding-left: 20px;
+    --stub: 86px;
+    --mascot-w: 70px;
+    font-size: 14px;
+    padding-left: 16px;
   }
 }
 
