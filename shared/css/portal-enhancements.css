@@ -107,7 +107,7 @@
 }
 /* portal-refinement */ .company-workspace { --bw-font-head:'Inter',system-ui,sans-serif; --bw-font-body:'Inter',system-ui,sans-serif; --bw-bg:#f5f7fb; --bw-bg-alt:#edf2f8; --bw-surface:#fff; --bw-text:#17243b; --bw-text-secondary:#43536b; --bw-text-muted:#596b82; --bw-border:#dce4ef; --bw-primary:#245bdb; --bw-primary-light:#eaf0ff; font:14px/1.6 var(--bw-font-body); background:var(--bw-bg); color:var(--bw-text); }
 [data-theme="dark"] .company-workspace { --bw-bg:var(--bw-night-bg);--bw-bg-alt:var(--bw-night-alt);--bw-surface:var(--bw-night-surface);--bw-text:var(--bw-night-text);--bw-text-secondary:var(--bw-night-secondary);--bw-text-muted:var(--bw-night-muted);--bw-border:var(--bw-night-border);--bw-primary:var(--bw-night-primary);--bw-primary-light:#203b60; }
-.company-workspace .bw-company-layout { max-width:1600px;gap:32px;padding:28px 32px 48px; }
+.company-workspace .bw-company-layout { max-width:none;gap:32px;padding:28px 32px 48px; }
 .company-workspace .bw-company-content { --bw-text-muted:#596b82;gap:28px;min-width:0; }
 [data-theme="dark"] .company-workspace .bw-company-content { --bw-text-muted:var(--bw-night-muted); }
 .company-workspace .bw-masar-sidebar { width:284px;height:calc(100dvh - 56px);min-height:0;max-height:calc(100dvh - 56px);overflow:hidden;border-radius:20px;border-width:1px;border-bottom:3px solid var(--bw-primary);padding:16px 12px;box-shadow:0 6px 24px #17243b06;background:var(--bw-surface); }

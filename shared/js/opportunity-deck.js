@@ -61,7 +61,7 @@
       node.dataset.family=l.category;node.style.setProperty('--card-color',({'company-1':'#2052c4','company-2':'#5442a6','company-3':'#086c72'})[l.company]||'#2052c4');
       const company=C.org(l.company),mark=E('span',company.split(' ').map(v=>v[0]).slice(0,2).join(''),'gallery-company-mark');front.append(A(E('header'),mark,E('span',company)));
       const art=E('div',null,'gallery-art');art.setAttribute('aria-hidden','true');for(let n=0;n<4;n++)art.append(E('span'));art.append(E('i',null,l.category==='cloud'?'bi bi-cloud':'bi bi-code-slash'));
-      front.append(art,E('p',l.category==='cloud'?'Cloud & infrastructure':'Software & technology','gallery-family'),E('h2',l.title),E('p',l.location,'gallery-location'));
+      front.append(art,E('p',l.categoryLabel||(l.category==='cloud'?'Cloud & infrastructure':'Software & technology'),'gallery-family'),E('h2',l.title),E('p',l.location,'gallery-location'));
       const tags=E('div',null,'gallery-tags');l.skills.split(',').slice(0,3).forEach(s=>tags.append(E('span',s.trim())));front.append(tags,A(E('footer'),E('span','8 weeks to build something'),E('span',`${l.capacity} ${Number(l.capacity)===1?'seat':'seats'}`,'role-seat-count')));
       back.append(E('p','Your learning journey'),E('h2','From first day to final delivery.'),E('small',planNote(l)));const weeks=E('ol');syllabus(l).forEach(w=>weeks.append(E('li',w)));back.append(weeks);back.setAttribute('aria-hidden','true');inner.append(front,back);node.append(inner);
       node.addEventListener('click',()=>{if(ignoreClick)return;if(i!==index)choose(i);else flipCard();});
@@ -73,6 +73,7 @@
       dossier.replaceChildren();dossier.append(A(E('header',null,'gallery-detail-head'),E('span','Inside this role'),E('span','Platform approved','gallery-approved')),E('h2',l.title),E('p',`${C.org(l.company)} · ${l.location}`,'gallery-detail-company'));
       const facts=E('dl',null,'gallery-facts');[['Duration','8 weeks'],['Commitment','40 h / week'],['Application deadline',C.date(l.deadline)],['Seats',String(l.capacity)]].forEach(([k,v])=>facts.append(A(E('div'),E('dt',k),E('dd',v))));dossier.append(roleFit(l),facts,A(E('section',null,'gallery-description'),E('h3','The work'),E('p',l.description)));
       const skills=E('div',null,'studio-skills');l.skills.split(',').forEach(t=>skills.append(E('span',t.trim())));dossier.append(A(E('section'),E('h3','What you’ll bring'),skills));
+      if(l.prerequisites?.length){const requirements=E('ul');l.prerequisites.forEach(text=>requirements.append(E('li',text)));dossier.append(A(E('section'),E('h3','Prerequisites'),requirements));}
       const action=placed?B('Continue my training',()=>{dossier.closest('dialog')?.close();window.switchTab('tab-progress');},true):applyAction(l);dossier.append(A(E('footer',null,'gallery-detail-footer'),action,E('p',placed?'You have a placement. These opportunities are available to browse.':'Applying creates a pending application. The company makes the hiring decision.')));
       if(!reduced.matches)dossier.animate([{opacity:.25,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],{duration:260,easing:'ease-out'});
     }

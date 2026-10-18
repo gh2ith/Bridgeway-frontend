@@ -269,17 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('.listing-detail a[href="../company-post-role/company-post-role.html"]').forEach(a=>{a.href=`../company-post-role/company-post-role.html?listing=${a.closest('.listing-detail').id==='listing-frontend'?'frontend':'software'}`;});
-  if(location.pathname.endsWith('company-post-role.html')) {
-    const id=new URLSearchParams(location.search).get('listing');
-    if(['frontend','software'].includes(id)){
-      set('h1','Edit internship'); set('#standalonePostForm button[type="submit"]','Review changes');
-      if(id==='frontend'){
-        $('#formRoleTitle').value='Frontend React Developer Intern';$('#formRoleReqs').value='React, TypeScript, Tailwind, Min GPA 3.0';$('#formCapacity').value='5';$('#formDeadline').value='2026-12-10';$('#formRoleDesc').value='Build accessible React interfaces with guidance from the frontend team during an eight-week internship.';
-      }else $('#formWorkMode').selectedIndex=1;
-      $('#formRoleTitle').dispatchEvent(new Event('input',{bubbles:true}));
-    }
-  }
-
   // Navigation is presentation state; URLs work without browser storage.
   document.querySelectorAll('.bw-masar-nav [data-tab]').forEach(button=>button.addEventListener('click',()=>{
     if(location.hash!==`#${button.dataset.tab}`)history.pushState(null,'',`#${button.dataset.tab}`);

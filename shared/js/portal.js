@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
   const steps=()=>{
     const list=el('ol',null,'partner-steps');
-    [['Connect','Platform Admin links active college and company accounts.'],['Apply & place','Students apply to partner listings. The company accepts or rejects applications; the college assigns a supervisor and handles placement administration after acceptance.'],['Train & review','The host company records weekly reports. The assigned supervisor reviews them.'],['Evaluate & complete','The host submits the college\u2019s end-of-term evaluation. The college reviews completion.']].forEach(([title,text])=>{const li=el('li');li.append(el('strong',title),el('span',text));list.append(li);});return list;
+    [['Connect','Platform Admin links active college and company accounts.'],['Apply & place','Students apply to approved listings. The company accepts or rejects applications; the college sets up placement after acceptance. Academic supervisors can be assigned beforehand.'],['Train & review','The host company records weekly reports. The assigned supervisor reviews them.'],['Evaluate & complete','The host submits the college\u2019s end-of-term evaluation. The college reviews completion.']].forEach(([title,text])=>{const li=el('li');li.append(el('strong',title),el('span',text));list.append(li);});return list;
   };
   // A relationship never grants access to a college's full student directory.
   if(role==='company') {
@@ -306,10 +306,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if((role==='company'||role==='admin')&&dashboard) {
     let panel=document.getElementById(role==='admin'?'tab-companies':'tab-partners');
     if(!panel){panel=el('section',null,'bw-tab-panel');panel.id='tab-partners';document.querySelector('main').append(panel);const button=el('button',null,'bw-masar-item bw-tab-btn');button.type='button';button.innerHTML='<i class="bi bi-link-45deg" aria-hidden="true"></i><span>Partner colleges</span>';button.dataset.tab=panel.id;document.querySelector('.bw-masar-nav').append(button);}
-    panel.replaceChildren();const card=el('section',null,'partner-panel');card.append(el('h2',role==='company'?'Partner colleges':'Partner companies'),el('p',role==='company'?'Your connected colleges. A partnership does not give access to their student directories.':'Pause or resume your college’s partnerships. Pausing stops new applications and placements; existing training continues. Changes are temporary on this page.'));panel.append(card);
+    panel.replaceChildren();const card=el('section',null,'partner-panel');card.append(el('h2',role==='company'?'Connected colleges':'Partner companies'),el('p',role==='company'?'College contacts and current placements with your company.':'Pause or resume your college’s partnerships. Pausing stops new applications and placements; existing training continues. Changes are temporary on this page.'));panel.append(card);
+    if(role==='company'){card.classList.add('company-college-directory');card.setAttribute('aria-label','Connected colleges');}
     model.links.filter(link=>role==='company'?link.company===company:link.college===college).forEach(link=>{
       const org=model.organizations.find(o=>o.id===(role==='company'?link.college:link.company));const row=el('div',null,'partner-row');const info=el('div');info.append(el('strong',org.name),el('small',org.email));const related=model.students.filter(s=>s.company===link.company&&s.college===link.college&&s.stage==='Placed');info.append(el('small',`${related.length} confirmed intern${related.length===1?'':'s'}  /  Fall 2026`));
       const controls=el('div',null,'partner-controls');const status=el('span',model.effective(link)?'Active':link.status==='Active'?'Account suspended':'Paused','bw-badge bw-badge-blue');controls.append(status);
+      if(role==='company'){
+        row.classList.add('company-college-row');
+        const identity=el('div',null,'company-college-identity'),mark=el('span',null,'company-college-mark'),icon=el('i',null,'bi bi-mortarboard');icon.setAttribute('aria-hidden','true');mark.append(icon);
+        const copy=el('div'),name=el('h3',org.name),email=el('a',org.email,'company-college-email');email.href=`mailto:${org.email}`;copy.append(name,email);identity.append(mark,copy);
+        const placement=el('div',null,'company-college-placements'),total=el('strong'),label=el('span','Active placements');placement.append(total,label);
+        const refresh=()=>{const cycle=window.BridgewayCycle;total.textContent=String(cycle?cycle.state.histories.filter(h=>h.company===link.company&&h.status==='Active'&&cycle.student(h.student)?.college===link.college).length:related.length);const effective=model.effective(link);status.textContent=effective?'Active':link.status==='Active'?'Account suspended':'Paused';status.className=`bw-badge company-college-status ${effective?'is-active':'is-paused'}`;};refresh();document.addEventListener('bridgeway:cycle-change',refresh);
+        info.replaceChildren(identity);info.classList.add('company-college-info');row.append(info,placement,controls);card.append(row);return;
+      }
       if(role==='admin') {
         const toggle=el('button',null,'bw-tag-btn');toggle.type='button';
         const refresh=()=>{status.textContent=model.effective(link)?'Active':link.status==='Active'?'Account suspended':'Paused';status.className=`bw-badge ${model.effective(link)?'bw-badge-blue':'bw-badge-danger'}`;toggle.textContent=link.status==='Active'?'Pause':'Resume';toggle.setAttribute('aria-label',`${toggle.textContent} partnership with ${org.name}`);};
@@ -323,7 +332,9 @@ document.addEventListener('DOMContentLoaded', () => {
       row.append(info,controls);card.append(row);
     });
     if(role==='company') {
-      const guide=el('section',null,'partner-panel');guide.append(el('h2','From partnership to completion'),steps(),el('p','Pausing a partnership stops new applications and placements. Existing placements keep their reporting and evaluation history. Platform Admin and the linked college admin can pause or resume a partnership.'));const next=el('button','Review your applicants','company-primary');next.type='button';next.addEventListener('click',()=>window.switchTab('tab-candidates'));guide.append(next);panel.append(guide);
+      const footer=el('footer',null,'company-college-directory-footer'),note=el('p','Connections are managed by Platform Admin and the linked college administrator. Student directories remain private.');footer.append(note);card.append(footer);
+      const guide=el('details',null,'partner-panel company-partnership-guide'),summary=el('summary','How partnerships work'),content=el('div',null,'company-partnership-guide-body');content.append(steps(),el('p','Pausing stops new applications and placements. Existing training and its reporting and evaluation history remain intact. Only Platform Admin and the linked college administrator can pause or resume a partnership.'));guide.append(summary,content);const next=el('button','Review applications','cycle-button');next.type='button';next.addEventListener('click',()=>window.switchTab('tab-candidates'));footer.append(next);panel.append(guide);
+      if(!card.querySelector('.partner-row'))card.insertBefore(el('p','No colleges are connected to your company yet. Platform Admin manages college connections.','company-college-empty'),footer);
     }
   }
   if(role==='student') {

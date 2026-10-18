@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target.closest('a')) setAccountOpen(false);
   });
   const headings = {
-    'tab-posts': ['Internship overview', 'A clear view of your opportunities, applicants, and interns.'],
+    'tab-posts': ['Internship overview', 'Keep hiring and training moving.'],
     'tab-candidates': ['Applications', 'Review applicants to your company listings.'],
     'tab-meetings': ['Application interviews', 'Arrange a conversation with applicants before making a hiring decision.'],
     'tab-accepted-students': ['Interns', 'Your internship roster and training status, separate from applications.'],
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (row.parentElement !== target) { row.hidden = false; target.append(row); }
     });
     document.getElementById('companyApplicationCount').textContent = applications.rows.length;
-    document.getElementById('companyApplicationsMetric').textContent = applications.rows.length;
+    if(!window.BridgewayCycle)document.getElementById('companyApplicationsMetric').textContent = applications.rows.length;
     document.getElementById('companyAcceptedCount').textContent = accepted.rows.length;
     document.querySelectorAll('.listing-applicants').forEach(button => {
       const role = button.getAttribute('aria-label').replace('Review applicants for ', '');

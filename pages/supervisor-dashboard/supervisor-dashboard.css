@@ -19,6 +19,50 @@
 .supervisor-change-student { margin:0 0 16px;padding:10px 12px;min-height:44px;border:1px solid var(--bw-border);border-radius:6px;background:var(--bw-surface);color:var(--bw-text-secondary);font:inherit;font-size:12px;cursor:pointer; }
 .supervisor-evaluations button:focus-visible { outline:2px solid var(--bw-primary);outline-offset:3px; }
 #supervisorReportDetail { min-width:0;container-type:inline-size; }
+#supervisorReportDetail > .cycle-training { padding:0;border:0;border-radius:0;margin:0; }
+#supervisorReportDetail .cycle-supervisor-review > .cycle-heading:first-child { padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid var(--bw-border); }
+#supervisorReportDetail .cycle-plan-title { gap:14px;margin-top:5px; }
+#supervisorReportDetail .cycle-plan-title h2 { font-size:22px;font-weight:500;letter-spacing:-.02em; }
+#supervisorReportDetail .cycle-heading p { font-size:13px; }
+#supervisorReportDetail .cycle-weeks { gap:7px;padding-bottom:20px;margin-bottom:24px; }
+#supervisorReportDetail .cycle-weeks button { background:transparent;border-color:var(--bw-border);min-height:58px;padding:10px 5px;font-size:13px;font-weight:500; }
+#supervisorReportDetail .cycle-weeks button[aria-pressed=true] { background:var(--bw-primary-light);border-color:var(--bw-primary); }
+#supervisorReportDetail .cycle-weeks small { font-size:11px; }
+#supervisorReportDetail .cycle-supervisor-review > .cycle-heading h3 { font-size:18px;font-weight:500;letter-spacing:normal; }
+.supervisor-report-columns { display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:28px;align-items:start; }
+.supervisor-report-content { min-width:0; }
+#supervisorReportDetail .supervisor-submission { border:0;border-radius:0;overflow:visible;margin:0; }
+#supervisorReportDetail .supervisor-submission-heading { padding:0 0 16px;background:transparent;align-items:flex-start; }
+#supervisorReportDetail .supervisor-submission-heading h3 { font-size:16px;font-weight:500;letter-spacing:normal; }
+#supervisorReportDetail .supervisor-submission-heading p { font-size:12px; }
+#supervisorReportDetail .supervisor-source-tag { font-size:11px;padding:4px 7px; }
+#supervisorReportDetail .supervisor-submission-objective { padding:18px 0;gap:12px;grid-template-columns:20px minmax(0,1fr); }
+#supervisorReportDetail .supervisor-submission-objective > i { font-size:18px; }
+#supervisorReportDetail .supervisor-company-result h4 { font-size:14px;font-weight:500;line-height:1.6; }
+#supervisorReportDetail .supervisor-completion { font-size:11px;padding:3px 7px; }
+#supervisorReportDetail .supervisor-company-note { display:grid;gap:3px;margin-top:8px!important;font-size:13px;line-height:1.7; }
+#supervisorReportDetail .supervisor-company-note > span:first-child { font-size:11px; }
+#supervisorReportDetail .supervisor-mentor-note { padding:18px 0 0;margin:4px 0 0;border:0;border-top:1px solid var(--bw-border); }
+#supervisorReportDetail :is(.supervisor-mentor-note,.supervisor-review-footer) h3 { font-size:16px;font-weight:500;letter-spacing:normal;margin:0 0 8px; }
+#supervisorReportDetail .supervisor-mentor-note p { font-size:13px;line-height:1.8; }
+#supervisorReportDetail .supervisor-review-footer { min-width:0;padding:22px;border:1px solid var(--bw-border);border-radius:12px;background:var(--bw-bg-alt); }
+#supervisorReportDetail .supervisor-review-footer > p { font-size:13px;line-height:1.7;margin-bottom:20px; }
+#supervisorReportDetail .supervisor-review-footer .cycle-field { font-size:12px; }
+#supervisorReportDetail .supervisor-review-footer textarea { min-height:130px;font-size:13px;background:var(--bw-surface); }
+#supervisorReportDetail .supervisor-review-footer .cycle-actions { display:grid;grid-template-columns:1fr;gap:9px;padding:0;margin-top:18px; }
+#supervisorReportDetail .supervisor-review-footer .cycle-actions button { font-size:13px;min-height:42px; }
+#supervisorReportDetail .supervisor-review-footer .cycle-actions button.is-primary { grid-row:1; }
+@container(max-width:950px) {
+ .supervisor-report-columns { grid-template-columns:minmax(0,1fr);gap:24px; }
+ #supervisorReportDetail .supervisor-review-footer .cycle-actions { display:flex;flex-wrap:wrap; }
+ #supervisorReportDetail .supervisor-review-footer .cycle-actions button { flex:1 1 160px; }
+}
+@container(max-width:600px) {
+ #supervisorReportDetail .cycle-weeks { grid-template-columns:repeat(4,minmax(0,1fr)); }
+ #supervisorReportDetail .cycle-plan-title { align-items:flex-start;flex-direction:column;gap:9px; }
+ #supervisorReportDetail .supervisor-review-footer { padding:18px; }
+ #supervisorReportDetail .supervisor-company-result { flex-wrap:wrap;gap:6px; }
+}
 .company-workspace main:has(#tab-endorsement.is-active) > .bw-kpi-grid { display:none; }
 .supervisor-evaluations h2 { font-size:18px;line-height:1.4;margin:0 0 8px; }
 .supervisor-evaluations h3 { font-size:15px;margin:24px 0 8px; }

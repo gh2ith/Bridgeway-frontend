@@ -34,7 +34,8 @@
   function card(a,company=false){
     const m=a.interview;if(!m)return null;
     const root=E('section',null,'application-interview');root.setAttribute('aria-label',`Interview for ${C.state.listings.find(l=>l.id===a.listing)?.title||'internship'}`);
-    root.append(A(E('header'),A(E('div'),E('small',company?C.student(a.student).name:C.org(a.company)),E('h3','A conversation about your next role')),C.status(m.status)),E('p',`${format(m.date)} · Amman time · ${m.duration} minutes`,'interview-date'),E('p',m.mode==='Online'?'Online interview · Jitsi':`${m.mode} · ${m.location}`,'cycle-muted'));
+    const identity=company?A(E('div'),E('h3',C.student(a.student).name),E('p',C.state.listings.find(l=>l.id===a.listing)?.title||'Internship','company-interview-role')):A(E('div'),E('small',C.org(a.company)),E('h3','A conversation about your next role'));
+    root.append(A(E('header'),identity,C.status(m.status)),E('p',`${format(m.date)} · Amman time · ${m.duration} minutes`,'interview-date'),E('p',m.mode==='Online'?'Online interview · Jitsi':`${m.mode} · ${m.location}`,'cycle-muted'));
     if(m.notes)root.append(E('p',m.notes,'interview-preparation'));
     if(m.response)root.append(E('p',m.response,'cycle-callout'));
     const actions=E('div',null,'cycle-actions');root.append(actions);
@@ -52,7 +53,7 @@
   function renderDesk(){
     if(document.body.dataset.portalRole!=='company')return;
     const panel=document.getElementById('tab-meetings');if(!panel)return;
-    panel.replaceChildren();const head=C.section('Interview schedule','Arrange a short conversation before deciding on an application.');panel.append(head);
+    panel.replaceChildren();const head=C.section('Interview schedule','Arrange a short conversation before deciding on an application.');head.classList.add('company-interview-schedule');panel.append(head);
     const apps=C.state.applications.filter(a=>a.company==='company-1'&&a.interview).sort((a,b)=>a.interview.date.localeCompare(b.interview.date));
     const count=document.getElementById('companyMeetingCount');if(count)count.textContent=String(apps.filter(a=>eligible(a)&&active(a.interview)).length);
     if(!apps.length)head.append(A(E('div',null,'cycle-interview-empty'),E('h3','No interviews scheduled'),E('p','Choose a pending applicant to arrange your first interview.','cycle-muted'),B('View applicants',()=>window.switchTab('tab-candidates'),true)));

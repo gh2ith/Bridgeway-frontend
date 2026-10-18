@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -19,12 +19,13 @@
   <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
 
   <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
-  <link rel="stylesheet" href="company-dashboard.css?v=fit-4">
+  <link rel="stylesheet" href="company-dashboard.css?v=college-directory-87">
   <link rel="stylesheet" href="../../shared/css/evaluation-radar.css?v=portal-clean-2">
   <link rel="stylesheet" href="../../shared/css/company-evaluation.css?v=night-2">
   <link rel="stylesheet" href="../../shared/css/portal-motion.css?v=portal-clean-2">
 <link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
-<link rel="stylesheet" href="../../shared/css/ticket-button.css"><link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-curl-27"><script src="../../shared/js/bridgeway-kinetic.js?v=ticket-curl-63"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=ticket-curl-68">
+<link rel="stylesheet" href="../../shared/css/ticket-button.css"><link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-curl-27"><script src="../../shared/js/bridgeway-kinetic.js?v=ticket-curl-63"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=college-directory-87">
+  <link rel="stylesheet" href="../../shared/css/typography.css?v=project-type-89">
 </head>
 <body class="company-workspace" data-portal-role="company" id="page-company-dashboard">
   <svg class="sprite" aria-hidden="true" focusable="false">
@@ -178,25 +179,25 @@
       </section>
 
       <section class="bw-kpi-grid" aria-label="Program overview">
-        <button type="button" class="bw-kpi-card is-active-kpi" data-kpi-tab="tab-posts" data-onclick="switchTab-tab-posts-1">
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-posts" data-summary="published">
           <span class="company-metric-label">Active internships <i class="bi bi-briefcase" aria-hidden="true"></i></span>
-          <span class="bw-kpi-value" id="kpiActivePosts">2</span>
+          <span class="bw-kpi-value" id="kpiActivePosts">0</span>
           <span class="company-metric-caption">Open for applications <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
         </button>
-        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-candidates" data-onclick="switchTab-tab-candidates-2">
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-candidates" data-summary="applications">
           <span class="company-metric-label">Applications <i class="bi bi-people" aria-hidden="true"></i></span>
-          <span class="bw-kpi-value" id="companyApplicationsMetric">1</span>
-          <span class="company-metric-caption">Review your pipeline <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+          <span class="bw-kpi-value" id="companyApplicationsMetric">0</span>
+          <span class="company-metric-caption">Awaiting your review <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
         </button>
-        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-accepted-students" data-onclick="switchTab-tab-accepted-students">
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-accepted-students" data-summary="interns">
           <span class="company-metric-label">Active interns <i class="bi bi-person-check" aria-hidden="true"></i></span>
-          <span class="bw-kpi-value">4</span>
+          <span class="bw-kpi-value" id="companyInternsMetric">0</span>
           <span class="company-metric-caption">8-week training program <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
         </button>
-        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-weekly-reports" data-onclick="switchTab-tab-weekly-reports-3">
+        <button type="button" class="bw-kpi-card" data-kpi-tab="tab-weekly-reports" data-summary="reports">
           <span class="company-metric-label">Weekly reports <i class="bi bi-journal-text" aria-hidden="true"></i></span>
-          <span class="bw-kpi-value">1</span>
-          <span class="company-metric-caption"><span class="company-status-dot"></span> Awaiting faculty review <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+          <span class="bw-kpi-value">0</span>
+          <span class="company-metric-caption"><span class="company-status-dot"></span> In supervisor review <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span>
         </button>
       </section>
 
@@ -650,19 +651,19 @@
     </div>
   </div>
 
-  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
+  <script src="../../shared/js/portal.js?v=college-directory-87"></script>
 
-  <script src="company-dashboard.js?v=interface-9"></script>
+  <script src="company-dashboard.js?v=college-directory-87"></script>
   <script src="../../shared/js/evaluation-radar.js?v=3"></script>
   <script src="../../shared/js/portal-motion.js?v=portal-clean-2"></script>
   <script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
 
   <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
   <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
-  <script src="../../shared/js/report-visibility.js?v=1"></script><script src="../../shared/js/workbook-download.js?v=workbook-clean-44"></script><script src="../../shared/js/workspace-cycle.js?v=ticket-curl-68"></script>
+  <script src="../../shared/js/report-visibility.js?v=1"></script><script src="../../shared/js/workbook-download.js?v=workbook-clean-44"></script><script src="../../shared/js/workspace-cycle.js?v=college-directory-87"></script>
   <script src="../../shared/js/partnership-review.js?v=ticket-lifecycle-54"></script>
   <link rel="stylesheet" href="../../shared/css/student-training.css?v=1">
-  <script src="../../shared/js/application-interviews.js?v=desktop-audit-29"></script>
+  <script src="../../shared/js/application-interviews.js?v=college-directory-87"></script>
 
 <script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
 </body>

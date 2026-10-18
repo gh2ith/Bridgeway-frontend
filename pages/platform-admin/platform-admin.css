@@ -129,9 +129,15 @@
 }
 
 /* Match the college/company portals without shrinking their navigation. */
-#page-platform-admin .bw-company-layout { max-width:1600px;padding:28px 36px 60px;gap:36px;align-items:start; }
+#page-platform-admin .bw-company-layout { max-width:none;padding:28px 36px 60px;gap:36px;align-items:start; }
 #page-platform-admin .bw-company-content { min-width:0;gap:28px; }
 #page-platform-admin .bw-masar-sidebar { height:fit-content;min-height:0;max-height:none;overflow:visible; }
+/* Fill more of the desktop rail without stretching navigation on tall displays. */
+@media(min-width:1081px) {
+  #page-platform-admin .bw-masar-sidebar { height:min(800px,calc(100dvh - 56px));max-height:calc(100dvh - 56px);overflow:hidden; }
+  #page-platform-admin .bw-masar-top { display:flex;flex-direction:column; }
+  #page-platform-admin .bw-masar-header { flex-shrink:0; }
+}
 #page-platform-admin .company-topbar { padding-bottom:20px; }
 #page-platform-admin .company-page-heading { align-items:center; }
 #page-platform-admin .company-page-heading h1 { font-size:clamp(28px,2.7vw,36px);font-weight:600;letter-spacing:-.04em;line-height:1.25;margin:8px 0 12px; }

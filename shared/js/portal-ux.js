@@ -142,7 +142,7 @@
     if(button.dataset.holdReject==='true'&&window.BridgewayKinetic?.confirmReject)return null; // The hold dialog is this action's confirmation.
     let label=button.textContent.replace(/[✓✔⚡]/g,'').trim().replace(/\s+/g,' ');
     if(button.id==='submitRubricBtn')label='Submit final evaluation';
-    if(button.form?.id==='standalonePostForm')label='Submit for review';
+    if(button.form?.id==='standalonePostForm'&&button.type==='submit')label='Submit for review';
     const listing=button.closest('[data-listing-id]'),reason=listing?.querySelector('textarea');
     if(reason&&['Reject','Pause publication'].includes(label)&&!reason.value.trim())return null; // Existing inline validation explains the missing reason.
     if(label==='Activate placement'&&!button.closest('.cycle-admission')?.querySelector('select')?.value)return null;
@@ -303,7 +303,11 @@
     // Inline errors supplement native constraints; valid entries are never cleared.
     let errorId=0;
     function errorFor(field){
-      const label=field.labels?.[0]?.textContent.replace(/\*/g,'').trim()||'this field';
+      // Wrapped labels also contain controls, hints, and the previous error.
+      // Read only their label copy so validation cannot incorporate itself.
+      const labelCopy=field.labels?.[0]?.cloneNode(true);
+      labelCopy?.querySelectorAll('input,select,textarea,button,[data-ux-error-for],.bw-ux-required,.ie-hint,.cycle-muted,small,[role="alert"]').forEach(node=>node.remove());
+      const label=labelCopy?.textContent.replace(/\*/g,'').replace(/\s+/g,' ').trim()||'this field';
       if(field.validity.valueMissing)return `Complete ${label.toLowerCase()}.`;
       if(field.validity.typeMismatch)return field.type==='email'?'Enter a valid email address.':'Enter a valid value.';
       if(field.validity.rangeUnderflow)return `Enter at least ${field.min}.`;

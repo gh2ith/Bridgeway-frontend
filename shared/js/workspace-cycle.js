@@ -381,9 +381,9 @@
     let week=Number.isInteger(selectedWeek)?Math.max(0,Math.min(selectedWeek,7)):pending>=0?pending:Math.min((student(id)?.weeks||1)-1,7),editing=false;
     const closed=['Left','Completed'].includes(state.histories.find(h=>h.student===id)?.status);
     function render(){const plan=state.plans[id];root.replaceChildren();root.classList.toggle('cycle-supervisor-review',role==='supervisor');if(!plan){root.append(E('p','The company creates a training plan after placement.','cycle-muted'));return;}
-      const w=plan[week];const heading=A(E('div',null,'cycle-heading'),A(E('div'),E('p',`${student(id).name} · ${org(student(id).company)}`,'cycle-muted'),A(E('div',null,'cycle-plan-title'),E('h2','The eight-week plan'),status(`${hours(id)} / 320 h verified`))));root.append(heading);if(role==='company'&&!closed)heading.append(B('Plan all eight weeks',()=>editFullPlan(id,render)));if(closed)root.append(E('p','Placement ended. The training record is retained for reference.','cycle-callout'));
+      const w=plan[week];const heading=A(E('div',null,'cycle-heading'),A(E('div'),E('p',role==='supervisor'?`${org(student(id).company)} · Eight-week training plan`:`${student(id).name} · ${org(student(id).company)}`,'cycle-muted'),A(E('div',null,'cycle-plan-title'),E('h2',role==='supervisor'?student(id).name:'The eight-week plan'),status(`${hours(id)} / 320 h verified`))));root.append(heading);if(role==='company'&&!closed)heading.append(B('Plan all eight weeks',()=>editFullPlan(id,render)));if(closed)root.append(E('p','Placement ended. The training record is retained for reference.','cycle-callout'));
       const rail=E('div',null,'cycle-weeks');rail.setAttribute('aria-label','Training weeks');plan.forEach((p,i)=>{const b=B('',()=>{week=i;editing=false;render();});b.setAttribute('aria-pressed',String(week===i));b.append(E('span',`Week ${i+1}`),E('small',p.status==='verified'?'Verified':p.status==='submitted'?'In review':p.status==='revision'?'Revision':'Planned'));if(role==='student'&&reportRestricted(id)){const lock=E('i',null,'bi bi-lock');lock.setAttribute('aria-hidden','true');b.firstChild.append(lock);b.title='Report hidden by your supervisor. The weekly plan remains available.';b.setAttribute('aria-label',`Week ${i+1} · ${b.querySelector('small').textContent} · Report hidden by your supervisor`);}rail.append(b);});root.append(rail);
-      const top=A(E('div',null,'cycle-heading'),A(E('div'),E('h3',w.title),E('p',`${w.hours} planned hours · Plan revision ${w.revision}`,'cycle-muted')),status(w.status));root.append(top);if(role==='platform')top.append(status(reportRestricted(id)?'Hidden from student':'Visible to student'));
+      const top=A(E('div',null,'cycle-heading'),A(E('div'),E('h3',role==='supervisor'?`Week ${week+1} · ${w.title}`:w.title),E('p',`${role==='supervisor'&&w.status!=='draft'?`${w.actualHours} reported hours · `:''}${w.hours} planned hours · Plan revision ${w.revision}`,'cycle-muted')),status(w.status));root.append(top);if(role==='platform')top.append(status(reportRestricted(id)?'Hidden from student':'Visible to student'));
       if(role==='company'&&!closed&&['draft','revision'].includes(w.status))top.append(B(editing?'Cancel editing':'Edit weekly plan',()=>{editing=!editing;render();}));
       if(editing){const form=E('form',null,'cycle-form'),title=field('Week title',w.title),planned=field('Planned hours',w.hours,'number');title.input.required=true;planned.input.min=1;planned.input.max=50;planned.input.required=true;const tasks=field('Objectives · one per line',w.objectives.map(o=>o.text).join('\n'),'textarea');tasks.input.required=true;form.append(title.wrap,planned.wrap,tasks.wrap);const save=E('button','Update plan','cycle-button is-primary');save.type='submit';form.append(save);root.append(form);form.addEventListener('submit',ev=>{ev.preventDefault();const lines=tasks.input.value.split('\n').map(x=>x.trim()).filter(Boolean);if(!lines.length||!title.input.value.trim()){tasks.input.setCustomValidity('Add at least one objective and a week title.');tasks.input.reportValidity();tasks.input.setCustomValidity('');return;}(w.planHistory||=[]).push({title:w.title,hours:w.hours,objectives:w.objectives.map(o=>o.text),revision:w.revision,at:now()});w.title=title.input.value.trim();w.hours=Number(planned.input.value);w.objectives=lines.map((text,i)=>{const old=w.objectives.find(o=>o.text===text);return old||{id:`${week}-${i}-${Date.now()}`,text,done:false,evidence:''};});w.revision++;w.updated=now();editing=false;commit(`Week ${week+1} plan updated for ${student(id).name}`);render();});return;}
       const checklist=E('div',null,'cycle-objectives');root.append(checklist);
@@ -404,7 +404,8 @@
         const mentor=A(E('section',null,'supervisor-mentor-note'),E('h3','Company feedback about the student'),E('p',w.notes||'The company has not added written feedback to this report.'));root.append(mentor);
         const reviewArea=E('section',null,'supervisor-review-footer');reviewArea.append(E('h3','Your review'),E('p',w.status==='submitted'?'Read the company’s feedback and results, then approve its report or request a revision.':w.status==='verified'?'Company report approved. Its content and verified hours remain unchanged.':w.status==='revision'?'Revision requested. Review reopens when the company resubmits.':'Approval becomes available after the company submits this report.','cycle-muted'));
         const review=field('Review notes / required revisions',w.review,'textarea');review.input.maxLength=3000;review.input.placeholder='Add an optional approval note, or explain what the company needs to revise.';review.input.disabled=w.status!=='submitted';reviewArea.append(review.wrap);
-        const controls=E('div',null,'cycle-actions');const verify=B(`Approve report · ${w.actualHours} h`,()=>{if(w.status!=='submitted')return;w.review=review.input.value.trim();w.status='verified';commit(`Week ${week+1} verified for ${student(id).name}`);render();},true),revise=B('Request revision',()=>{if(!review.input.value.trim()){review.input.setCustomValidity('Explain the required changes.');review.input.reportValidity();review.input.setCustomValidity('');return;}w.review=review.input.value.trim();w.status='revision';commit(`Week ${week+1} revision requested`);render();});verify.dataset.supervisorVerify='true';verify.disabled=w.status!=='submitted';revise.disabled=w.status!=='submitted';controls.append(revise,verify);reviewArea.append(controls);root.append(reviewArea);
+        const controls=E('div',null,'cycle-actions');const verify=B(`Approve report · ${w.actualHours} h`,()=>{if(w.status!=='submitted')return;w.review=review.input.value.trim();w.status='verified';commit(`Week ${week+1} verified for ${student(id).name}`);render();},true),revise=B('Request revision',()=>{if(!review.input.value.trim()){review.input.setCustomValidity('Explain the required changes.');review.input.reportValidity();review.input.setCustomValidity('');return;}w.review=review.input.value.trim();w.status='revision';commit(`Week ${week+1} revision requested`);render();});verify.dataset.supervisorVerify='true';verify.disabled=w.status!=='submitted';revise.disabled=w.status!=='submitted';controls.append(revise,verify);reviewArea.append(controls);
+        root.append(A(E('div',null,'supervisor-report-columns'),A(E('div',null,'supervisor-report-content'),checklist,mentor),reviewArea));
       } else if(w.status!=='draft'){root.append(E('p',`${w.actualHours} reported hours · ${w.notes}`,'cycle-muted'));if(role==='student'){const review=A(E('section',null,'cycle-callout cycle-student-review'),E('h4','Supervisor review'),E('p',w.review||(w.status==='submitted'?'Your supervisor has not added feedback yet.':'No written feedback was added for this week.')));review.setAttribute('aria-label','Supervisor review');root.append(review);}else if(w.review)root.append(E('p',w.review,'cycle-callout'));}
     }render();return render;
   }
@@ -499,37 +500,47 @@
     [search.input,college.input,outcome.input].forEach(n=>n.addEventListener(n===search.input?'input':'change',()=>{render();updateExport();}));render();updateExport();
   }
   function publications(root,company=false){
-    let filter='All';
+    let filter='All',drawer=null,drawerListing='',drawerOpener=null;
+    const deadlineLabel=value=>value&&Number.isFinite(Date.parse(value))?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Amman'}).format(new Date(value+'T00:00:00Z')):'Not recorded';
     const panel=section(company?'Publication desk':'Listing review desk',company?'Submit for platform review. Approved opportunities are available across all active colleges.':'Review the opportunity before students from all colleges can discover it.');
     root.append(panel);
     const pick=select('Publication status',['All','Pending review','Published','Rejected','Paused',...(company?['Deleted']:[])],'All');
-    panel.append(pick.wrap);
-    const list=E('div',null,company?'cycle-publications is-company-posts':'cycle-publications is-platform-posts');panel.append(list);
-    if(company){const create=E('a','Post an internship','cycle-button is-primary');create.href='../company-post-role/company-post-role.html';panel.querySelector('header').append(create);}
-    function showPending(){if(filter!=='All'){filter='Pending review';pick.input.value=filter;}render();}
-    function edit(l){
-      const form=E('form',null,'cycle-form');
-      const title=field('Role title',l.title),category=select('Category',[['software','Software & web'],['cloud','Cloud & DevOps'],['cybersecurity','Cybersecurity'],['data','Data & AI'],['mobile','Mobile development']],l.category||'software');
-      const location=field('Location & workplace',l.location),description=field('Responsibilities',l.description,'textarea'),skills=field('Skills · separated by commas',l.skills),capacity=field('Open places',l.capacity,'number'),deadline=field('Application deadline',l.deadline,'date');
-      [title,location,description,skills,capacity,deadline].forEach(f=>{f.input.required=true;f.wrap.firstElementChild.append(' *');});
-      title.input.maxLength=160;location.input.maxLength=200;description.input.maxLength=6000;skills.input.maxLength=1000;
-      capacity.input.min='1';capacity.input.max='500';capacity.input.step='1';
-      form.append(E('p',l.status==='Published'?'Saving changes returns this listing to Platform Admin review. It will not be discoverable again until approved. Existing applications and training stay intact.':'Save your changes and submit the updated listing for Platform Admin review.','cycle-callout'));
-      form.append(title.wrap,A(E('div',null,'cycle-post-fields'),category.wrap,location.wrap),description.wrap,skills.wrap,A(E('div',null,'cycle-post-fields'),capacity.wrap,deadline.wrap));
-      const submit=E('button','Save & submit for review','cycle-button is-primary');submit.type='submit';
-      form.append(A(E('div',null,'cycle-actions'),submit));
-      const d=dialog('Edit internship post',form);
-      form.addEventListener('submit',ev=>{
-        ev.preventDefault();
-        for(const f of [title,location,description,skills]){
-          if(!f.input.value.trim()){f.input.setCustomValidity('Enter a value, not only spaces.');f.input.reportValidity();f.input.setCustomValidity('');return;}
-        }
-        if(!form.reportValidity())return;
-        l.revisions ||= [];l.revisions.push({at:now(),status:l.status,review:l.review||''});
-        Object.assign(l,{title:title.input.value.trim(),category:category.input.value,location:location.input.value.trim(),description:description.input.value.trim(),skills:skills.input.value.trim(),capacity:Number(capacity.input.value),deadline:deadline.input.value,status:'Pending review',review:'',updated:now()});
-        commit('Company edited listing and submitted for review');d.close();showPending();
+    const search=field('Search listings','','search'),sort=select('Sort listings',['Pending first','Deadline: earliest first','Role: A to Z'],'Pending first'),filters=E('div',null,'publication-filters'),result=E('p','','publication-result');
+    const filterButtons=[];
+    const list=E('div',null,'publication-table-wrap');
+    {
+      panel.classList.add('publication-review-desk');panel.setAttribute('aria-label','Internship listings');panel.querySelector('header').remove();
+      search.input.placeholder=company?'Search internships':'Search role, company, or skill';
+      search.wrap.classList.add('publication-search');
+      const searchIcon=E('i',null,'bi bi-search');searchIcon.setAttribute('aria-hidden','true');search.wrap.append(searchIcon);
+      filters.setAttribute('role','group');filters.setAttribute('aria-label','Publication status');
+      (company?['All','Published','Pending review','Paused','Rejected','Deleted']:['All','Pending review','Published','Paused','Rejected']).forEach(value=>{
+        const button=B('',()=>{filter=value;pick.input.value=value;render();});
+        button.dataset.status=value;filterButtons.push(button);filters.append(button);
       });
+      result.setAttribute('role','status');
+      panel.append(filters,A(E('div',null,'publication-toolbar'),search.wrap,sort.wrap),list,A(E('footer',null,'publication-table-footer'),result,E('p','All active colleges · Local restrictions apply','cycle-muted')));
+      search.input.addEventListener('input',render);sort.input.addEventListener('change',render);
     }
+    if(company){
+      panel.classList.add('company-publications');
+      filters.remove();panel.querySelector('.publication-toolbar').remove();
+      pick.input.setAttribute('aria-label','Publication status');
+      panel.prepend(A(E('div',null,'company-publication-filter'),pick.wrap));
+      list.classList.add('cycle-publications','is-company-posts');
+
+      sort.input.prepend(new Option('Published first','Published first'));sort.input.value='Published first';
+      const sectionHeading=A(E('header',null,'company-listing-heading'),A(E('div'),E('h2','Publication desk'),E('p','Submit for platform review. Approved opportunities are available across all active colleges.','cycle-muted')));panel.prepend(sectionHeading);
+      const create=E('a','Post an internship','cycle-button is-primary');create.href='../company-post-role/company-post-role.html';sectionHeading.append(create);
+      document.addEventListener('bridgeway:publication-filter',ev=>{filter=ev.detail;search.input.value='';render();});
+      document.addEventListener('bridgeway:cycle-change',render);
+    }
+    function applicants(l,pending=false){
+      const inbox=document.querySelector('.cycle-applicant-inbox');if(!inbox)return;
+      const input=inbox.querySelector('input'),statusSelect=inbox.querySelector('select');input.value=l?.title||'';statusSelect.value=pending?'Pending':'All';input.dispatchEvent(new Event('input',{bubbles:true}));statusSelect.dispatchEvent(new Event('change',{bubbles:true}));window.switchTab('tab-candidates');
+    }
+    function showPending(){if(filter!=='All'){filter='Pending review';pick.input.value=filter;}render();}
+    function edit(l){location.href=`../company-post-role/company-post-role.html?listing=${encodeURIComponent(l.id)}`;}
     function remove(l){
       if(window.BridgewayKinetic){
         const previous=l.status;
@@ -551,62 +562,158 @@
       });confirm.classList.add('is-danger');
       body.append(A(E('div',null,'cycle-actions'),cancel,confirm));cancel.focus();
     }
+    const publicationIcon=name=>{const node=E('i',null,'bi '+name);node.setAttribute('aria-hidden','true');return node;};
+    function confirmCompanyPause(l,opener){
+      if(l.status!=='Published')return;
+      const form=E('form',null,'publication-pause-form');
+      const cancel=B('Cancel',()=>popup.querySelector('header button').click()),confirm=E('button','Confirm pause','cycle-button is-primary');confirm.type='submit';confirm.dataset.confirmation='custom';
+      form.append(E('p',l.title,'publication-pause-title'),E('p','This listing will be hidden from discovery. Existing applications and training remain intact.','cycle-muted'),A(E('div',null,'cycle-actions'),cancel,confirm));
+      const popup=dialog('Pause this listing?',form);popup.classList.add('publication-pause-confirm','bw-dialog-surface');
+      const heading=popup.querySelector('header'),icon=E('i',null,'bi bi-info-circle bw-dialog-heading-icon');icon.setAttribute('aria-hidden','true');heading.classList.add('bw-dialog-heading');heading.prepend(icon);
+      popup.addEventListener('close',()=>{if(opener?.isConnected)return;const target=drawer?.open?drawer.querySelector('.publication-drawer-close'):[...list.querySelectorAll('[data-listing-id]')].find(row=>row.dataset.listingId===l.id)?.querySelector('summary')||pick.input;target?.focus({preventScroll:true});});
+      form.addEventListener('submit',event=>{
+        event.preventDefault();
+        if(l.status!=='Published'){form.dataset.committed='true';popup.close();return;}
+        l.status='Paused';form.dataset.committed='true';window.BridgewayUX?.remember(form);commit(`Listing ${l.title}: Paused`);render();if(drawer?.open)renderDrawer(l);popup.close();
+      });
+      cancel.focus();
+    }
+    function restorePublicationFocus(){
+      const target=drawerOpener?.isConnected?drawerOpener:[...list.querySelectorAll('[data-listing-id]')].find(row=>row.dataset.listingId===drawerListing)?.querySelector('button,summary')||(company?pick.input:search.input);
+      target.focus({preventScroll:true});
+    }
+    async function discardDecision(){
+      const notes=drawer?.querySelector('textarea');
+      return !notes?.value.trim()||!window.BridgewayUX?.confirmDiscard||await window.BridgewayUX.confirmDiscard();
+    }
+    async function dismissDrawer(){if(await discardDecision())drawer?.close();}
+    function openListing(l,opener,nextStatus=''){
+      if(drawer?.open)return;
+      drawerListing=l.id;drawerOpener=opener;
+      const sourceRow=opener.closest('[data-listing-id]');sourceRow?.classList.add('is-reviewing');
+      drawer=E('dialog',null,'publication-drawer');drawer.setAttribute('aria-labelledby','publicationDrawerTitle');
+      const close=B('',dismissDrawer);close.classList.add('publication-drawer-close');close.setAttribute('aria-label','Close listing details');close.append(publicationIcon('bi-x-lg'));
+      drawer.append(A(E('header',null,'publication-drawer-top'),E('span','Listing details'),close),E('div',null,'publication-detail'));
+      drawer.addEventListener('cancel',ev=>{ev.preventDefault();dismissDrawer();});
+      drawer.addEventListener('click',ev=>{if(ev.target!==drawer)return;const r=drawer.getBoundingClientRect();if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)dismissDrawer();});
+      drawer.addEventListener('close',()=>{sourceRow?.classList.remove('is-reviewing');drawer.remove();drawer=null;restorePublicationFocus();},{once:true});
+      document.body.append(drawer);renderDrawer(l,nextStatus);drawer.showModal();close.focus({preventScroll:true});
+    }
+    function renderDrawer(l,nextStatus=''){
+      const detail=drawer.querySelector('.publication-detail');detail.replaceChildren();
+      const title=E('h2',l.title);title.id='publicationDrawerTitle';
+      detail.append(A(E('header',null,'publication-detail-heading'),status(l.status),title,E('p',`${org(l.company)} · ${l.location}`,'cycle-muted')));
+      const facts=E('dl',null,'publication-facts');
+      [['Application deadline',deadlineLabel(l.deadline)],['Open places',String(l.capacity)],['Training duration','8 weeks'],['Availability','All active colleges']].forEach(([label,value])=>facts.append(A(E('div'),E('dt',label),E('dd',value))));
+      const skills=E('div',null,'publication-skills');l.skills.split(',').map(s=>s.trim()).filter(Boolean).forEach(s=>skills.append(E('span',s)));
+      if(l.categoryLabel)detail.append(A(E('p',null,'cycle-muted'),E('strong','Category: '),E('span',l.categoryLabel)));
+      detail.append(facts,E('h3','Responsibilities'),E('p',l.description,'publication-description'),E('h3','Required skills'),skills);
+      if(l.prerequisites?.length){const requirements=E('ul',null,'publication-prerequisites');l.prerequisites.forEach(text=>requirements.append(E('li',text)));detail.append(E('h3','Prerequisites'),requirements);}
+      if(l.review&&l.review!=='Approved listing')detail.append(A(E('div',null,'publication-review-note'),E('h3','Latest review'),E('p',l.review)));
+      if(nextStatus&&(!company||nextStatus==='Paused')){
+        const required=nextStatus!=='Published',label=nextStatus==='Published'?(l.status==='Paused'?'Confirm resume':'Confirm publication'):nextStatus==='Paused'?'Confirm pause':'Confirm rejection';
+        const form=E('form',null,'publication-decision'),notes=field(required?'Reason *':'Review notes (optional)','','textarea');notes.input.required=required;notes.input.maxLength=2000;
+        const explanation=nextStatus==='Published'?'The listing will be available to active colleges, subject to their local availability restrictions.':nextStatus==='Paused'?'The listing will be hidden from discovery. Existing applications and training remain intact.':'The listing will remain unpublished. Add a reason the company can use when revising it.';
+        const cancel=B('Cancel',async()=>{if(await discardDecision()){renderDrawer(l);drawer.querySelector('.publication-detail-actions button')?.focus();}}),confirm=E('button',label,'cycle-button '+(nextStatus==='Rejected'?'is-danger':'is-primary'));confirm.type='submit';confirm.dataset.confirmation='custom';
+        const decisionTitle=nextStatus==='Published'?(l.status==='Paused'?'Resume this listing?':'Approve this listing?'):nextStatus==='Paused'?'Pause this listing?':'Reject this listing?';
+        form.append(E('h3',decisionTitle),E('p',explanation,'cycle-muted'),notes.wrap,A(E('div',null,'cycle-actions'),cancel,confirm));detail.append(form);
+        notes.input.addEventListener('input',()=>notes.input.setCustomValidity(''));
+        form.addEventListener('submit',ev=>{
+          ev.preventDefault();
+          if(required&&!notes.input.value.trim()){notes.input.setCustomValidity('Add a reason for this decision.');notes.input.reportValidity();return;}
+          const allowed=company?nextStatus==='Paused'&&l.status==='Published':nextStatus==='Published'?['Pending review','Paused'].includes(l.status):nextStatus==='Paused'?l.status==='Published':l.status==='Pending review';
+          if(!allowed){renderDrawer(l);return;}
+          l.status=nextStatus;l.review=notes.input.value.trim();form.dataset.committed='true';commit(`Listing ${l.title}: ${l.status}`);render();drawer.close();
+        });
+      }else{
+        const actions=E('footer',null,'publication-detail-actions');
+        const choices=company?(l.status==='Published'?[['Pause listing','Paused']]:[]):l.status==='Pending review'?[['Reject listing','Rejected'],['Approve & publish','Published']]:l.status==='Published'?[['Pause listing','Paused']]:l.status==='Paused'?[['Resume listing','Published']]:[];
+        choices.forEach(([label,next])=>{const button=B(label,()=>{if(company&&next==='Paused'){confirmCompanyPause(l,button);return;}renderDrawer(l,next);drawer.querySelector('textarea').focus();},next==='Published');button.dataset.confirmation='custom';if(next==='Rejected')button.classList.add('is-danger');actions.append(button);});
+        if(company&&l.status!=='Deleted'){
+          const editButton=B('Edit listing',()=>edit(l));actions.prepend(editButton);
+          const apps=B('View applications',()=>{drawer.close();applicants(l);});actions.append(apps);
+        }
+        if(!company&&!choices.length)actions.append(E('p','The company can revise and resubmit this listing.','cycle-muted'));
+        if(company&&l.status==='Pending review')detail.append(E('p','Awaiting Platform Admin review. This listing is not published yet.','cycle-callout'));
+        detail.append(actions);
+      }
+    }
+    function reviewTable(items){
+      const table=E('table',null,'publication-table');table.setAttribute('aria-label','Internship listings');
+      const head=E('thead'),headRow=E('tr');(company?['Internship','Publication','Deadline','Actions']:['Internship / Company','Workplace','Deadline','Status','Actions']).forEach(label=>{const th=E('th',label);th.scope='col';headRow.append(th);});head.append(headRow);
+      const body=E('tbody');table.append(head,body);
+      items.forEach(l=>{
+        const row=E('tr');row.dataset.listingId=l.id;
+        const cell=label=>{const td=E('td');td.dataset.label=label;row.append(td);return td;};
+        const identity=cell('Internship / Company'),title=B(l.title,()=>openListing(l,title));title.className='publication-title';title.setAttribute('aria-haspopup','dialog');identity.append(title,E('span',company?`${l.location} · ${l.capacity} ${l.capacity===1?'place':'places'}`:org(l.company),'publication-company'));
+        if(company){const copy=E('div');copy.append(...identity.childNodes);identity.append(A(E('div',null,'company-listing-identity'),publicationIcon('bi-briefcase'),copy));}
+        if(company){
+          cell('Publication').append(status(l.status));
+        }else{
+        const parts=l.location.split('·').map(value=>value.trim()),place=cell('Workplace');place.append(E('span',parts[0]),E('span',parts.slice(1).join(' · '),'publication-company'));
+        const dateCell=cell('Deadline');const time=E('time',deadlineLabel(l.deadline));time.dateTime=l.deadline;dateCell.append(time);
+        cell('Status').append(status(l.status));
+        }
+        if(company){const time=E('time',deadlineLabel(l.deadline));time.dateTime=l.deadline;cell('Deadline').append(time);}
+        const actions=A(cell('Actions'),E('div',null,'publication-row-actions')).firstElementChild;
+        const view=B(company?'View listing':l.status==='Pending review'?'Review':'View details',()=>openListing(l,view),!company&&l.status==='Pending review');view.setAttribute('aria-haspopup','dialog');if(!company)actions.append(view);
+        const menu=E('details',null,'publication-menu'),trigger=E('summary');trigger.setAttribute('aria-label',`Actions for ${l.title}`);trigger.append(publicationIcon('bi-three-dots'));
+        const options=E('div',null,'publication-menu-options');
+        const option=(label,next='')=>{const button=B(label,()=>{menu.open=false;if(company&&next==='Paused'){trigger.focus();confirmCompanyPause(l,trigger);}else openListing(l,trigger,next);});button.dataset.confirmation='custom';button.setAttribute('aria-haspopup','dialog');button.prepend(publicationIcon(next==='Paused'?'bi-pause-circle':next==='Published'?'bi-play-circle':'bi-file-earmark-text'));options.append(button);};
+        if(company){
+          const companyAction=(label,fn)=>{
+            const button=B(label,()=>{menu.open=false;trigger.focus();fn();});button.dataset.confirmation='custom';
+            button.prepend(publicationIcon(label==='Edit listing'?'bi-pencil-square':label==='Restore listing'?'bi-arrow-counterclockwise':'bi-trash3'));
+            if(label==='Delete listing'){button.classList.add('publication-delete-action','is-danger');button.setAttribute('aria-haspopup','dialog');}
+            options.append(button);
+          };
+          if(l.status==='Deleted')companyAction('Restore listing',()=>{l.status=l.deletedFromStatus||'Pending review';delete l.deletedAt;delete l.deletedFromStatus;filter='All';commit('Company restored listing');render();});
+          else{companyAction('Edit listing',()=>edit(l));if(l.status==='Published')option('Pause listing','Paused');companyAction('Delete listing',()=>remove(l));}
+        }else{option('View listing');if(l.status==='Published')option('Pause listing','Paused');if(l.status==='Paused')option('Resume listing','Published');}
+        menu.append(trigger,options);actions.append(menu);
+        menu.addEventListener('toggle',()=>{if(menu.open)list.querySelectorAll('details[open]').forEach(other=>{if(other!==menu)other.open=false;});});
+        menu.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();menu.open=false;trigger.focus();}});
+        body.append(row);
+      });
+      if(!items.length){const td=E('td',null,'publication-empty');td.colSpan=company?4:5;const reset=B('Clear filters',()=>{filter='All';pick.input.value='All';search.input.value='';render();(company?pick.input:search.input).focus();});td.append(publicationIcon('bi-search'),E('strong','No matching listings'),E('p',company?'Choose another publication status.':'Try another role, company, or publication status.'),reset);body.append(A(E('tr'),td));}
+      if(company&&items.length){
+        items.forEach(l=>{
+          const source=[...body.children].find(row=>row.dataset.listingId===l.id),menu=source.querySelector('.publication-menu');
+          const card=E('article',null,'company-post-card');card.dataset.listingId=l.id;
+          const title=B(l.title,()=>openListing(l,title));title.className='company-post-title';title.setAttribute('aria-haspopup','dialog');
+          menu.classList.add('cycle-post-menu');menu.querySelector('.publication-menu-options').classList.add('cycle-post-menu-options');
+          const heading=A(E('header',null,'company-post-card-heading'),status(l.status),menu);
+          const skills=E('div',null,'company-post-card-skills'),tokens=[...new Set(l.skills.split(',').map(s=>s.trim()).filter(Boolean))];
+          skills.setAttribute('aria-label','Required skills');tokens.slice(0,3).forEach(text=>skills.append(E('span',text)));
+          if(tokens.length>3){const more=B(`+${tokens.length-3}`,()=>openListing(l,more));more.setAttribute('aria-label',`View all ${tokens.length} required skills for ${l.title}`);more.setAttribute('aria-haspopup','dialog');skills.append(more);}
+          const facts=E('dl',null,'company-post-card-facts');
+          facts.append(A(E('div'),E('dt','Open places'),E('dd',String(l.capacity))),A(E('div'),E('dt','Application deadline'),A(E('dd'),Object.assign(E('time',deadlineLabel(l.deadline)),{dateTime:l.deadline}))));
+          card.append(heading,A(E('h3'),title),A(E('p',null,'company-post-card-location'),publicationIcon('bi-geo-alt'),E('span',l.location)),E('p',l.description,'company-post-card-description'),skills,facts,E('p','All active colleges','company-post-card-availability'));
+          if(l.review&&l.review!=='Approved listing')card.append(A(E('div',null,'company-post-card-review'),E('strong','Latest review'),E('p',l.review)));
+          list.append(card);
+        });
+      }else list.append(table);
+    }
     function render(){
       list.replaceChildren();
-      const items=state.listings.filter(l=>(!company||l.company==='company-1')&&(filter==='All'?l.status!=='Deleted':l.status===filter));
-      if(!company)items.sort((a,b)=>Number(b.status==='Pending review')-Number(a.status==='Pending review'));
-      items.forEach(l=>{
-        const card=section(l.title,`${org(l.company)} · ${l.location}`);card.dataset.listingId=l.id;
-        card.append(status(l.status),E('p',l.description),E('p',`${l.capacity} places · Deadline ${l.deadline} · All active colleges`,'cycle-muted'),E('p',l.skills,'cycle-muted'));
-        if(l.review)card.append(E('p',`Review: ${l.review}`,'cycle-callout'));
-        if(company){
-          const menu=E('details',null,'cycle-post-menu'),trigger=E('summary','⋯');
-          trigger.setAttribute('aria-label',`Post actions for ${l.title}`);trigger.title='Post actions';
-          const options=E('div',null,'cycle-post-menu-options');
-          const action=(label,fn,danger=false)=>{
-            const button=B(label,()=>{menu.open=false;trigger.focus();fn();});
-            if(danger)button.classList.add('is-danger');options.append(button);
-          };
-          if(l.status==='Deleted'){
-            action('Restore post',()=>{l.status=l.deletedFromStatus||'Pending review';delete l.deletedAt;delete l.deletedFromStatus;commit('Company restored listing');filter='All';pick.input.value=filter;render();});
-          }else{
-            action('Edit post',()=>edit(l));
-            if(l.status==='Published')action('Pause publication',()=>{l.status='Paused';commit('Company paused listing; existing records retained');render();});
-            action('Delete post',()=>remove(l),true);
-          }
-          menu.append(trigger,options);card.querySelector('.cycle-heading').append(menu);
-          menu.addEventListener('toggle',()=>{if(menu.open)list.querySelectorAll('details[open]').forEach(other=>{if(other!==menu)other.open=false;});});
-          menu.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.preventDefault();menu.open=false;trigger.focus();}});
-        }else{
-          const choices=l.status==='Pending review'?[['Approve & publish','Published'],['Reject','Rejected']]:l.status==='Published'?[['Pause publication','Paused']]:l.status==='Paused'?[['Resume publication','Published']]:[];
-          if(choices.length){
-            const controls=E('details',null,'cycle-review-controls');
-            const trigger=E('summary',l.status==='Pending review'?'Review listing':'Manage publication');
-            trigger.setAttribute('aria-label',`${trigger.textContent}: ${l.title}`);
-            const body=E('div',null,'cycle-review-body'),actions=E('div',null,'cycle-actions');
-            const notes=field(l.status==='Published'?'Reason for pausing *':'Review notes',l.status==='Published'?'':l.review||'','textarea');
-            notes.input.maxLength=2000;notes.input.rows=3;
-            const error=E('p','','cycle-form-error');error.id=`review-error-${l.id}`;error.hidden=true;error.setAttribute('role','alert');
-            notes.input.setAttribute('aria-describedby',error.id);
-            notes.input.addEventListener('input',()=>{error.hidden=true;notes.input.removeAttribute('aria-invalid');});
-            body.append(notes.wrap,error);
-            for(const [label,nextStatus]of choices){
-              const button=B(label,()=>{
-                if(nextStatus!=='Published'&&!notes.input.value.trim()){error.textContent='Add a reason for this decision.';error.hidden=false;notes.input.setAttribute('aria-invalid','true');notes.input.focus();return;}
-                l.status=nextStatus;l.review=notes.input.value.trim();commit(`Listing ${l.title}: ${l.status}`);render();
-              },nextStatus==='Published');
-              if(nextStatus==='Rejected')button.classList.add('is-danger');
-              actions.append(button);
-            }
-            body.append(actions);controls.append(trigger,body);card.append(controls);
-          }
-        }
-        list.append(card);
-      });
-      if(!items.length)list.append(E('p','No listings with this status.','cycle-muted'));
+      const query=search.input.value.trim().toLowerCase();
+      const items=state.listings.filter(l=>(!company||l.company==='company-1')&&(filter==='All'?l.status!=='Deleted':l.status===filter)&&(!query||`${l.title} ${org(l.company)} ${l.skills} ${l.location}`.toLowerCase().includes(query)));
+      {
+        filterButtons.forEach(button=>{
+          const value=button.dataset.status,count=state.listings.filter(l=>(!company||l.company==='company-1')&&(value==='All'?l.status!=='Deleted':l.status===value)).length;
+          button.replaceChildren(E('span',value==='All'?(company?'All':'All listings'):value),E('span',String(count),'publication-filter-count'));
+          button.setAttribute('aria-pressed',String(filter===value));
+        });
+        if(company)pick.input.value=filter;
+        result.textContent=`${items.length} of ${state.listings.filter(l=>(!company||l.company==='company-1')&&(filter==='Deleted'||l.status!=='Deleted')).length} ${company?'internships':'listings'}${query?' matching your search':''}`;
+      }
+      items.sort((a,b)=>sort.input.value==='Role: A to Z'?a.title.localeCompare(b.title):sort.input.value==='Deadline: earliest first'?a.deadline.localeCompare(b.deadline):sort.input.value==='Published first'?Number(b.status==='Published')-Number(a.status==='Published'):Number(b.status==='Pending review')-Number(a.status==='Pending review'));
+      reviewTable(company?items.sort((a,b)=>state.listings.indexOf(a)-state.listings.indexOf(b)):items);
     }
+
     panel.addEventListener('click',ev=>{list.querySelectorAll('details[open]').forEach(menu=>{if(!menu.contains(ev.target))menu.open=false;});});
-    pick.input.addEventListener('change',()=>{filter=pick.input.value;render();});render();
+    document.addEventListener('pointerdown',ev=>{if(!panel.contains(ev.target))list.querySelectorAll('details[open]').forEach(menu=>{menu.open=false;});});
+    pick.input.addEventListener('change',()=>{filter=pick.input.value||'All';render();});render();
   }
 function admissions(root,college=false){const panel=section(college?'Placement setup':'Applicant inbox',college?'Activate training after company acceptance. Keep or update the assigned academic supervisor.':'Review applicants, arrange interviews, and make your hiring decisions.');if(!college)panel.classList.add('cycle-applicant-inbox');root.prepend(panel);const tools=E('div',null,'cycle-toolbar'),search=field('Find an applicant','','search'),filter=select('Application status',['All','Pending','Accepted','Placed','Rejected','Withdrawn'],'All');tools.append(search.wrap);if(!college)tools.append(filter.wrap);if(!college)search.input.placeholder='Search by name, student ID, or role';panel.append(tools);const list=E('div');panel.append(list);search.input.addEventListener('input',render);filter.input.addEventListener('change',render);
     function render(){list.replaceChildren();const apps=state.applications.filter(a=>college?student(a.student).college==='college-1'&&['Accepted','Placed'].includes(a.status):a.company==='company-1').filter(a=>(filter.input.value==='All'||college||a.status===filter.input.value)&&`${student(a.student).name} ${student(a.student).studentId} ${state.listings.find(l=>l.id===a.listing)?.title}`.toLowerCase().includes(search.input.value.toLowerCase().trim()));if(!apps.length){list.append(E('p',college?'No accepted applicants waiting for placement.':(search.input.value.trim()||filter.input.value!=='All'?'No applicants match these filters. Try another name or choose All statuses.':'Applications to your listings will appear here.'),'cycle-muted'));return;}apps.forEach(a=>{const s=student(a.student),l=state.listings.find(l=>l.id===a.listing);const row=A(E('section',null,'cycle-admission'),A(E('div'),E('strong',s.name),E('p',`${s.studentId} · ${l?.title} · ${org(a.company)}`,'cycle-muted')),status(a.status));row.append(B('Student details',()=>{const body=section(s.name,`${s.studentId} · ${org(s.college)}`);body.append(E('p',`GPA ${s.gpa} · Applied for ${l.title}`),status(a.status),E('p','Application. CV document contents are not stored or analyzed.','cycle-muted'));dialog('Applicant record',body);}));if(college&&a.status==='Placed'){row.append(E('p',`Assigned to ${a.supervisor}. Training plan is ready for the company.`,'cycle-muted'));}else if(college){const supervisor=select('Academic supervisor',[['','Select a supervisor'],...[...new Set(['Dr. Ahmad S.',...model.students.filter(item=>item.college===s.college).map(item=>item.supervisor).filter(Boolean)])].map(name=>[name,name])],s.supervisor||'');row.append(supervisor.wrap,B('Activate placement',()=>{if(!supervisor.input.value){supervisor.input.setCustomValidity('Select an academic supervisor.');supervisor.input.reportValidity();supervisor.input.setCustomValidity('');return;}a.status='Placed';a.supervisor=supervisor.input.value;s.stage='Placed';s.company=a.company;s.supervisor=supervisor.input.value;const previous=state.histories.find(h=>h.student===s.id);if(previous&&previous.status!=='Active'&&state.plans[s.id]){(state.archivedPlans||={})[previous.id]=structuredClone(state.plans[s.id]);if(state.evaluations[s.id]){(state.archivedEvaluations||={})[previous.id]=structuredClone(state.evaluations[s.id]);delete state.evaluations[s.id];}delete state.plans[s.id];}state.histories.unshift({id:crypto.randomUUID(),student:s.id,company:a.company,role:l.title,start:new Date().toISOString().slice(0,10),end:'',status:'Active',reason:''});window.BridgewayCycle.seedPlan(s.id);commit(`College assigned a supervisor to ${s.name}`);render();},true));}else if(a.status==='Pending')row.append(A(E('div',null,'cycle-actions'),B('Accept applicant',()=>{if(state.applications.some(other=>other.id!==a.id&&other.student===a.student&&(other.status==='Accepted'||other.status==='Placed'&&state.histories.some(h=>h.student===a.student&&h.status==='Active')))){say('This student already has another accepted application or active placement.');return;}a.status='Accepted';commit(`Company accepted ${s.name}`);render();},true),B('Reject applicant',()=>{
@@ -652,6 +759,13 @@ function admissions(root,college=false){const panel=section(college?'Placement s
       const old=document.getElementById('companyWeeklyForm');old.dataset.cycleManaged='true';old.hidden=true;document.querySelector('.weekly-section-heading').hidden=true;document.querySelector('.weekly-report-context').hidden=true;
       const mount=E('section',null,'cycle-training');old.after(mount);const original=window.selectWeeklyIntern;window.selectWeeklyIntern=(id,...args)=>{original(id,...args);training(mount,id==='1'?'alice':'ghaith','company');};
       const list=document.getElementById('tab-posts');if(list){[...list.children].forEach(n=>n.hidden=true);const body=E('div');list.prepend(body);publications(body,true);}
+      const reviewPending=()=>{window.switchTab('tab-candidates');const inbox=document.querySelector('.cycle-applicant-inbox');if(!inbox)return;const search=inbox.querySelector('input'),select=inbox.querySelector('select');search.value='';select.value='Pending';search.dispatchEvent(new Event('input',{bubbles:true}));select.dispatchEvent(new Event('change',{bubbles:true}));};
+      document.querySelectorAll('[data-summary]').forEach(button=>button.addEventListener('click',()=>{
+        if(button.dataset.summary==='published'){window.switchTab('tab-posts');document.dispatchEvent(new CustomEvent('bridgeway:publication-filter',{detail:'Published'}));}
+        else if(button.dataset.summary==='applications')reviewPending();
+        else{window.switchTab(button.dataset.kpiTab);if(button.dataset.summary==='interns')document.querySelector('[data-accepted-filter="accepted"]')?.click();}
+      }));
+
       const candidates=document.getElementById('tab-candidates');if(candidates){[...candidates.children].forEach(n=>n.hidden=true);admissions(candidates);}
       for(const s of model.students.filter(s=>s.company==='company-1'&&state.histories.some(h=>h.student===s.id&&h.status==='Active')&&!['alice','ghaith'].includes(s.id))){const b=B('',()=>{document.getElementById('companyWeeklyPrompt').hidden=true;document.getElementById('companyWeeklyDetail').hidden=false;training(mount,s.id,'company');});b.className='company-student-button';b.append(E('strong',s.name),E('small',s.studentId));document.getElementById('weeklyStudentList').append(b);}
       const selected=document.getElementById('activeInternSelect').value;if(selected)training(mount,selected==='1'?'alice':'ghaith','company');
@@ -678,6 +792,8 @@ function admissions(root,college=false){const panel=section(college?'Placement s
     const id=location.hash.slice(1);if(document.getElementById(id)?.classList.contains('bw-tab-panel'))window.switchTab(id);
     function updateCounts(){
       const companyPosts=document.getElementById('kpiActivePosts');if(companyPosts)companyPosts.textContent=published().filter(l=>l.company==='company-1').length;
+      const pendingApplications=document.getElementById('companyApplicationsMetric');if(pendingApplications)pendingApplications.textContent=state.applications.filter(a=>a.company==='company-1'&&a.status==='Pending').length;if(pendingApplications)pendingApplications.closest('button').classList.toggle('has-pending',Number(pendingApplications.textContent)>0);
+      const activeInterns=document.getElementById('companyInternsMetric');if(activeInterns)activeInterns.textContent=new Set(state.histories.filter(h=>h.company==='company-1'&&h.status==='Active').map(h=>h.student)).size;
       const reportTotal=ids=>ids.reduce((n,id)=>n+(state.plans[id]||[]).filter(w=>w.status==='submitted').length,0);
       const companyReports=document.querySelector('[data-kpi-tab="tab-weekly-reports"] .bw-kpi-value');if(companyReports)companyReports.textContent=reportTotal(model.students.filter(s=>s.company==='company-1').map(s=>s.id));
       if(role==='supervisor'){
